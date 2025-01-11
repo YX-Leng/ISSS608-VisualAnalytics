@@ -1,0 +1,25 @@
+---
+title: "Hands-on Exercise 1"
+author: "Leng Yi Xiu"
+date: "Jan 01 2025"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+## **A Layered Grammar of Graphics: ggplot2 methods**
+
+### 1.1 Learning Outcome
+
+-   basic principles and essential components of ggplot2
+
+### 1.2 Getting Started
+
+Loading pacman package:
+
+```{r}
+pacman::p_load(tidyverse)
+```

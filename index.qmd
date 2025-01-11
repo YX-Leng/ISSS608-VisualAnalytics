@@ -1,5 +1,5 @@
 ---
-title: "ISSS608-VisualAnalytics"
+title: "ISSS608 Visual Analytics and Applications"
 ---
 
 This is a Quarto website.

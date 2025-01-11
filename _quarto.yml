@@ -5,9 +5,13 @@ website:
   title: "ISSS608 Visual Analytics and Applications"
   navbar:
     left:
+    - text: "Hands-on Exercise"
+    - text: "In-class Exercise"
+    - text: "Take-home Exercise"
+    right:
       - href: index.qmd
         text: Home
-      - about.qmd
+
 
 format:
   html:

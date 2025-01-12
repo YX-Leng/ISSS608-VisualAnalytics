@@ -10,8 +10,11 @@ website:
         - text: "Hands-on Exercise 1"
           href: "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html"
     - text: "In-class Exercise"
-      
+      menu:
+        - text: "Pending Week 1"
     - text: "Take-home Exercise"
+      menu:
+        - text: "Pending Week 1"
       
     right:
       - href: index.qmd

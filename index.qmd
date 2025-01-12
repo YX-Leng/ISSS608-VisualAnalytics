@@ -1,7 +1,35 @@
 ---
 title: "ISSS608 Visual Analytics and Applications"
+author: "Leng Yi Xiu"
+date: "Jan 12 2025"
 ---
 
 Welcome to **ISSS608 Visual Analytics and Applications**. In this website, you will find my coursework prepared for this course.
 
-![](images/pic.png)
+![](images/pic.png){fig-align="center" width="532"}
+
+## About the Author
+
+-   A full-time digital / finance transformation consultant, currently pursuing a Master of IT in Business with Singapore Management University.
+
+-   Strong focus on exploring generative AI solutions for process automation and applying advanced data analytics skills to optimize financial and operational outcomes.
+
+## Learning Journey
+
+My learning journey consists of **4 components**:
+
+| Week | Hands-on Exercise                                                                                          | In-class Exercise | Take-home Exercise |
+|--------|------------------|-------------------|------------------|
+| 1    | [Hands-on_Ex01](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex01/hands-on_ex01) |                   |                    |
+| 2    |                                                                                                            |                   |                    |
+| 3    |                                                                                                            |                   |                    |
+| 4    |                                                                                                            |                   |                    |
+| 5    |                                                                                                            |                   |                    |
+| 6    |                                                                                                            |                   |                    |
+| 7    |                                                                                                            |                   |                    |
+| 8    |                                                                                                            |                   |                    |
+| 9    |                                                                                                            |                   |                    |
+| 10   |                                                                                                            |                   |                    |
+
+| Final Project |     |
+|---------------|-----|

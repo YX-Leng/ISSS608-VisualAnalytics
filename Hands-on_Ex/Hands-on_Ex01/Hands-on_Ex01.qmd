@@ -116,7 +116,7 @@ ggplot(data=exam_data,
   geom_bar()
 ```
 
-#### 1.7.2 Geometric Objects: geom_dotplot
+#### 1.7.2 Geometric Objects: geom_dotplot()
 
 ```{r}
 ggplot(data=exam_data, 
@@ -135,4 +135,112 @@ ggplot(data=exam_data,
                dotsize = 0.5) +      
   scale_y_continuous(NULL,           
                      breaks = NULL)  
+```
+
+#### 1.7.3 Geometric Objects: geom_histogram()
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_histogram()       
+```
+
+::: {.callout-note appearance="simple"}
+Note that the default bin is **30**.
+:::
+
+#### 1.7.4 Modifying a geometric object by changing geom()
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20,            
+                 color="black",      
+                 fill="light blue")  
+```
+
+#### 1.7.5 Modifying a geometric object by changing aes()
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           fill = GENDER)) +
+  geom_histogram(bins=20, 
+                 color="grey30")
+```
+
+#### 1.7.6 Geometric Objects: geom_density()
+
+Geom_density() computes and plots [kernel density estimate](https://en.wikipedia.org/wiki/Kernel_density_estimation), which is a smoothed version of the histogram.
+
+The code below plots the distribution of Maths scores in a kernel density estimate plot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_density()           
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS, 
+           colour = GENDER)) +
+  geom_density()
+```
+
+::: {.callout-note appearance="simple"}
+-   plot two kernel density lines by using *colour* or *fill* arguments of **`aes()`**
+:::
+
+#### 1.7.7 Geometric Objects: geom_boxplot()
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS,       
+           x= GENDER)) +    
+  geom_boxplot()            
+```
+
+[Notches](https://sites.google.com/site/davidsstatistics/home/notched-box-plots) are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.
+
+The code chunk below plots the distribution of Maths scores by gender in notched plot instead of boxplot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot(notch=TRUE)
+```
+
+#### 1.7.8 Geometric Objects: geom_violin()
+
+Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it’s easier to compare several distributions since they’re placed side by side.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin()
+```
+
+#### 1.7.9 Geometric Objects: geom_point()
+
+Geom_point() is useful for creating scatterplot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point()            
+```
+
+#### 1.7.10 geom objects can be combined
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot() +                    
+  geom_point(position="jitter", 
+             size = 0.5)        
 ```

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Leng Yi Xiu">
-<meta name="dcterms.date" content="2025-01-01">
+<meta name="dcterms.date" content="2025-01-12">
 
 <title>ISSS608 Visual Analytics and Applications - Hands-on Exercise 1</title>
 <style>
@@ -161,10 +161,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#a-layered-grammar-of-graphics-ggplot2-methods" id="toc-a-layered-grammar-of-graphics-ggplot2-methods" class="nav-link active" data-scroll-target="#a-layered-grammar-of-graphics-ggplot2-methods"><strong>A Layered Grammar of Graphics: ggplot2 methods</strong></a>
+  <li><a href="#a-layered-grammar-of-graphics-ggplot2-methods" id="toc-a-layered-grammar-of-graphics-ggplot2-methods" class="nav-link active" data-scroll-target="#a-layered-grammar-of-graphics-ggplot2-methods">A Layered Grammar of Graphics: ggplot2 methods</a>
   <ul class="collapse">
   <li><a href="#learning-outcome" id="toc-learning-outcome" class="nav-link" data-scroll-target="#learning-outcome">1.1 Learning Outcome</a></li>
   <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">1.2 Getting Started</a></li>
+  <li><a href="#introducing-ggplot" id="toc-introducing-ggplot" class="nav-link" data-scroll-target="#introducing-ggplot">1.3 Introducing ggplot</a></li>
+  <li><a href="#grammar-of-graphics" id="toc-grammar-of-graphics" class="nav-link" data-scroll-target="#grammar-of-graphics">1.4 Grammar of Graphics</a></li>
+  <li><a href="#essential-grammatical-elements-in-ggplot2-data" id="toc-essential-grammatical-elements-in-ggplot2-data" class="nav-link" data-scroll-target="#essential-grammatical-elements-in-ggplot2-data">1.5 Essential Grammatical Elements in ggplot2: Data</a></li>
+  <li><a href="#essential-grammatical-elements-in-ggplot2-aesthetic-mappings" id="toc-essential-grammatical-elements-in-ggplot2-aesthetic-mappings" class="nav-link" data-scroll-target="#essential-grammatical-elements-in-ggplot2-aesthetic-mappings">1.6 Essential Grammatical Elements in ggplot2: Aesthetic mappings</a></li>
+  <li><a href="#essential-grammatical-elements-in-ggplot2-geometrics" id="toc-essential-grammatical-elements-in-ggplot2-geometrics" class="nav-link" data-scroll-target="#essential-grammatical-elements-in-ggplot2-geometrics">1.7 Essential Grammatical Elements in ggplot2: Geometrics</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -191,14 +196,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">January 1, 2025</p>
+      <p class="date">January 12, 2025</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 11, 2025</p>
+      <p class="date-modified">January 12, 2025</p>
     </div>
   </div>
     
@@ -210,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <section id="a-layered-grammar-of-graphics-ggplot2-methods" class="level2">
-<h2 class="anchored" data-anchor-id="a-layered-grammar-of-graphics-ggplot2-methods"><strong>A Layered Grammar of Graphics: ggplot2 methods</strong></h2>
+<h2 class="anchored" data-anchor-id="a-layered-grammar-of-graphics-ggplot2-methods">A Layered Grammar of Graphics: ggplot2 methods</h2>
 <section id="learning-outcome" class="level3">
 <h3 class="anchored" data-anchor-id="learning-outcome">1.1 Learning Outcome</h3>
 <ul>
@@ -219,12 +224,210 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="getting-started" class="level3">
 <h3 class="anchored" data-anchor-id="getting-started">1.2 Getting Started</h3>
-<p>Loading pacman package:</p>
+<p>Loading <strong><code>pacman</code></strong> package &amp; importing data:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>exam_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Exam_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 322 Columns: 7
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): ID, CLASS, GENDER, RACE
+dbl (3): ENGLISH, MATHS, SCIENCE
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<ul>
+<li><p>Dataset consist of year end examination grades of a cohort of Primary 3 student from a local school.</p></li>
+<li><p>Total of 7 attributes - 4 are categorical and 3 are continuous data type.<br>
+Categorical: ID, CLASS, GENDER and RACE<br>
+Continuous: MATHS, ENGLISH and SCIENCE</p></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="introducing-ggplot" class="level3">
+<h3 class="anchored" data-anchor-id="introducing-ggplot">1.3 Introducing ggplot</h3>
+<p>Comparison between R Graphics and ggplot:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">R Graphics</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">ggplot2</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(exam_data<span class="sc">$</span>MATHS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, <span class="fu">aes</span>(<span class="at">x =</span> MATHS)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">10</span>, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">boundary =</span> <span class="dv">100</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">color=</span><span class="st">"black"</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">fill=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Distribution of Maths scores"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="grammar-of-graphics" class="level3">
+<h3 class="anchored" data-anchor-id="grammar-of-graphics">1.4 Grammar of Graphics</h3>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/GrammerofGraphics.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Description of each building block
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p><strong>Data</strong>: The dataset being plotted.</p></li>
+<li><p><strong>Aesthetics</strong> take attributes of the data and use them to influence visual characteristics, such as position, colours, size, shape, or transparency.</p></li>
+<li><p><strong>Geometrics</strong>: The visual elements used for our data, such as point, bar or line.</p></li>
+<li><p><strong>Facets</strong> split the data into subsets to create multiple variations of the same graph (paneling, multiple plots).</p></li>
+<li><p><strong>Statistics</strong>, statiscal transformations that summarise data (e.g.&nbsp;mean, confidence intervals).</p></li>
+<li><p><strong>Coordinate systems</strong> define the plane on which data are mapped on the graphic.</p></li>
+<li><p><strong>Themes</strong> modify all non-data components of a plot, such as main title, sub-title, y-aixs title, or legend background.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="essential-grammatical-elements-in-ggplot2-data" class="level3">
+<h3 class="anchored" data-anchor-id="essential-grammatical-elements-in-ggplot2-data">1.5 Essential Grammatical Elements in ggplot2: Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<ul>
+<li><p>A blank canvas appears.</p></li>
+<li><p><strong><code>ggplot()</code></strong> initializes a ggplot object.</p></li>
+<li><p>The <em>data</em> argument defines the dataset to be used for plotting.</p></li>
+<li><p>If the dataset is not already a data.frame, it will be converted to one by <strong><code>fortify()</code></strong>.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="essential-grammatical-elements-in-ggplot2-aesthetic-mappings" class="level3">
+<h3 class="anchored" data-anchor-id="essential-grammatical-elements-in-ggplot2-aesthetic-mappings">1.6 Essential Grammatical Elements in ggplot2: Aesthetic mappings</h3>
+<p>The aesthetic mappings take attributes of the data and and use them to influence visual characteristics, such as position, colour, size, shape, or transparency. Each visual characteristic can thus encode an aspect of the data and be used to convey information.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> MATHS))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="essential-grammatical-elements-in-ggplot2-geometrics" class="level3">
+<h3 class="anchored" data-anchor-id="essential-grammatical-elements-in-ggplot2-geometrics">1.7 Essential Grammatical Elements in ggplot2: Geometrics</h3>
+<p>Geometric objects are the actual marks we put on a plot. The code chunk below plots a bar chart by using <strong><code>geom_bar()</code></strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>RACE)) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="geometric-objects-geom_dotplot" class="level4">
+<h4 class="anchored" data-anchor-id="geometric-objects-geom_dotplot">1.7.2 Geometric Objects: geom_dotplot</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> MATHS)) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_dotplot</span>(<span class="at">dotsize =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Bin width defaults to 1/30 of the range of the data. Pick better value with
+`binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-caution">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The y scale is not very useful, in fact it is very misleading. It should be turned off.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> MATHS)) <span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binwidth=</span><span class="fl">2.5</span>,         </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">dotsize =</span> <span class="fl">0.5</span>) <span class="sc">+</span>      </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="cn">NULL</span>,           </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks =</span> <span class="cn">NULL</span>)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
+</section>
 </section>
 </section>
 

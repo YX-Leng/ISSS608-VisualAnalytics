@@ -244,3 +244,69 @@ ggplot(data=exam_data,
   geom_point(position="jitter", 
              size = 0.5)        
 ```
+
+### 1.8 **Essential Grammatical Elements in ggplot2: Statistics**
+
+The [Statistics functions](#0) statistically transform data, usually as some form of summary.
+
+#### 1.8.1 Working with stat()
+
+The boxplots below are incomplete because **the positions of the means were not shown**.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot()
+```
+
+#### 1.8.2 Working with stat() - the stat_summary() method
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  stat_summary(geom = "point",       
+               fun = "mean",         
+               colour ="red",        
+               size=4)               
+```
+
+#### 1.8.3 Working with stat() - the geom() method
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4)          
+```
+
+#### 1.8.4 Adding a best fit curve on a scatterplot
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(size=0.5)
+```
+
+::: {.callout-note appearance="simple"}
+-   The default method used is *loess*.
+
+-   Default smoothing method can be overridden as shown below (method=lm).
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              linewidth=0.5)
+```
+
+### 1.9 **Essential Grammatical Elements in ggplot2: Facets**
+
+Facetting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data. They are an alternative to aesthetics for displaying additional discrete variables.

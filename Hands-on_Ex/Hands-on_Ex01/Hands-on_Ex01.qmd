@@ -245,7 +245,7 @@ ggplot(data=exam_data,
              size = 0.5)        
 ```
 
-### 1.8 **Essential Grammatical Elements in ggplot2: Statistics**
+### 1.8 Essential Grammatical Elements in ggplot2: Statistics
 
 The [Statistics functions](#0) statistically transform data, usually as some form of summary.
 
@@ -307,6 +307,96 @@ ggplot(data=exam_data,
               linewidth=0.5)
 ```
 
-### 1.9 **Essential Grammatical Elements in ggplot2: Facets**
+### 1.9 Essential Grammatical Elements in ggplot2: Facets
 
-Facetting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data. They are an alternative to aesthetics for displaying additional discrete variables.
+Faceting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data. They are an alternative to aesthetics for displaying additional discrete variables.
+
+#### 1.9.1 Working with facet_wrap()
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_wrap(~ CLASS)
+```
+
+#### 1.9.2 facet_grid() function
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_grid(~ CLASS)
+```
+
+### 1.10 Essential Grammatical Elements in ggplot2: Coordinates
+
+The Coordinates functions map the position of objects onto the plane of the plot.
+
+#### 1.10.1 Working with coordinate
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip()
+```
+
+#### 1.10.2 Changing the y- and x-axis range
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, size=0.5)
+```
+
+::: {.callout-caution appearance="simple"}
+The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+
+The code chunk below fixed both the y-axis and x-axis range from 0-100.
+:::
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+```
+
+### 1.11 Essential Grammatical Elements in ggplot2: themes
+
+#### 1.11.1 Working with theme
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal()
+```

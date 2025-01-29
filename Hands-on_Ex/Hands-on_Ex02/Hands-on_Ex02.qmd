@@ -233,5 +233,3 @@ Figure below is created by combining patchwork and theme_economist() of ggthemes
 patchwork <- (p1 / p2) | p3
 patchwork & theme_economist()
 ```
-
-

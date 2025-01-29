@@ -18,18 +18,18 @@ Welcome to **ISSS608 Visual Analytics and Applications**. In this website, you w
 
 My learning journey consists of **4 components**:
 
-| Week | Hands-on Exercise                                                                                          | In-class Exercise | Take-home Exercise |
-|------|------------------------------------------------------------------------------------------------------------|-------------------|--------------------|
-| 1    | [Hands-on_Ex01](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex01/hands-on_ex01) |                   |                    |
-| 2    | [Hands-on_Ex02](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex02/hands-on_ex02) |                   |                    |
-| 3    |                                                                                                            |                   |                    |
-| 4    |                                                                                                            |                   |                    |
-| 5    |                                                                                                            |                   |                    |
-| 6    |                                                                                                            |                   |                    |
-| 7    |                                                                                                            |                   |                    |
-| 8    |                                                                                                            |                   |                    |
-| 9    |                                                                                                            |                   |                    |
-| 10   |                                                                                                            |                   |                    |
+| Week | Hands-on Exercise                                                                                           | In-class Exercise                                                                                               | Take-home Exercise |
+|-----------|----------------------|------------------------|----------------------|
+| 1    | [Hands-on_Ex01](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex01/hands-on_ex01)  | [In-class_Ex01](https://public.tableau.com/app/profile/yi.xiu.leng/viz/In-class_Ex01_17371864393520/Dashboard)  |                    |
+| 2    | [Hands-on_Ex02](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex02/hands-on_ex02)  | [In-class_Ex02](https://public.tableau.com/app/profile/yi.xiu.leng/viz/In-class_Ex02_17378027610090/Dashboard2) |                    |
+| 3    | [Hands-on_Ex03a](https://isss608visualanalytics-yxleng.netlify.app/hands-on_ex/hands-on_ex03/hands-on_ex03) |                                                                                                                 |                    |
+| 4    |                                                                                                             |                                                                                                                 |                    |
+| 5    |                                                                                                             |                                                                                                                 |                    |
+| 6    |                                                                                                             |                                                                                                                 |                    |
+| 7    |                                                                                                             |                                                                                                                 |                    |
+| 8    |                                                                                                             |                                                                                                                 |                    |
+| 9    |                                                                                                             |                                                                                                                 |                    |
+| 10   |                                                                                                             |                                                                                                                 |                    |
 
 | Final Project |     |
 |---------------|-----|

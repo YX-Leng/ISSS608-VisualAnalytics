@@ -1,0 +1,11 @@
+---
+title: "Take-Home Exercise 1"
+author: "Leng Yi Xiu"
+date: "Feb 01 2025"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---

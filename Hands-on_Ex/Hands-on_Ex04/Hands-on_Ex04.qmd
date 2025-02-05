@@ -172,7 +172,7 @@ ggplot(exam,
                outlier.shape = NA)
 ```
 
-#### 1.4.3 Adding the Dot Plots with stat_dots()
+#### 1.4.3 Adding the Dot Plots with `stat_dots()`
 
 ```{r}
 ggplot(exam, 
@@ -253,3 +253,133 @@ gghistostats(
 )
 ```
 
+#### 2.3.6 Two-sample mean test: `ggbetweenstats()` method
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = GENDER, 
+  y = MATHS,
+  type = "np",
+  messages = FALSE
+)
+```
+
+#### 2.3.7 Oneway ANOVA test: `ggbetweenstats()` method
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = RACE, 
+  y = ENGLISH,
+  type = "p",
+  mean.ci = TRUE, 
+  pairwise.comparisons = TRUE, 
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+#### 2.3.8 Significant test of Correlation: `ggscatterstats()`
+
+```{r}
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH,
+  marginal = FALSE,
+  )
+```
+
+#### 2.3.9 Significant test of Association (Dependence): `ggbarstats()` methods
+
+Maths scores is binned into a 4-class variable:
+
+```{r}
+exam1 <- exam %>% 
+  mutate(MATHS_bins = 
+           cut(MATHS, 
+               breaks = c(0,60,75,85,100))
+)
+```
+
+Visual for Significant Test of Association:
+
+```{r}
+ggbarstats(exam1, 
+           x = MATHS_bins, 
+           y = GENDER)
+```
+
+### 2.4 Visualising Models
+
+-   Visualising model diagnostic and model parameters by using parameters package
+
+### 2.5 Loading R packages and data import
+
+```{r}
+pacman::p_load(readxl, performance, parameters, see)
+```
+
+```{r}
+car_resale <- read_xls("data/ToyotaCorolla.xls", 
+                       "data")
+car_resale
+```
+
+### 2.6 Model Diagnostic
+
+#### 2.6.1 Multiple Regression Model using `lm()`
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+model
+```
+
+#### 2.6.2 Checking for multicollinearity
+
+```{r}
+check_c <- check_collinearity(model)
+check_c
+plot(check_c)
+```
+
+#### 2.6.3 Checking for normality assumption
+
+```{r}
+model1 <- lm(Price ~ Age_08_04 + KM + 
+              Weight + Guarantee_Period, data = car_resale)
+
+check_n <- check_normality(model1)
+
+plot(check_n)
+```
+
+#### 2.6.4 Checking for homogeneity of variances
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+
+plot(check_h)
+```
+
+#### 2.6.5 Complete check
+
+```{r}
+check_model(model1)
+```
+
+#### 2.6.6 Visualising Regression Parameters: see methods
+
+```{r}
+plot(parameters(model1))
+```
+
+#### 2.6.7 Visualising Regression Parameters: `ggcoefstats()` methods
+
+```{r}
+ggcoefstats(model1, 
+            output = "plot")
+```

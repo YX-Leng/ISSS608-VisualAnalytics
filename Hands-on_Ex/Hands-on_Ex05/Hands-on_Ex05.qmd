@@ -51,7 +51,7 @@ agpop_mutated <- pop_data %>%
 
 ### 1.4 Plotting Ternary Diagram with R
 
-### 1.4.1 Plotting a static ternary diagram
+#### 1.4.1 Plotting a static ternary diagram
 
 ```{r}
 ggtern(data=agpop_mutated,aes(x=YOUNG,y=ACTIVE, z=OLD)) +
@@ -67,7 +67,7 @@ ggtern(data=agpop_mutated, aes(x=YOUNG,y=ACTIVE, z=OLD)) +
   theme_rgbw()
 ```
 
-### 1.4.2 Plotting an interactive ternary diagram using plot_ly()
+#### 1.4.2 Plotting an interactive ternary diagram using plot_ly()
 
 ```{r}
 # reusable function for creating annotation object
@@ -254,3 +254,128 @@ grouped_ggcorrmat(
   )
 )
 ```
+
+### 2.7 Visualising Correlation Matrix using corrplot Package
+
+#### 2.7.1 Getting started with corrplot
+
+```{r}
+wine.cor <- cor(wine[, 1:11])
+```
+
+```{r}
+corrplot(wine.cor)
+```
+
+::: {.callout-note appearance="simple"}
+The default visual object used to plot the corrgram is **circle**.
+
+The default layout of the corrgram is a **symmetric matrix**.
+
+The default colour scheme is **diverging blue-red**, blue = pair variables with +ve correlation coefficients, red = pair variables with -ve correlation coefficients
+
+Intensity of colour (or **saturation**) is used to represent the strength of the correlation coefficient, i.e. darker colours = stronger linear relationship
+:::
+
+#### 2.7.2 Working with visual geometrics
+
+In **corrplot** package, there are seven visual geometrics (parameter method) can be used to encode the attribute values. They are: circle, square, ellipse, number, shade, color and pie. Default visual = circle.
+
+To change the default setting:
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse") 
+```
+
+#### 2.7.3 Working with layout
+
+`corrplor()` supports three layout types, namely: “full”, “upper” or “lower”. The default is “full” which display full matrix. 
+
+To change the default setting:
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         type="lower")
+```
+
+To further customize the default layout:
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         type="lower",
+         diag = FALSE,
+         tl.col = "black")
+```
+
+#### 2.7.4 Working with mixed layout
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               tl.col = "black")
+```
+
+#### 2.7.5 Combining corrgram with the significant test
+
+Figure below shows a corrgram combined with the significant test. The corrgram reveals that **not all correlation pairs are statistically significant**.
+
+```{r}
+wine.sig = cor.mtest(wine.cor, conf.level= .95)
+
+corrplot(wine.cor,
+         method = "number",
+         type = "lower",
+         diag = FALSE,
+         tl.col = "black",
+         tl.srt = 45,
+         p.mat = wine.sig$p,
+         sig.level = .05)
+```
+
+#### 2.7.6 Reorder a corrgram
+
+Matrix reorder is very important for mining the hiden structure and pattern in a corrgram. By default, the order of attributes of a corrgram is sorted according to the correlation matrix (i.e. “original”). Currently, corrplot package support four sorting methods, they are:
+
+1.  “AOE” is for the angular order of the eigenvectors. See Michael Friendly (2002) for details.
+
+2.  “FPC” for the first principal component order.
+
+3.  “hclust” for hierarchical clustering order, and “hclust.method” for the agglomeration method to be used.
+
+    -   “hclust.method” should be one of “ward”, “single”, “complete”, “average”, “mcquitty”, “median” or “centroid”.
+
+4.  “alphabet” for alphabetical order.
+
+::: {.callout-note appearance="simple"}
+More algorithms can be found in **seriation** package.
+:::
+
+```{r}
+corrplot.mixed(wine.cor, 
+               lower = "ellipse", 
+               upper = "number",
+               tl.pos = "lt",
+               diag = "l",
+               order="AOE",
+               tl.col = "black")
+```
+
+#### 2.7.7 Reorder a correlation matrix using hclust
+
+```{r}
+corrplot(wine.cor, 
+         method = "ellipse", 
+         tl.pos = "lt",
+         tl.col = "black",
+         order="hclust",
+         hclust.method = "ward.D",
+         addrect = 3)
+```
+
+

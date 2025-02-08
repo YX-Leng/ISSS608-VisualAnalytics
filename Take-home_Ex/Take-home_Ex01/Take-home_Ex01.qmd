@@ -9,3 +9,15 @@ execute:
   message: false
   freeze: true
 ---
+
+# Ship Performance in the Gulf of Guinea
+
+## 1 Overview
+
+The Gulf of Guinea is a crucial maritime hub, but ship performance is affected by environmental conditions, security risks, and regulatory factors. Strong currents, high humidity, and piracy impact navigation, fuel efficiency, and operational costs.
+
+Key metrics such as vessel speed, fuel consumption, turnaround time, and security-related delays shape shipping efficiency. Understanding these factors is essential for optimizing operations and ensuring maritime security in the region.
+
+### 1.1 The Dataset
+
+### 1.2 The Task

@@ -10,7 +10,7 @@ execute:
   freeze: true
 ---
 
-# Ship Performance in the Gulf of Guinea
+# Take-Home Exercise 1: Ship Performance in the Gulf of Guinea
 
 ## 1 Overview
 
@@ -148,76 +148,117 @@ glimpse(ship_data_clean)
 ::: panel-tabset
 ## Ship Type
 
-```{r, collapse=TRUE}
+```{r}
+#| code-fold: true
 ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh,       
-           x= Ship_Type)) +    
-  geom_boxplot() +
+       aes(y = Efficiency_nm_per_kWh, x = Ship_Type)) +    
+  geom_boxplot(outlier.shape = 16,  
+               outlier.colour = "red",  
+               outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="red",          
+             colour="blue",          
              size=4) +
+  stat_summary(fun = "mean", 
+               geom = "text", 
+               aes(label = round(..y.., 2)), 
+               colour = "darkgrey", 
+               vjust = -1) +
   labs(title = "Efficiency (nm per kWh) by Ship Type")
 ```
 
 ## Route Type
 
-```{r, collapse=TRUE}
+```{r}
+#| code-fold: true
 ggplot(data=ship_data_clean, 
        aes(y = Efficiency_nm_per_kWh,       
            x= Route_Type)) +    
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = 16,  
+               outlier.colour = "red",  
+               outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="red",          
+             colour="blue",          
              size=4) +
+  stat_summary(fun = "mean", 
+               geom = "text", 
+               aes(label = round(..y.., 2)), 
+               colour = "darkgrey", 
+               vjust = -1) +
   labs(title = "Efficiency (nm per kWh) by Route Type")
 ```
 
 ## Engine Type
 
-```{r, collapse=TRUE}
+```{r}
+#| code-fold: true
 ggplot(data=ship_data_clean, 
        aes(y = Efficiency_nm_per_kWh,       
            x= Engine_Type)) +    
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = 16,  
+               outlier.colour = "red",  
+               outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="red",          
+             colour="blue",          
              size=4) +
+  stat_summary(fun = "mean", 
+               geom = "text", 
+               aes(label = round(..y.., 2)), 
+               colour = "darkgrey", 
+               vjust = -1) +
   labs(title = "Efficiency (nm per kWh) by Engine Type")
 ```
 
 ## Maintenance Status
 
-```{r, collapse=TRUE}
+```{r}
+#| code-fold: true
 ggplot(data=ship_data_clean, 
        aes(y = Efficiency_nm_per_kWh,       
            x= Maintenance_Status)) +    
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = 16,  
+               outlier.colour = "red",  
+               outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="red",          
+             colour="blue",          
              size=4) +
+  stat_summary(fun = "mean", 
+               geom = "text", 
+               aes(label = round(..y.., 2)), 
+               colour = "darkgrey", 
+               vjust = -1) +
   labs(title = "Efficiency (nm per kWh) by Maintenance Status")
 ```
 
 ## Weather Conditions
 
-```{r, collapse=TRUE}
+```{r}
+#| code-fold: true
 ggplot(data=ship_data_clean, 
        aes(y = Efficiency_nm_per_kWh,       
            x= Weather_Condition)) +    
-  geom_boxplot() +
+  geom_boxplot(outlier.shape = 16,  
+               outlier.colour = "red",  
+               outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="red",          
+             colour="blue",          
              size=4) +
+  stat_summary(fun = "mean", 
+               geom = "text", 
+               aes(label = round(..y.., 2)), 
+               colour = "darkgrey", 
+               vjust = -1) +
   labs(title = "Efficiency (nm per kWh) by Weather Condition")
 ```
 :::
 
-### 4.2
+### 4.2 Univariate: Factors affecting Operational Cost
+
+
 
 ### 4.3
 

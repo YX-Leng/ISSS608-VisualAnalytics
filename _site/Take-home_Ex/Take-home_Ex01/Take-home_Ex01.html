@@ -333,7 +333,7 @@ Categorical Features
 </section>
 <section id="import-data" class="level3">
 <h3 class="anchored" data-anchor-id="import-data">2.2 Import Data</h3>
-<p>Importing csv data file:</p>
+<p>Importing the csv data file:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ship_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Ship_Performance_Dataset.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -360,6 +360,7 @@ date  (1): Date
 </ol>
 <section id="verify-data-types" class="level3">
 <h3 class="anchored" data-anchor-id="verify-data-types">3.1 Verify Data Types</h3>
+<p>Code chunk to verify that all data types in the dataset is correct:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ship_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -385,6 +386,7 @@ $ Weekly_Voyage_Count     &lt;dbl&gt; 1, 6, 9, 1, 8, 7, 3, 6, 8, 2, 9, 4, 3, 7, 
 $ Average_Load_Percentage &lt;dbl&gt; 93.76925, 93.89537, 96.21824, 66.19370, 80.008…</code></pre>
 </div>
 </div>
+<p>To further understand the categorical features and values used for each feature, the following code chunk is used to list out the unique values for each categorical column:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>categorical_cols <span class="ot">&lt;-</span> ship_data <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.character))</span>
@@ -411,6 +413,20 @@ $Maintenance_Status
 
 $Weather_Condition
 [1] "Moderate" "Rough"    "Calm"     "None"    </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+To Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>As observed, all the categorical columns have unique value stated as “None” which can be interpreted as a missing value in the data.</p>
+<p>This will need to be addressed in 3.3 Check for missing values.</p>
 </div>
 </div>
 </section>

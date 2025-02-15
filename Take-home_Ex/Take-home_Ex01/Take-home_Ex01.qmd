@@ -31,31 +31,31 @@ The raw dataset consists of **2736 rows** and **24 columns**, with some of the k
 ::: callout-tip
 ## Numerical Features
 
--   Speed_Over_Ground_knots: Average speed of the ship over water (in knots).
+-   **Speed_Over_Ground_knots**: Average speed of the ship over water (in knots).
 
--   Engine_Power_kW: Engine power output (in kilowatts).
+-   **Engine_Power_kW**: Engine power output (in kilowatts).
 
--   Distance_Traveled_nm: Total distance traveled by the ship (in nautical miles).
+-   **Distance_Traveled_nm**: Total distance traveled by the ship (in nautical miles).
 
--   Operational_Cost_USD: Total operational cost per voyage (in USD).
+-   **Operational_Cost_USD**: Total operational cost per voyage (in USD).
 
--   Revenue_per_Voyage_USD: Revenue generated per voyage (in USD).
+-   **Revenue_per_Voyage_USD**: Revenue generated per voyage (in USD).
 
--   Efficiency_nm_per_kWh: Energy efficiency calculated in nautical miles per kilowatt-hour.
+-   **Efficiency_nm_per_kWh**: Energy efficiency calculated in nautical miles per kilowatt-hour.
 :::
 
 ::: callout-tip
 ## Categorical Features
 
--   Ship_Type: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).
+-   **Ship_Type**: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).
 
--   Route_Type: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).
+-   **Route_Type**: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).
 
--   Engine_Type: Type of engine (e.g., Diesel, Heavy Fuel Oil).
+-   **Engine_Type**: Type of engine (e.g., Diesel, Heavy Fuel Oil).
 
--   Maintenance_Status: Maintenance condition of the ship (e.g., Fair, Critical, Good).
+-   **Maintenance_Status**: Maintenance condition of the ship (e.g., Fair, Critical, Good).
 
--   Weather_Condition: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).
+-   **Weather_Condition**: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).
 :::
 
 ## 2 Loading R packages and data
@@ -95,9 +95,33 @@ Before conducting exploratory data analysis, we must first gain a deeper underst
 glimpse(ship_data)
 ```
 
+```{r}
+categorical_cols <- ship_data %>%
+  select(where(is.character))
+
+# Show unique values for each categorical column
+unique_vals <- categorical_cols %>%
+  summarise(across(everything(), ~ list(unique(.))))
+
+print(unique_vals)
+```
+
 ### 3.2 Identify duplicate records
 
+```{r}
+duplicate <- ship_data %>% 
+  group_by_all() %>% 
+  filter(n()>1) %>% 
+  ungroup()
+  
+duplicate
+```
+
 ### 3.3 Check for missing values
+
+```{r}
+
+```
 
 ## 4 Exploratory Data Analysis
 

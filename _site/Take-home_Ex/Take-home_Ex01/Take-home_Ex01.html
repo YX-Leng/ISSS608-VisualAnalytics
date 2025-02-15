@@ -294,12 +294,12 @@ Numerical Features
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>Speed_Over_Ground_knots: Average speed of the ship over water (in knots).</p></li>
-<li><p>Engine_Power_kW: Engine power output (in kilowatts).</p></li>
-<li><p>Distance_Traveled_nm: Total distance traveled by the ship (in nautical miles).</p></li>
-<li><p>Operational_Cost_USD: Total operational cost per voyage (in USD).</p></li>
-<li><p>Revenue_per_Voyage_USD: Revenue generated per voyage (in USD).</p></li>
-<li><p>Efficiency_nm_per_kWh: Energy efficiency calculated in nautical miles per kilowatt-hour.</p></li>
+<li><p><strong>Speed_Over_Ground_knots</strong>: Average speed of the ship over water (in knots).</p></li>
+<li><p><strong>Engine_Power_kW</strong>: Engine power output (in kilowatts).</p></li>
+<li><p><strong>Distance_Traveled_nm</strong>: Total distance traveled by the ship (in nautical miles).</p></li>
+<li><p><strong>Operational_Cost_USD</strong>: Total operational cost per voyage (in USD).</p></li>
+<li><p><strong>Revenue_per_Voyage_USD</strong>: Revenue generated per voyage (in USD).</p></li>
+<li><p><strong>Efficiency_nm_per_kWh</strong>: Energy efficiency calculated in nautical miles per kilowatt-hour.</p></li>
 </ul>
 </div>
 </div>
@@ -314,11 +314,11 @@ Categorical Features
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>Ship_Type: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).</p></li>
-<li><p>Route_Type: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).</p></li>
-<li><p>Engine_Type: Type of engine (e.g., Diesel, Heavy Fuel Oil).</p></li>
-<li><p>Maintenance_Status: Maintenance condition of the ship (e.g., Fair, Critical, Good).</p></li>
-<li><p>Weather_Condition: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).</p></li>
+<li><p><strong>Ship_Type</strong>: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).</p></li>
+<li><p><strong>Route_Type</strong>: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).</p></li>
+<li><p><strong>Engine_Type</strong>: Type of engine (e.g., Diesel, Heavy Fuel Oil).</p></li>
+<li><p><strong>Maintenance_Status</strong>: Maintenance condition of the ship (e.g., Fair, Critical, Good).</p></li>
+<li><p><strong>Weather_Condition</strong>: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).</p></li>
 </ul>
 </div>
 </div>
@@ -390,9 +390,43 @@ $ Weekly_Voyage_Count     &lt;dbl&gt; 1, 6, 9, 1, 8, 7, 3, 6, 8, 2, 9, 4, 3, 7, 
 $ Average_Load_Percentage &lt;dbl&gt; 93.76925, 93.89537, 96.21824, 66.19370, 80.008…</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>categorical_cols <span class="ot">&lt;-</span> ship_data <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(is.character))</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Show unique values for each categorical column</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>unique_vals <span class="ot">&lt;-</span> categorical_cols <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">list</span>(<span class="fu">unique</span>(.))))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(unique_vals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 5
+  Ship_Type Route_Type Engine_Type Maintenance_Status Weather_Condition
+  &lt;list&gt;    &lt;list&gt;     &lt;list&gt;      &lt;list&gt;             &lt;list&gt;           
+1 &lt;chr [5]&gt; &lt;chr [5]&gt;  &lt;chr [4]&gt;   &lt;chr [4]&gt;          &lt;chr [4]&gt;        </code></pre>
+</div>
+</div>
 </section>
 <section id="identify-duplicate-records" class="level3">
 <h3 class="anchored" data-anchor-id="identify-duplicate-records">3.2 Identify duplicate records</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>duplicate <span class="ot">&lt;-</span> ship_data <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by_all</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">n</span>()<span class="sc">&gt;</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>duplicate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 18
+# ℹ 18 variables: Date &lt;date&gt;, Ship_Type &lt;chr&gt;, Route_Type &lt;chr&gt;,
+#   Engine_Type &lt;chr&gt;, Maintenance_Status &lt;chr&gt;, Speed_Over_Ground_knots &lt;dbl&gt;,
+#   Engine_Power_kW &lt;dbl&gt;, Distance_Traveled_nm &lt;dbl&gt;, Draft_meters &lt;dbl&gt;,
+#   Weather_Condition &lt;chr&gt;, Cargo_Weight_tons &lt;dbl&gt;,
+#   Operational_Cost_USD &lt;dbl&gt;, Revenue_per_Voyage_USD &lt;dbl&gt;,
+#   Turnaround_Time_hours &lt;dbl&gt;, Efficiency_nm_per_kWh &lt;dbl&gt;,
+#   Seasonal_Impact_Score &lt;dbl&gt;, Weekly_Voyage_Count &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
 </section>
 <section id="check-for-missing-values" class="level3">
 <h3 class="anchored" data-anchor-id="check-for-missing-values">3.3 Check for missing values</h3>

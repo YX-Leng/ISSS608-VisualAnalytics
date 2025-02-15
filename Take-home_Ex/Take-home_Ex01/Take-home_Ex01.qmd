@@ -120,6 +120,14 @@ duplicate
 ### 3.3 Check for missing values
 
 ```{r}
+missing_data <- is.na(ship_data)
+
+# Filter rows where there is at least one TRUE (missing value)
+missing_row <- ship_data[apply(missing_data, 1, any), ]
+print(missing_row)
+```
+
+```{r}
 none_vals <- ship_data %>%
   filter(if_any(where(is.character), ~ . == "None"))
 
@@ -135,7 +143,79 @@ glimpse(ship_data_clean)
 
 ## 4 Exploratory Data Analysis
 
-### 4.1
+### 4.1 Univariate: Factors affecting Energy Efficiency
+
+::: panel-tabset
+## Ship Type
+
+```{r, collapse=TRUE}
+ggplot(data=ship_data_clean, 
+       aes(y = Efficiency_nm_per_kWh,       
+           x= Ship_Type)) +    
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4) +
+  labs(title = "Efficiency (nm per kWh) by Ship Type")
+```
+
+## Route Type
+
+```{r, collapse=TRUE}
+ggplot(data=ship_data_clean, 
+       aes(y = Efficiency_nm_per_kWh,       
+           x= Route_Type)) +    
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4) +
+  labs(title = "Efficiency (nm per kWh) by Route Type")
+```
+
+## Engine Type
+
+```{r, collapse=TRUE}
+ggplot(data=ship_data_clean, 
+       aes(y = Efficiency_nm_per_kWh,       
+           x= Engine_Type)) +    
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4) +
+  labs(title = "Efficiency (nm per kWh) by Engine Type")
+```
+
+## Maintenance Status
+
+```{r, collapse=TRUE}
+ggplot(data=ship_data_clean, 
+       aes(y = Efficiency_nm_per_kWh,       
+           x= Maintenance_Status)) +    
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4) +
+  labs(title = "Efficiency (nm per kWh) by Maintenance Status")
+```
+
+## Weather Conditions
+
+```{r, collapse=TRUE}
+ggplot(data=ship_data_clean, 
+       aes(y = Efficiency_nm_per_kWh,       
+           x= Weather_Condition)) +    
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun="mean",           
+             colour="red",          
+             size=4) +
+  labs(title = "Efficiency (nm per kWh) by Weather Condition")
+```
+:::
 
 ### 4.2
 

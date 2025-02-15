@@ -63,8 +63,8 @@ The raw dataset consists of **2736 rows** and **24 columns**, with some of the k
 The following code chunk is used to install necessary packages for this article:
 
 ```{r}
-pacman::p_load(tidyverse, ggrepel, patchwork, 
-               ggthemes, hrbrthemes,ggiraph, 
+pacman::p_load(tidyverse, ggdist, ggridges, 
+               ggthemes, colorspace, ggiraph, 
                gganimate, plotly, DT,
                readxl, gifski, gapminder)
 ```
@@ -153,7 +153,76 @@ glimpse(ship_data_clean)
 
 ## 4 Exploratory Data Analysis
 
-### 4.1 Univariate: Factors affecting Energy Efficiency
+### 4.1 Univariate: Frequency Counts
+
+::: panel-tabset
+## Ship Type
+
+```{r}
+#| code-fold: true
+ggplot(data=ship_data_clean, 
+       aes(x=Ship_Type)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
+  coord_flip() +
+  theme_classic() +
+  ggtitle("Distribution by Ship Type")
+```
+
+## Route Type
+
+```{r}
+#| code-fold: true
+ggplot(data=ship_data_clean, 
+       aes(x=Route_Type)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
+  coord_flip() +
+  theme_classic() +
+  ggtitle("Distribution by Route Type")
+```
+
+## Engine Type
+
+```{r}
+#| code-fold: true
+ggplot(data=ship_data_clean, 
+       aes(x=Engine_Type)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
+  coord_flip() +
+  theme_classic() +
+  ggtitle("Distribution by Engine Type")
+```
+
+## Maintenance Status
+
+```{r}
+#| code-fold: true
+ggplot(data=ship_data_clean, 
+       aes(x=Maintenance_Status)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
+  coord_flip() +
+  theme_classic() +
+  ggtitle("Distribution by Maintenance Status")
+```
+
+## Weather Condition
+
+```{r}
+#| code-fold: true
+ggplot(data=ship_data_clean, 
+       aes(x=Weather_Condition)) +
+  geom_bar(fill = "lightgrey", color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
+  coord_flip() +
+  theme_classic() +
+  ggtitle("Distribution by Weather Condition")
+```
+:::
+
+### 4.2 Univariate: Factors affecting Energy Efficiency
 
 ::: panel-tabset
 ## Ship Type
@@ -266,9 +335,119 @@ ggplot(data=ship_data_clean,
 ```
 :::
 
-### 4.2 Univariate: Factors affecting Operational Cost
+### 4.3 Univariate: Factors affecting Operational Cost
 
-### 4.3
+::: panel-tabset
+## Ship Type
+
+```{r}
+#| code-fold: true
+ggplot(ship_data_clean, 
+       aes(x = Operational_Cost_USD, 
+           y = Ship_Type )) +
+  geom_density_ridges(
+    scale = 2,
+    rel_min_height = 0.01,
+    bandwidth = 10000,
+    fill = lighten("#7097BB", .3),
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "Operational Cost (USD)",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
+```
+
+## Route Type
+
+```{r}
+#| code-fold: true
+ggplot(ship_data_clean, 
+       aes(x = Operational_Cost_USD, 
+           y = Route_Type )) +
+  geom_density_ridges(
+    scale = 2,
+    rel_min_height = 0.01,
+    bandwidth = 10000,
+    fill = lighten("#7097BB", .3),
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "Operational Cost (USD)",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
+```
+
+## Engine Type
+
+```{r}
+#| code-fold: true
+ggplot(ship_data_clean, 
+       aes(x = Operational_Cost_USD, 
+           y = Engine_Type )) +
+  geom_density_ridges(
+    scale = 2,
+    rel_min_height = 0.01,
+    bandwidth = 10000,
+    fill = lighten("#7097BB", .3),
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "Operational Cost (USD)",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
+```
+
+## Maintenance Status
+
+```{r}
+#| code-fold: true
+ggplot(ship_data_clean, 
+       aes(x = Operational_Cost_USD, 
+           y = Maintenance_Status )) +
+  geom_density_ridges(
+    scale = 2,
+    rel_min_height = 0.01,
+    bandwidth = 10000,
+    fill = lighten("#7097BB", .3),
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "Operational Cost (USD)",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
+```
+
+## Weather Condition
+
+```{r}
+#| code-fold: true
+ggplot(ship_data_clean, 
+       aes(x = Operational_Cost_USD, 
+           y = Weather_Condition )) +
+  geom_density_ridges(
+    scale = 2,
+    rel_min_height = 0.01,
+    bandwidth = 10000,
+    fill = lighten("#7097BB", .3),
+    color = "white"
+  ) +
+  scale_x_continuous(
+    name = "Operational Cost (USD)",
+    expand = c(0, 0)
+    ) +
+  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
+  theme_ridges()
+```
+:::
 
 ### 4.4
 

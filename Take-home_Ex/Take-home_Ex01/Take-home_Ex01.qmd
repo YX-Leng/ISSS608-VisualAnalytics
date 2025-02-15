@@ -14,10 +14,99 @@ execute:
 
 ## 1 Overview
 
-The Gulf of Guinea is a crucial maritime hub, but ship performance is affected by environmental conditions, security risks, and regulatory factors. Strong currents, high humidity, and piracy impact navigation, fuel efficiency, and operational costs.
+The Gulf of Guinea is a crucial maritime hub, but ship performance is affected by environmental conditions, security risks, and regulatory factors. Strong currents, high humidity, and piracy also impact navigation, fuel efficiency, and operational costs.
 
-Key metrics such as vessel speed, fuel consumption, turnaround time, and security-related delays shape shipping efficiency. Understanding these factors is essential for optimizing operations and ensuring maritime security in the region.
+Key metrics such as vessel speed, fuel consumption, turnaround time, and security-related delays play a crucial role in determining shipping efficiency. Analyzing these factors is essential for optimizing operations and enhancing maritime security in the region.
 
-### 1.1 The Dataset
+### 1.1 The Task
 
-### 1.2 The Task
+For this week's article, we will be using various data visualisation techniques to explore the different factors affecting ship performance in the Gulf of Guinea.
+
+### 1.2 The Dataset
+
+The ship performance dataset ([**Kaggle**](https://www.kaggle.com/datasets/jeleeladekunlefijabi/ship-performance-clustering-dataset)) contains data on essential operational metrics and characteristics of different ship types operating in the Gulf of Guinea.
+
+The raw dataset consists of **2736 rows** and **24 columns**, with some of the key features below:
+
+::: callout-tip
+## Numerical Features
+
+-   Speed_Over_Ground_knots: Average speed of the ship over water (in knots).
+
+-   Engine_Power_kW: Engine power output (in kilowatts).
+
+-   Distance_Traveled_nm: Total distance traveled by the ship (in nautical miles).
+
+-   Operational_Cost_USD: Total operational cost per voyage (in USD).
+
+-   Revenue_per_Voyage_USD: Revenue generated per voyage (in USD).
+
+-   Efficiency_nm_per_kWh: Energy efficiency calculated in nautical miles per kilowatt-hour.
+:::
+
+::: callout-tip
+## Categorical Features
+
+-   Ship_Type: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).
+
+-   Route_Type: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).
+
+-   Engine_Type: Type of engine (e.g., Diesel, Heavy Fuel Oil).
+
+-   Maintenance_Status: Maintenance condition of the ship (e.g., Fair, Critical, Good).
+
+-   Weather_Condition: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).
+:::
+
+## 2 Loading R packages and data
+
+### 2.1 Loading R packages
+
+The following code chunk is used to install necessary packages for this article:
+
+```{r}
+pacman::p_load(tidyverse, ggrepel, patchwork, 
+               ggthemes, hrbrthemes,ggiraph, 
+               gganimate, plotly, DT,
+               readxl, gifski, gapminder)
+```
+
+### 2.2 Import Data
+
+Importing csv data file:
+
+```{r}
+ship_data <- read_csv("data/Ship_Performance_Dataset.csv")
+```
+
+## 3 Data Preparation
+
+Before conducting exploratory data analysis, we must first gain a deeper understanding of the dataset and perform essential data preparation steps, including:
+
+1.  Verifying all data types,
+
+2.  Identifying duplicate records, and
+
+3.  Checking for missing values.
+
+### 3.1 Verify Data Types
+
+```{r}
+glimpse(ship_data)
+```
+
+### 3.2 Identify duplicate records
+
+### 3.3 Check for missing values
+
+## 4 Exploratory Data Analysis
+
+### 4.1
+
+### 4.2
+
+### 4.3
+
+### 4.4
+
+### 4.5

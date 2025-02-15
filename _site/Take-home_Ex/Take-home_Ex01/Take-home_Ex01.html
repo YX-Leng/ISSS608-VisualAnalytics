@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -169,8 +203,27 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">1 Overview</a>
   <ul class="collapse">
-  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">1.1 The Dataset</a></li>
-  <li><a href="#the-task" id="toc-the-task" class="nav-link" data-scroll-target="#the-task">1.2 The Task</a></li>
+  <li><a href="#the-task" id="toc-the-task" class="nav-link" data-scroll-target="#the-task">1.1 The Task</a></li>
+  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">1.2 The Dataset</a></li>
+  </ul></li>
+  <li><a href="#loading-r-packages-and-data" id="toc-loading-r-packages-and-data" class="nav-link" data-scroll-target="#loading-r-packages-and-data">2 Loading R packages and data</a>
+  <ul class="collapse">
+  <li><a href="#loading-r-packages" id="toc-loading-r-packages" class="nav-link" data-scroll-target="#loading-r-packages">2.1 Loading R packages</a></li>
+  <li><a href="#import-data" id="toc-import-data" class="nav-link" data-scroll-target="#import-data">2.2 Import Data</a></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3 Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#verify-data-types" id="toc-verify-data-types" class="nav-link" data-scroll-target="#verify-data-types">3.1 Verify Data Types</a></li>
+  <li><a href="#identify-duplicate-records" id="toc-identify-duplicate-records" class="nav-link" data-scroll-target="#identify-duplicate-records">3.2 Identify duplicate records</a></li>
+  <li><a href="#check-for-missing-values" id="toc-check-for-missing-values" class="nav-link" data-scroll-target="#check-for-missing-values">3.3 Check for missing values</a></li>
+  </ul></li>
+  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">4 Exploratory Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">4.1</a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">4.2</a></li>
+  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2">4.3</a></li>
+  <li><a href="#section-3" id="toc-section-3" class="nav-link" data-scroll-target="#section-3">4.4</a></li>
+  <li><a href="#section-4" id="toc-section-4" class="nav-link" data-scroll-target="#section-4">4.5</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -205,7 +258,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 8, 2025</p>
+      <p class="date-modified">February 15, 2025</p>
     </div>
   </div>
     
@@ -220,13 +273,147 @@ ul.task-list li input[type="checkbox"] {
 <h1>Ship Performance in the Gulf of Guinea</h1>
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">1 Overview</h2>
-<p>The Gulf of Guinea is a crucial maritime hub, but ship performance is affected by environmental conditions, security risks, and regulatory factors. Strong currents, high humidity, and piracy impact navigation, fuel efficiency, and operational costs.</p>
-<p>Key metrics such as vessel speed, fuel consumption, turnaround time, and security-related delays shape shipping efficiency. Understanding these factors is essential for optimizing operations and ensuring maritime security in the region.</p>
-<section id="the-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="the-dataset">1.1 The Dataset</h3>
-</section>
+<p>The Gulf of Guinea is a crucial maritime hub, but ship performance is affected by environmental conditions, security risks, and regulatory factors. Strong currents, high humidity, and piracy also impact navigation, fuel efficiency, and operational costs.</p>
+<p>Key metrics such as vessel speed, fuel consumption, turnaround time, and security-related delays play a crucial role in determining shipping efficiency. Analyzing these factors is essential for optimizing operations and enhancing maritime security in the region.</p>
 <section id="the-task" class="level3">
-<h3 class="anchored" data-anchor-id="the-task">1.2 The Task</h3>
+<h3 class="anchored" data-anchor-id="the-task">1.1 The Task</h3>
+<p>For this week’s article, we will be using various data visualisation techniques to explore the different factors affecting ship performance in the Gulf of Guinea.</p>
+</section>
+<section id="the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="the-dataset">1.2 The Dataset</h3>
+<p>The ship performance dataset (<a href="https://www.kaggle.com/datasets/jeleeladekunlefijabi/ship-performance-clustering-dataset"><strong>Kaggle</strong></a>) contains data on essential operational metrics and characteristics of different ship types operating in the Gulf of Guinea.</p>
+<p>The raw dataset consists of <strong>2736 rows</strong> and <strong>24 columns</strong>, with some of the key features below:</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Numerical Features
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Speed_Over_Ground_knots: Average speed of the ship over water (in knots).</p></li>
+<li><p>Engine_Power_kW: Engine power output (in kilowatts).</p></li>
+<li><p>Distance_Traveled_nm: Total distance traveled by the ship (in nautical miles).</p></li>
+<li><p>Operational_Cost_USD: Total operational cost per voyage (in USD).</p></li>
+<li><p>Revenue_per_Voyage_USD: Revenue generated per voyage (in USD).</p></li>
+<li><p>Efficiency_nm_per_kWh: Energy efficiency calculated in nautical miles per kilowatt-hour.</p></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Categorical Features
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Ship_Type: Type of ship (e.g., Tanker, Container Ship, Fish Carrier, Bulk Carrier).</p></li>
+<li><p>Route_Type: Shipping route type (e.g., Short-haul, Long-haul, Transoceanic).</p></li>
+<li><p>Engine_Type: Type of engine (e.g., Diesel, Heavy Fuel Oil).</p></li>
+<li><p>Maintenance_Status: Maintenance condition of the ship (e.g., Fair, Critical, Good).</p></li>
+<li><p>Weather_Condition: Prevailing weather conditions during voyages (e.g., Calm, Moderate, Rough).</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="loading-r-packages-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="loading-r-packages-and-data">2 Loading R packages and data</h2>
+<section id="loading-r-packages" class="level3">
+<h3 class="anchored" data-anchor-id="loading-r-packages">2.1 Loading R packages</h3>
+<p>The following code chunk is used to install necessary packages for this article:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggrepel, patchwork, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggthemes, hrbrthemes,ggiraph, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               gganimate, plotly, DT,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               readxl, gifski, gapminder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="import-data" class="level3">
+<h3 class="anchored" data-anchor-id="import-data">2.2 Import Data</h3>
+<p>Importing csv data file:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>ship_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Ship_Performance_Dataset.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 2736 Columns: 18
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr   (5): Ship_Type, Route_Type, Engine_Type, Maintenance_Status, Weather_C...
+dbl  (12): Speed_Over_Ground_knots, Engine_Power_kW, Distance_Traveled_nm, D...
+date  (1): Date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation">3 Data Preparation</h2>
+<p>Before conducting exploratory data analysis, we must first gain a deeper understanding of the dataset and perform essential data preparation steps, including:</p>
+<ol type="1">
+<li><p>Verifying all data types,</p></li>
+<li><p>Identifying duplicate records, and</p></li>
+<li><p>Checking for missing values.</p></li>
+</ol>
+<section id="verify-data-types" class="level3">
+<h3 class="anchored" data-anchor-id="verify-data-types">3.1 Verify Data Types</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ship_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,736
+Columns: 18
+$ Date                    &lt;date&gt; 2023-06-04, 2023-06-11, 2023-06-18, 2023-06-2…
+$ Ship_Type               &lt;chr&gt; "Container Ship", "Fish Carrier", "Container S…
+$ Route_Type              &lt;chr&gt; "None", "Short-haul", "Long-haul", "Transocean…
+$ Engine_Type             &lt;chr&gt; "Heavy Fuel Oil (HFO)", "Steam Turbine", "Dies…
+$ Maintenance_Status      &lt;chr&gt; "Critical", "Good", "Fair", "Fair", "Fair", "F…
+$ Speed_Over_Ground_knots &lt;dbl&gt; 12.59756, 10.38758, 20.74975, 21.05510, 13.742…
+$ Engine_Power_kW         &lt;dbl&gt; 2062.9840, 1796.0574, 1648.5567, 915.2618, 108…
+$ Distance_Traveled_nm    &lt;dbl&gt; 1030.9436, 1060.4864, 658.8741, 1126.8225, 144…
+$ Draft_meters            &lt;dbl&gt; 14.132284, 14.653083, 7.199261, 11.789063, 9.7…
+$ Weather_Condition       &lt;chr&gt; "Moderate", "Rough", "Moderate", "Moderate", "…
+$ Cargo_Weight_tons       &lt;dbl&gt; 1959.0179, 162.3947, 178.0409, 1737.3853, 260.…
+$ Operational_Cost_USD    &lt;dbl&gt; 483832.35, 483388.00, 448543.40, 261349.61, 28…
+$ Revenue_per_Voyage_USD  &lt;dbl&gt; 292183.27, 883765.79, 394018.75, 87551.38, 676…
+$ Turnaround_Time_hours   &lt;dbl&gt; 25.86708, 63.24820, 49.41815, 22.40911, 64.158…
+$ Efficiency_nm_per_kWh   &lt;dbl&gt; 1.4551789, 0.2903614, 0.4995945, 0.7029057, 1.…
+$ Seasonal_Impact_Score   &lt;dbl&gt; 1.4156533, 0.8856478, 1.4058132, 1.3707043, 0.…
+$ Weekly_Voyage_Count     &lt;dbl&gt; 1, 6, 9, 1, 8, 7, 3, 6, 8, 2, 9, 4, 3, 7, 7, 3…
+$ Average_Load_Percentage &lt;dbl&gt; 93.76925, 93.89537, 96.21824, 66.19370, 80.008…</code></pre>
+</div>
+</div>
+</section>
+<section id="identify-duplicate-records" class="level3">
+<h3 class="anchored" data-anchor-id="identify-duplicate-records">3.2 Identify duplicate records</h3>
+</section>
+<section id="check-for-missing-values" class="level3">
+<h3 class="anchored" data-anchor-id="check-for-missing-values">3.3 Check for missing values</h3>
+</section>
+</section>
+<section id="exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis">4 Exploratory Data Analysis</h2>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section">4.1</h3>
+</section>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1">4.2</h3>
+</section>
+<section id="section-2" class="level3">
+<h3 class="anchored" data-anchor-id="section-2">4.3</h3>
+</section>
+<section id="section-3" class="level3">
+<h3 class="anchored" data-anchor-id="section-3">4.4</h3>
+</section>
+<section id="section-4" class="level3">
+<h3 class="anchored" data-anchor-id="section-4">4.5</h3>
 
 
 </section>

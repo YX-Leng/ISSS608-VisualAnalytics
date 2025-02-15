@@ -1,5 +1,5 @@
 ---
-title: "Take-Home Exercise 1"
+title: "Take-Home Exercise 1: Ship Performance in the Gulf of Guinea"
 author: "Leng Yi Xiu"
 date: "Feb 01 2025"
 date-modified: "last-modified"
@@ -9,8 +9,6 @@ execute:
   message: false
   freeze: true
 ---
-
-# Take-Home Exercise 1: Ship Performance in the Gulf of Guinea
 
 ## 1 Overview
 

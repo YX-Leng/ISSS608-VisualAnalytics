@@ -101,7 +101,7 @@ categorical_cols <- ship_data %>%
 
 # Show unique values for each categorical column
 unique_vals <- categorical_cols %>%
-  summarise(across(everything(), ~ list(unique(.))))
+  map(~ unique(.))
 
 print(unique_vals)
 ```
@@ -120,7 +120,17 @@ duplicate
 ### 3.3 Check for missing values
 
 ```{r}
+none_vals <- ship_data %>%
+  filter(if_any(where(is.character), ~ . == "None"))
 
+print(none_vals)
+```
+
+```{r}
+ship_data_clean <- ship_data %>%
+  filter(!if_any(where(is.character), ~ . == "None"))
+
+glimpse(ship_data_clean)
 ```
 
 ## 4 Exploratory Data Analysis

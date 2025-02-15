@@ -396,14 +396,26 @@ $ Average_Load_Percentage &lt;dbl&gt; 93.76925, 93.89537, 96.21824, 66.19370, 80
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Show unique values for each categorical column</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>unique_vals <span class="ot">&lt;-</span> categorical_cols <span class="sc">%&gt;%</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), <span class="sc">~</span> <span class="fu">list</span>(<span class="fu">unique</span>(.))))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map</span>(<span class="sc">~</span> <span class="fu">unique</span>(.))</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(unique_vals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 5
-  Ship_Type Route_Type Engine_Type Maintenance_Status Weather_Condition
-  &lt;list&gt;    &lt;list&gt;     &lt;list&gt;      &lt;list&gt;             &lt;list&gt;           
-1 &lt;chr [5]&gt; &lt;chr [5]&gt;  &lt;chr [4]&gt;   &lt;chr [4]&gt;          &lt;chr [4]&gt;        </code></pre>
+<pre><code>$Ship_Type
+[1] "Container Ship" "Fish Carrier"   "Bulk Carrier"   "None"          
+[5] "Tanker"        
+
+$Route_Type
+[1] "None"         "Short-haul"   "Long-haul"    "Transoceanic" "Coastal"     
+
+$Engine_Type
+[1] "Heavy Fuel Oil (HFO)" "Steam Turbine"        "Diesel"              
+[4] "None"                
+
+$Maintenance_Status
+[1] "Critical" "Good"     "Fair"     "None"    
+
+$Weather_Condition
+[1] "Moderate" "Rough"    "Calm"     "None"    </code></pre>
 </div>
 </div>
 </section>
@@ -430,6 +442,62 @@ $ Average_Load_Percentage &lt;dbl&gt; 93.76925, 93.89537, 96.21824, 66.19370, 80
 </section>
 <section id="check-for-missing-values" class="level3">
 <h3 class="anchored" data-anchor-id="check-for-missing-values">3.3 Check for missing values</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>none_vals <span class="ot">&lt;-</span> ship_data <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">if_any</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> . <span class="sc">==</span> <span class="st">"None"</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(none_vals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 609 × 18
+   Date       Ship_Type      Route_Type Engine_Type          Maintenance_Status
+   &lt;date&gt;     &lt;chr&gt;          &lt;chr&gt;      &lt;chr&gt;                &lt;chr&gt;             
+ 1 2023-06-04 Container Ship None       Heavy Fuel Oil (HFO) Critical          
+ 2 2023-07-30 None           Coastal    Heavy Fuel Oil (HFO) Good              
+ 3 2023-09-17 Tanker         Long-haul  None                 Good              
+ 4 2023-10-22 Container Ship None       Diesel               Critical          
+ 5 2023-10-29 Bulk Carrier   Short-haul Diesel               None              
+ 6 2023-11-05 None           Coastal    Heavy Fuel Oil (HFO) Good              
+ 7 2023-11-19 None           Coastal    Diesel               Good              
+ 8 2023-12-03 None           Coastal    Heavy Fuel Oil (HFO) Critical          
+ 9 2024-01-14 Bulk Carrier   None       Heavy Fuel Oil (HFO) Critical          
+10 2024-03-24 Tanker         None       Steam Turbine        Critical          
+# ℹ 599 more rows
+# ℹ 13 more variables: Speed_Over_Ground_knots &lt;dbl&gt;, Engine_Power_kW &lt;dbl&gt;,
+#   Distance_Traveled_nm &lt;dbl&gt;, Draft_meters &lt;dbl&gt;, Weather_Condition &lt;chr&gt;,
+#   Cargo_Weight_tons &lt;dbl&gt;, Operational_Cost_USD &lt;dbl&gt;,
+#   Revenue_per_Voyage_USD &lt;dbl&gt;, Turnaround_Time_hours &lt;dbl&gt;,
+#   Efficiency_nm_per_kWh &lt;dbl&gt;, Seasonal_Impact_Score &lt;dbl&gt;,
+#   Weekly_Voyage_Count &lt;dbl&gt;, Average_Load_Percentage &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ship_data_clean <span class="ot">&lt;-</span> ship_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">if_any</span>(<span class="fu">where</span>(is.character), <span class="sc">~</span> . <span class="sc">==</span> <span class="st">"None"</span>))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(ship_data_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,127
+Columns: 18
+$ Date                    &lt;date&gt; 2023-06-11, 2023-06-18, 2023-06-25, 2023-07-0…
+$ Ship_Type               &lt;chr&gt; "Fish Carrier", "Container Ship", "Bulk Carrie…
+$ Route_Type              &lt;chr&gt; "Short-haul", "Long-haul", "Transoceanic", "Tr…
+$ Engine_Type             &lt;chr&gt; "Steam Turbine", "Diesel", "Steam Turbine", "D…
+$ Maintenance_Status      &lt;chr&gt; "Good", "Fair", "Fair", "Fair", "Fair", "Criti…
+$ Speed_Over_Ground_knots &lt;dbl&gt; 10.38758, 20.74975, 21.05510, 13.74278, 18.616…
+$ Engine_Power_kW         &lt;dbl&gt; 1796.0574, 1648.5567, 915.2618, 1089.7218, 217…
+$ Distance_Traveled_nm    &lt;dbl&gt; 1060.4864, 658.8741, 1126.8225, 1445.2812, 723…
+$ Draft_meters            &lt;dbl&gt; 14.653083, 7.199261, 11.789063, 9.727833, 14.9…
+$ Weather_Condition       &lt;chr&gt; "Rough", "Moderate", "Moderate", "Moderate", "…
+$ Cargo_Weight_tons       &lt;dbl&gt; 162.3947, 178.0409, 1737.3853, 260.5951, 1912.…
+$ Operational_Cost_USD    &lt;dbl&gt; 483388.00, 448543.40, 261349.61, 287718.38, 18…
+$ Revenue_per_Voyage_USD  &lt;dbl&gt; 883765.79, 394018.75, 87551.38, 676121.46, 776…
+$ Turnaround_Time_hours   &lt;dbl&gt; 63.24820, 49.41815, 22.40911, 64.15823, 47.476…
+$ Efficiency_nm_per_kWh   &lt;dbl&gt; 0.2903614, 0.4995945, 0.7029057, 1.3313431, 1.…
+$ Seasonal_Impact_Score   &lt;dbl&gt; 0.8856478, 1.4058132, 1.3707043, 0.5833834, 1.…
+$ Weekly_Voyage_Count     &lt;dbl&gt; 6, 9, 1, 8, 7, 3, 6, 2, 9, 4, 3, 7, 7, 2, 4, 3…
+$ Average_Load_Percentage &lt;dbl&gt; 93.89537, 96.21824, 66.19370, 80.00858, 53.174…</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="exploratory-data-analysis" class="level2">

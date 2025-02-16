@@ -1,5 +1,6 @@
 ---
-title: "Take-Home Exercise 1: Ship Performance in the Gulf of Guinea"
+title: "Take-Home Exercise 1: 
+Ship Performance in the Gulf of Guinea"
 author: "Leng Yi Xiu"
 date: "Feb 01 2025"
 date-modified: "last-modified"
@@ -65,7 +66,7 @@ The following code chunk is used to install necessary packages for this article:
 ```{r}
 pacman::p_load(tidyverse, ggdist, ggridges, 
                ggthemes, colorspace, ggiraph, 
-               gganimate, plotly, DT,
+               ggtext, gganimate, plotly, DT,
                readxl, gifski, gapminder)
 ```
 
@@ -92,12 +93,14 @@ Before conducting exploratory data analysis, we must first gain a deeper underst
 Code chunk to verify that all data types in the dataset is correct:
 
 ```{r}
+#| code-fold: true
 glimpse(ship_data)
 ```
 
 To further understand the categorical features and values used for each feature, the following code chunk is used to list out the unique values for each categorical column:
 
 ```{r}
+#| code-fold: true
 categorical_cols <- ship_data %>%
   select(where(is.character))
 
@@ -119,6 +122,7 @@ This will need to be addressed in 3.3 Check for missing values.
 ### 3.2 Identify duplicate records
 
 ```{r}
+#| code-fold: true
 duplicate <- ship_data %>% 
   group_by_all() %>% 
   filter(n()>1) %>% 
@@ -130,6 +134,7 @@ duplicate
 ### 3.3 Check for missing values
 
 ```{r}
+#| code-fold: true
 missing_data <- is.na(ship_data)
 
 # Filter rows where there is at least one TRUE (missing value)
@@ -138,6 +143,7 @@ print(missing_row)
 ```
 
 ```{r}
+#| code-fold: true
 none_vals <- ship_data %>%
   filter(if_any(where(is.character), ~ . == "None"))
 
@@ -145,6 +151,7 @@ print(none_vals)
 ```
 
 ```{r}
+#| code-fold: true
 ship_data_clean <- ship_data %>%
   filter(!if_any(where(is.character), ~ . == "None"))
 
@@ -153,299 +160,210 @@ glimpse(ship_data_clean)
 
 ## 4 Exploratory Data Analysis
 
-### 4.1 Univariate: Frequency Counts
+### 4.1 Univariate: Frequency Counts for all features
+
+::: callout-important
+## Observations
+
+-   Use of bar charts to look at the distribution of data across all categorical features
+-   Data observed is generally evenly distributed and each categorical feature is evenly represented
+:::
 
 ::: panel-tabset
-## Ship Type
+## Categorical Features
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(x=Ship_Type)) +
-  geom_bar(fill = "lightgrey", color = "black") +
-  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
-  coord_flip() +
-  theme_classic() +
-  ggtitle("Distribution by Ship Type")
+# Select categorical columns
+cat_cols <- c("Ship_Type", "Route_Type", "Engine_Type", "Maintenance_Status", "Weather_Condition")
+
+# Pivot data to long format
+ship_data_categorical <- ship_data_clean %>%
+  select(all_of(cat_cols)) %>%
+  pivot_longer(cols = everything(), names_to = "variable", values_to = "category")
+
+# Plot faceted bar charts
+ggplot(ship_data_categorical, aes(x = category, fill = variable)) +
+  geom_bar(color = "black") +
+  geom_text(stat = "count", aes(label = after_stat(count)), hjust = -0.2, size = 2.5) +
+  coord_flip(clip = "off", expand = FALSE) +
+  facet_wrap(~variable, scales = "free_y") +  
+  theme_minimal(base_size = 10) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title = "Distribution of Categorical Features",
+       x = "Category",
+       y = "Count") +
+  theme(legend.position = "none",
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 10))
 ```
 
-## Route Type
+## Numeric Features
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(x=Route_Type)) +
-  geom_bar(fill = "lightgrey", color = "black") +
-  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
-  coord_flip() +
-  theme_classic() +
-  ggtitle("Distribution by Route Type")
-```
+# Pivot data to long format
+ship_data_numeric <- ship_data_clean %>%
+  pivot_longer(cols = where(is.numeric), 
+               names_to = "Feature", 
+               values_to = "Numeric")
 
-## Engine Type
-
-```{r}
-#| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(x=Engine_Type)) +
-  geom_bar(fill = "lightgrey", color = "black") +
-  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
-  coord_flip() +
-  theme_classic() +
-  ggtitle("Distribution by Engine Type")
-```
-
-## Maintenance Status
-
-```{r}
-#| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(x=Maintenance_Status)) +
-  geom_bar(fill = "lightgrey", color = "black") +
-  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
-  coord_flip() +
-  theme_classic() +
-  ggtitle("Distribution by Maintenance Status")
-```
-
-## Weather Condition
-
-```{r}
-#| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(x=Weather_Condition)) +
-  geom_bar(fill = "lightgrey", color = "black") +
-  geom_text(stat = "count", aes(label = after_stat(count)), hjust = 1.5) +
-  coord_flip() +
-  theme_classic() +
-  ggtitle("Distribution by Weather Condition")
+# Plot faceted histograms
+ggplot(ship_data_numeric, aes(x = Numeric, fill = Feature)) +
+  geom_histogram(color = "black", bins = 30, alpha = 0.7) +  
+  facet_wrap(~Feature, scales = "free") +  
+  theme_minimal(base_size = 10) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title = "Distribution of Numeric Features",
+       x = "Value",
+       y = "Frequency") +
+  theme(legend.position = "none",
+        strip.text = element_text(size = 10),
+        plot.title = element_text(face = "bold", size = 10, hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))  
 ```
 :::
 
-### 4.2 Univariate: Factors affecting Energy Efficiency
+### 4.2 Visualizing Correlation Matrix of Numeric Features
+
+```{r}
+#| code-fold: true
+ship_data_clean[, c(6:9, 11:18)] <- scale(ship_data_clean[, c(6:9, 11:18)])
+```
+
+```{r}
+#| code-fold: true
+ggstatsplot::ggcorrmat(
+  data = ship_data_clean, 
+  cor.vars = c(6:9, 11:18),
+  ggcorrplot.args = list(outline.color = "black", 
+                         hc.order = TRUE,
+                         tl.cex = 10),
+  title    = "Correlogram for Ship Data",
+  subtitle = "All pairs: no significant at p < 0.05"
+)
+```
+
+### 4.3 Bivariate: Factors affecting Numeric Features
 
 ::: panel-tabset
 ## Ship Type
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh, x = Ship_Type)) +    
+# Boxplot with facets
+ggplot(data = ship_data_numeric, 
+       aes(y = Numeric, x = Ship_Type)) +  # x maps to Ship_Type
   geom_boxplot(outlier.shape = 16,  
-               outlier.colour = "red",  
+               outlier.colour = "blue",  
                outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="blue",          
-             size=4) +
-  stat_summary(fun = "mean", 
-               geom = "text", 
-               aes(label = round(..y.., 2)), 
-               colour = "darkgrey", 
-               vjust = -1) +
-  labs(title = "Efficiency (nm per kWh) by Ship Type")
+             colour="pink",          
+             size=3) +
+  labs(title = "Box Plots of All Numeric Features by Ship Type") +
+  facet_wrap(~Feature, scales = "free_y") +
+   theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    strip.text = element_text(size = 8, lineheight = 1.1),
+    plot.margin = margin(10, 10, 10, 10),  
+    panel.spacing = unit(0.5, "lines")  
+   )
 ```
 
 ## Route Type
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh,       
-           x= Route_Type)) +    
+# Boxplot with facets
+ggplot(data = ship_data_numeric, 
+       aes(y = Numeric, x = Route_Type)) +  # x maps to Route Type
   geom_boxplot(outlier.shape = 16,  
-               outlier.colour = "red",  
+               outlier.colour = "blue",  
                outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="blue",          
-             size=4) +
-  stat_summary(fun = "mean", 
-               geom = "text", 
-               aes(label = round(..y.., 2)), 
-               colour = "darkgrey", 
-               vjust = -1) +
-  labs(title = "Efficiency (nm per kWh) by Route Type")
+             colour="pink",          
+             size=3) +
+  labs(title = "Box Plots of All Numeric Features by Route Type") +
+  facet_wrap(~Feature, scales = "free_y") +
+   theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    strip.text = element_text(size = 8, lineheight = 1.1),
+    plot.margin = margin(10, 10, 10, 10),  
+    panel.spacing = unit(0.5, "lines")  
+   )
 ```
 
 ## Engine Type
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh,       
-           x= Engine_Type)) +    
+# Boxplot with facets
+ggplot(data = ship_data_numeric, 
+       aes(y = Numeric, x = Engine_Type)) +  # x maps to Engine_Type
   geom_boxplot(outlier.shape = 16,  
-               outlier.colour = "red",  
+               outlier.colour = "blue",  
                outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="blue",          
-             size=4) +
-  stat_summary(fun = "mean", 
-               geom = "text", 
-               aes(label = round(..y.., 2)), 
-               colour = "darkgrey", 
-               vjust = -1) +
-  labs(title = "Efficiency (nm per kWh) by Engine Type")
+             colour="pink",          
+             size=3) +
+  labs(title = "Box Plots of All Numeric Features by Engine Type") +
+  facet_wrap(~Feature, scales = "free_y") +
+   theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    strip.text = element_text(size = 8, lineheight = 1.1),
+    plot.margin = margin(10, 10, 10, 10),  
+    panel.spacing = unit(0.5, "lines")  
+   )
 ```
 
 ## Maintenance Status
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh,       
-           x= Maintenance_Status)) +    
+# Boxplot with facets
+ggplot(data = ship_data_numeric, 
+       aes(y = Numeric, x = Maintenance_Status)) +  # x maps to Maintenance Status
   geom_boxplot(outlier.shape = 16,  
-               outlier.colour = "red",  
+               outlier.colour = "blue",  
                outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="blue",          
-             size=4) +
-  stat_summary(fun = "mean", 
-               geom = "text", 
-               aes(label = round(..y.., 2)), 
-               colour = "darkgrey", 
-               vjust = -1) +
-  labs(title = "Efficiency (nm per kWh) by Maintenance Status")
+             colour="pink",          
+             size=3) +
+  labs(title = "Box Plots of All Numeric Features by Maintenance Status") +
+  facet_wrap(~Feature, scales = "free_y") +
+   theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    strip.text = element_text(size = 8, lineheight = 1.1),
+    plot.margin = margin(10, 10, 10, 10),  
+    panel.spacing = unit(0.5, "lines")  
+   )
 ```
 
 ## Weather Conditions
 
 ```{r}
 #| code-fold: true
-ggplot(data=ship_data_clean, 
-       aes(y = Efficiency_nm_per_kWh,       
-           x= Weather_Condition)) +    
+# Boxplot with facets
+ggplot(data = ship_data_numeric, 
+       aes(y = Numeric, x = Weather_Condition)) +  # x maps to Weather Conditions
   geom_boxplot(outlier.shape = 16,  
-               outlier.colour = "red",  
+               outlier.colour = "blue",  
                outlier.size = 1) +       
   geom_point(stat="summary",        
              fun="mean",           
-             colour="blue",          
-             size=4) +
-  stat_summary(fun = "mean", 
-               geom = "text", 
-               aes(label = round(..y.., 2)), 
-               colour = "darkgrey", 
-               vjust = -1) +
-  labs(title = "Efficiency (nm per kWh) by Weather Condition")
-```
-:::
-
-### 4.3 Univariate: Factors affecting Operational Cost
-
-::: panel-tabset
-## Ship Type
-
-```{r}
-#| code-fold: true
-ggplot(ship_data_clean, 
-       aes(x = Operational_Cost_USD, 
-           y = Ship_Type )) +
-  geom_density_ridges(
-    scale = 2,
-    rel_min_height = 0.01,
-    bandwidth = 10000,
-    fill = lighten("#7097BB", .3),
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "Operational Cost (USD)",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Route Type
-
-```{r}
-#| code-fold: true
-ggplot(ship_data_clean, 
-       aes(x = Operational_Cost_USD, 
-           y = Route_Type )) +
-  geom_density_ridges(
-    scale = 2,
-    rel_min_height = 0.01,
-    bandwidth = 10000,
-    fill = lighten("#7097BB", .3),
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "Operational Cost (USD)",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Engine Type
-
-```{r}
-#| code-fold: true
-ggplot(ship_data_clean, 
-       aes(x = Operational_Cost_USD, 
-           y = Engine_Type )) +
-  geom_density_ridges(
-    scale = 2,
-    rel_min_height = 0.01,
-    bandwidth = 10000,
-    fill = lighten("#7097BB", .3),
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "Operational Cost (USD)",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Maintenance Status
-
-```{r}
-#| code-fold: true
-ggplot(ship_data_clean, 
-       aes(x = Operational_Cost_USD, 
-           y = Maintenance_Status )) +
-  geom_density_ridges(
-    scale = 2,
-    rel_min_height = 0.01,
-    bandwidth = 10000,
-    fill = lighten("#7097BB", .3),
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "Operational Cost (USD)",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
-```
-
-## Weather Condition
-
-```{r}
-#| code-fold: true
-ggplot(ship_data_clean, 
-       aes(x = Operational_Cost_USD, 
-           y = Weather_Condition )) +
-  geom_density_ridges(
-    scale = 2,
-    rel_min_height = 0.01,
-    bandwidth = 10000,
-    fill = lighten("#7097BB", .3),
-    color = "white"
-  ) +
-  scale_x_continuous(
-    name = "Operational Cost (USD)",
-    expand = c(0, 0)
-    ) +
-  scale_y_discrete(name = NULL, expand = expansion(add = c(0.2, 2.6))) +
-  theme_ridges()
+             colour="pink",          
+             size=3) +
+  labs(title = "Box Plots of All Numeric Features by Weather Conditions") +
+  facet_wrap(~Feature, scales = "free_y") +
+   theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  
+    strip.text = element_text(size = 8, lineheight = 1.1),
+    plot.margin = margin(10, 10, 10, 10),  
+    panel.spacing = unit(0.5, "lines")  
+   )
 ```
 :::
 

@@ -590,6 +590,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
 ```
 
 ## Mean
+
 -   gives the output we would get by default from heatmap functions in other packages
 
 ```{r}
@@ -598,13 +599,13 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
 ```
 
 ## None
+
 -   gives the dendrograms without any rotation that is based on the data matrix
 
 ```{r}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           seriate = "none")
 ```
-
 :::
 
 #### 3.5.7 working with colour palettes
@@ -616,6 +617,7 @@ heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
 ```
 
 #### 3.5.8 The finishing touch
+
 ```{r}
 heatmaply(normalize(wh_matrix[, -c(1, 2, 4, 5)]),
           Colv=NA,

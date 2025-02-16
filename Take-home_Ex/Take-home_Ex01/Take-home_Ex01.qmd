@@ -1,6 +1,5 @@
 ---
-title: "Take-Home Exercise 1: 
-Ship Performance in the Gulf of Guinea"
+title: "Take-Home Exercise 1: Ship Performance in the Gulf of Guinea"
 author: "Leng Yi Xiu"
 date: "Feb 01 2025"
 date-modified: "last-modified"
@@ -9,6 +8,8 @@ execute:
   echo: true
   message: false
   freeze: true
+  format: html
+  css: styles.css
 ---
 
 ## 1 Overview
@@ -25,7 +26,7 @@ For this week's article, we will be using various data visualisation techniques 
 
 The ship performance dataset ([**Kaggle**](https://www.kaggle.com/datasets/jeleeladekunlefijabi/ship-performance-clustering-dataset)) contains data on essential operational metrics and characteristics of different ship types operating in the Gulf of Guinea.
 
-The raw dataset consists of **2736 rows** and **24 columns**, with some of the key features below:
+The raw dataset consists of **2,736 rows** and **18 columns**, with some of the key features below:
 
 ::: callout-tip
 ## Numerical Features
@@ -61,21 +62,26 @@ The raw dataset consists of **2736 rows** and **24 columns**, with some of the k
 
 ### 2.1 Loading R packages
 
-The following code chunk is used to install necessary packages for this article:
+📌 The following code chunk is used to install necessary packages for this article:
 
 ```{r}
-pacman::p_load(tidyverse, ggdist, ggridges, 
+pacman::p_load(dplyr, tidyverse, ggdist, lubridate, 
                ggthemes, colorspace, ggiraph, 
-               ggtext, gganimate, plotly, DT,
-               readxl, gifski, gapminder)
+               ggtext, gganimate, plotly, readxl, 
+               gifski, gapminder, factoextra, cluster)
+```
+
+``` markdown
 ```
 
 ### 2.2 Import Data
 
-Importing the csv data file:
+📌 Importing the csv data file and mutating categorical data to factors:
 
 ```{r}
-ship_data <- read_csv("data/Ship_Performance_Dataset.csv")
+cols <- c("Ship_Type", "Route_Type", "Engine_Type","Maintenance_Status","Weather_Condition")
+ship_data <- read_csv("data/Ship_Performance_Dataset.csv") %>%
+  mutate(across(cols, as.factor))
 ```
 
 ## 3 Data Preparation
@@ -90,19 +96,19 @@ Before conducting exploratory data analysis, we must first gain a deeper underst
 
 ### 3.1 Verify Data Types
 
-Code chunk to verify that all data types in the dataset is correct:
+📌 Code chunk to verify that all data types in the dataset is correct:
 
 ```{r}
 #| code-fold: true
 glimpse(ship_data)
 ```
 
-To further understand the categorical features and values used for each feature, the following code chunk is used to list out the unique values for each categorical column:
+📌 To further understand the categorical features and values used for each feature, the following code chunk is used to list out the unique values for each categorical column:
 
 ```{r}
 #| code-fold: true
 categorical_cols <- ship_data %>%
-  select(where(is.character))
+  select(where(~is.factor(.)))
 
 # Show unique values for each categorical column
 unique_vals <- categorical_cols %>%
@@ -116,7 +122,7 @@ print(unique_vals)
 
 As observed, all the categorical columns have unique value stated as "None" which can be interpreted as a missing value in the data.
 
-This will need to be addressed in 3.3 Check for missing values.
+This will need to be addressed in **3.3 Check for missing values**.
 :::
 
 ### 3.2 Identify duplicate records
@@ -131,6 +137,12 @@ duplicate <- ship_data %>%
 duplicate
 ```
 
+::: callout-note
+## Note
+
+-   No duplicate records identified.
+:::
+
 ### 3.3 Check for missing values
 
 ```{r}
@@ -142,10 +154,18 @@ missing_row <- ship_data[apply(missing_data, 1, any), ]
 print(missing_row)
 ```
 
+::: callout-note
+## Note
+
+-   No missing values identified.
+
+-   However, data wrangling required to exclude categorical features that have "None" indicated. Following code chunks are used to identify records that have "None" indicated in any one of the categorical features and to filter them out from the clean dataset for analysis.
+:::
+
 ```{r}
 #| code-fold: true
 none_vals <- ship_data %>%
-  filter(if_any(where(is.character), ~ . == "None"))
+  filter(if_any(where(is.factor), ~ . == "None"))
 
 print(none_vals)
 ```
@@ -153,21 +173,27 @@ print(none_vals)
 ```{r}
 #| code-fold: true
 ship_data_clean <- ship_data %>%
-  filter(!if_any(where(is.character), ~ . == "None"))
+  filter(!if_any(where(is.factor), ~ . == "None"))
 
 glimpse(ship_data_clean)
 ```
 
-## 4 Exploratory Data Analysis
-
-### 4.1 Univariate: Frequency Counts for all features
-
 ::: callout-important
 ## Observations
 
--   Use of bar charts to look at the distribution of data across all categorical features
--   Data observed is generally evenly distributed and each categorical feature is evenly represented
+After cleaning up the data and excluding records where categorical data has "None" indicated, the clean dataset consists of **2,127 rows** and **18 columns.**
+
+With this, we can proceed to our Exploratory Data Analysis (EDA).
 :::
+
+## 4 Exploratory Data Analysis (EDA)
+
+### 4.1 Univariate: Frequency Counts for all features
+
+For EDA, we firstly run a distribution analysis across all the categorical and numerical features to understand the representation of each feature.
+
+-   Use of `geom_bar()` and `geom_histogram()` to look at the distribution of data across all categorical features.
+-   Use of `facet_wrap()` to view multiple plots in a grid - particularly useful for visualizing how a certain feature behaves across different subsets of the data.
 
 ::: panel-tabset
 ## Categorical Features
@@ -223,17 +249,31 @@ ggplot(ship_data_numeric, aes(x = Numeric, fill = Feature)) +
 ```
 :::
 
+::: callout-important
+## Observations
+
+-   Data observed is generally **evenly distributed**. Each categorical and numerical feature is evenly represented.
+-   Generally no significant outliers observed from the dataset.
+:::
+
 ### 4.2 Visualizing Correlation Matrix of Numeric Features
+
+Next, we move on to understanding relationships between the numeric features in the dataset. This is to identify if any of the features influence one another.
+
+To understand this, we will make use of a correlation matrix to measure the strength of the relationship between two features. This is visualized using `ggcormat()` of the **ggstatsplot** package.
 
 ```{r}
 #| code-fold: true
-ship_data_clean[, c(6:9, 11:18)] <- scale(ship_data_clean[, c(6:9, 11:18)])
+scaled_cols <- scale(ship_data_clean[, c(6:9, 11:18)])
+scaled_cols <- as.data.frame(scaled_cols)
+ship_data_scale <- cbind(ship_data_clean[, -c(6:9, 11:18)], scaled_cols)
+ship_data_scale <- as.data.frame(ship_data_scale)
 ```
 
 ```{r}
 #| code-fold: true
 ggstatsplot::ggcorrmat(
-  data = ship_data_clean, 
+  data = ship_data_scale, 
   cor.vars = c(6:9, 11:18),
   ggcorrplot.args = list(outline.color = "black", 
                          hc.order = TRUE,
@@ -242,6 +282,10 @@ ggstatsplot::ggcorrmat(
   subtitle = "All pairs: no significant at p < 0.05"
 )
 ```
+
+::: callout-important
+## Observations
+:::
 
 ### 4.3 Bivariate: Factors affecting Numeric Features
 
@@ -367,6 +411,116 @@ ggplot(data = ship_data_numeric,
 ```
 :::
 
-### 4.4
+### 4.4 Time Trend of Average Revenue and Cost
 
-### 4.5
+::: panel-tabset
+## Average Revenue
+
+```{r}
+#| code-fold: true
+# Extract Year-Month
+ship_data_Timetrend <- ship_data_clean %>%
+  mutate(Year_Month = as.Date(format(Date, "%Y-%m-01"))) %>%
+  group_by(Year_Month, Route_Type) %>%
+  summarise(Average_Revenue = mean(Revenue_per_Voyage_USD, na.rm = TRUE),
+            Average_Cost = mean(Operational_Cost_USD, na.rm = TRUE), .groups = "drop") 
+
+# Average Revenue over time
+plot_revenue <- plot_ly(data = ship_data_Timetrend, 
+        x = ~Year_Month, 
+        y = ~Average_Revenue, 
+        color = ~Route_Type, 
+        type = 'scatter', 
+        mode = 'lines+markers')
+
+# Apply layout for the revenue plot
+plot_revenue <- plot_revenue %>%
+ layout(title = "Average Revenue Over Time",
+         font = list(size = 18, family = "Arial"),
+         xaxis = list(title = "Year-Month", titlefont = list(size = 14, family = "Arial")),
+         yaxis = list(title = "Average Revenue (USD)", titlefont = list(size = 14, family = "Arial")),
+         plot_bgcolor = "#f9f9f9",   # Background color
+         paper_bgcolor = "#ffffff",  # Paper background color
+         font = list(family = "Arial", size = 14, color = "#333333"),  # General font style
+         showlegend = TRUE, 
+         legend = list(title = list(text = 'Route Type')),
+         margin = list(l = 60, r = 60, t = 60, b = 60),  # Adjust margins
+         hovermode = "closest",   # Improve hover interaction
+         hoverlabel = list(bgcolor = "white", font = list(color = "black")))  # Hover label styling
+plot_revenue
+```
+
+## Average Cost
+
+```{r}
+#| code-fold: true
+# Average Cost over time
+plot_cost <- plot_ly(data = ship_data_Timetrend, 
+        x = ~Year_Month, 
+        y = ~Average_Cost, 
+        color = ~Route_Type, 
+        type = 'scatter', 
+        mode = 'lines+markers')
+
+# Apply layout for the cost plot
+plot_cost <- plot_cost %>%
+ layout(title = "Average Cost Over Time",
+         font = list(size = 18, family = "Arial"),
+         xaxis = list(title = "Year-Month", titlefont = list(size = 14, family = "Arial")),
+         yaxis = list(title = "Average Cost (USD)", titlefont = list(size = 14, family = "Arial")),
+         plot_bgcolor = "#f9f9f9",   # Background color
+         paper_bgcolor = "#ffffff",  # Paper background color
+         font = list(family = "Arial", size = 14, color = "#333333"),  # General font style
+         showlegend = TRUE, 
+         legend = list(title = list(text = 'Route Type')),
+         margin = list(l = 60, r = 60, t = 60, b = 60),  # Adjust margins
+         hovermode = "closest",   # Improve hover interaction
+         hoverlabel = list(bgcolor = "white", font = list(color = "black")))  # Hover label styling
+plot_cost
+```
+:::
+
+```{r}
+#| code-fold: true
+# Extract Year-Month
+ship_Timetrend2 <- ship_data_clean %>%
+  mutate(Year_Month = as.Date(format(Date, "%Y-%m-01"))) %>%
+  group_by(Year_Month, Engine_Type) %>%
+  summarise(Average_Efficiency = mean(Efficiency_nm_per_kWh, na.rm = TRUE), .groups = "drop")
+
+# Average Efficiency over time
+plot_ly(data = ship_Timetrend2, 
+        x = ~Year_Month, 
+        y = ~Average_Efficiency, 
+        color = ~Engine_Type, 
+        type = 'scatter', 
+        mode = 'lines+markers')
+```
+
+### 4.5 K-Means
+
+```{r}
+fviz_nbclust(scaled_cols, kmeans, method = "wss") + 
+  ggtitle("Elbow Method for Choosing k")
+```
+
+```{r}
+# Assuming you choose the optimal k (let's say k = 3)
+optimal_k <- 2
+kmeans_result <- kmeans(scaled_cols, centers = optimal_k, nstart = 25)
+
+fviz_cluster(kmeans_result, data = scaled_cols, 
+             ellipse.type = "norm", geom = "point", 
+             main = paste("K-Means Clustering (k =", optimal_k, ")"))
+```
+
+```{r}
+# Calculate silhouette score
+silhouette_scores <- silhouette(kmeans_result$cluster, dist(scaled_cols))
+avg_silhouette_score <- mean(silhouette_scores[, 3])
+
+# Print the silhouette object
+print(avg_silhouette_score)
+```
+
+## 5 Summary & Conclusion

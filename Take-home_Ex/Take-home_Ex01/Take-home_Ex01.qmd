@@ -283,7 +283,7 @@ ggstatsplot::ggcorrmat(
 ::: callout-important
 ## Observations
 
--   Features do not have strong linear relationships with each other.
+-   Features do **not** have strong linear relationships with each other.
 
 -   None of the correlations between these features are statistically significant at the p \< 0.05 level, possibly due to over-scaling / normalization of the data.
 
@@ -465,13 +465,9 @@ plot_efficiency
 ::: callout-important
 ## Observations
 
--   Seasonal trend is observed, especially for **Long-haul** and **Short-haul** routes.
+-   In general, ships operating on **Steam Turbine** are the most fuel efficient among all 3 engine types.
 
-    -   **Long-haul**: Average revenue peaked in the months of August and March
-
-    -   **Short-haul**: Average revenue peaked in the month of January
-
--   However, this showed be analysed in tandem with the seasonal trend for operational cost and profit can be maximized only if operational costs are kept low.
+-   However, the plots suggest a certain level of seasonal/time trend, which can be indicative of the impact of other features on fuel efficiency as well.
 :::
 
 ## Average Revenue
@@ -562,15 +558,28 @@ plot_cost
 :::
 :::
 
-### 4.5 K-Means
+### 4.5 K-Means Clustering
+
+As the features have been previously identified to **not** have any linear correlation to each other (see 4.2 Visualizing Correlation Matrix of Numeric Features), we will attempt to group the data using K-means clustering to see if there is any non-linear relationship.
+
+K-means clustering uses distance metrics to identify clusters where points are close together in a multi-dimensional space.
+
+#### 4.5.1 Elbow Method
+
+The **Elbow Method** is used to determine the optimal number of clusters (K) in K-Means clustering. To determine the optimal number of clusters, look for the point where the within-cluster sum of squares (WCSS) stops decreasing sharply and starts to level off.
+
+With this ship performance dataset, optimal number of clusters is **2**.
 
 ```{r}
+#| code-fold: true
 fviz_nbclust(scaled_cols, kmeans, method = "wss") + 
   ggtitle("Elbow Method for Choosing k")
 ```
 
+#### 4.5.2 Visualising K-means Clustering
+
 ```{r}
-# Assuming you choose the optimal k (let's say k = 3)
+#| code-fold: true
 optimal_k <- 2
 kmeans_result <- kmeans(scaled_cols, centers = optimal_k, nstart = 25)
 
@@ -586,6 +595,32 @@ avg_silhouette_score <- mean(silhouette_scores[, 3])
 
 # Print the silhouette object
 print(avg_silhouette_score)
+
 ```
 
-## 5 Summary & Conclusion
+::: callout-important
+## Observations
+
+-   Based on the above K-means clustering chart, there appears to be significant overlaps and no clear separation between clusters.
+
+-   Possible reasons for overlapping clusters:
+
+    -   Data used for ship performance may not naturally be clustered and actual data distribution may follow a different structure.
+
+    -   The features may not have good differentiation and feature engineering may be required.
+
+    -   Wrong choice of K.
+
+-   From the silhouette score of 0.0644 (\~ to 0), quality of clustering result is not good and further work can be done with different clustering algorithms.
+:::
+
+## 5 Summary
+
+In conclusion, the analysis of ship performance data revealed several key insights into operational efficiency and data distribution:
+
+1.  Feature analysis showed an **equal distribution across all features**, ensuring balanced representation in the dataset.
+2.  There was **no significant correlation** between features.
+3.  **Bivariate analysis** suggested that categorical features such as ship type, engine type and route type had minimal impact on efficiency and profits. This suggests the need for a more comprehensive multivariate analysis to assess potential interactions and **combined effects** on performance metrics.
+4.  K-Means clustering did not produce meaningful groupings, suggesting the lack of well-separated clusters in the dataset.
+
+Future work include looking into multivariate analysis to discover any combined effects on ship performance, feature engineering to create more meaningful features and exploring time-series modelling like ARIMA.

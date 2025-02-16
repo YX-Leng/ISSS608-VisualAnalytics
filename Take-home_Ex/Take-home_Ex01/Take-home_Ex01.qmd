@@ -429,16 +429,6 @@ ggplot(data = ship_data_numeric,
 ::: panel-tabset
 ## Fuel Efficiency
 
-::: callout-important
-## Observations
-
--   Overall trend that ships running on **Steam Turbine** is generally the most fuel efficient of the 3 engine types (highest nautical miles per kWh of energy).
-
--   From the plot, it appears that there is a possiblity of seasonal trend, but this differs across all 3 engine types.
-
--   For example in January 2024, Steam Turbine ships are at their lowest efficiency level (across the time period of July 2023 to June 2024) whereas for diesel ships, they are at highest efficiency level. This is indicative that other variables need to be taken into consideration when exploring fuel efficiency (i.e. what kind of routes are these ships on, load that each ship is carrying in different periods etc.)
-:::
-
 ```{r}
 #| code-fold: true
 # Extract Year-Month
@@ -471,6 +461,18 @@ plot_efficiency <- plot_efficiency %>%
          hoverlabel = list(bgcolor = "white", font = list(color = "black")))  # Hover label styling
 plot_efficiency
 ```
+
+::: callout-important
+## Observations
+
+-   Seasonal trend is observed, especially for **Long-haul** and **Short-haul** routes.
+
+    -   **Long-haul**: Average revenue peaked in the months of August and March
+
+    -   **Short-haul**: Average revenue peaked in the month of January
+
+-   However, this showed be analysed in tandem with the seasonal trend for operational cost and profit can be maximized only if operational costs are kept low.
+:::
 
 ## Average Revenue
 
@@ -508,6 +510,18 @@ plot_revenue <- plot_revenue %>%
 plot_revenue
 ```
 
+::: callout-important
+## Observations
+
+-   Seasonal trend is observed, especially for **Long-haul** and **Short-haul** routes:
+
+    -   **Long-haul**: Average revenue peaked in the months of August and March
+
+    -   **Short-haul**: Average revenue peaked in the month of January
+
+-   However, this showed be analysed in tandem with the seasonal trend for operational cost and profit can be maximized only if operational costs are kept low.
+:::
+
 ## Average Cost
 
 ```{r}
@@ -536,6 +550,16 @@ plot_cost <- plot_cost %>%
          hoverlabel = list(bgcolor = "white", font = list(color = "black")))  # Hover label styling
 plot_cost
 ```
+
+::: callout-important
+## Observations
+
+-   Seasonal trend is also observed, but it differs slightly from the trend in revenue:
+
+    -   **Long-haul**: Average cost peaked in the months of **October** and March. Cost in August is kept relatively low, even though revenues were high, possibly due to other factors like use of more fuel efficient ships to keep cost down.
+
+    -   **Short-haul & Transoceanic**: Average cost generally higher among the 4 route types and have erratic trends. Not recommended as they do not maximize profits.
+:::
 :::
 
 ### 4.5 K-Means

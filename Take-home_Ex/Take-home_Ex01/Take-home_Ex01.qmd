@@ -71,9 +71,6 @@ pacman::p_load(dplyr, tidyverse, ggdist, lubridate,
                gifski, gapminder, factoextra, cluster)
 ```
 
-``` markdown
-```
-
 ### 2.2 Import Data
 
 📌 Importing the csv data file and mutating categorical data to factors:
@@ -278,13 +275,19 @@ ggstatsplot::ggcorrmat(
   ggcorrplot.args = list(outline.color = "black", 
                          hc.order = TRUE,
                          tl.cex = 10),
-  title    = "Correlogram for Ship Data",
+  title    = "Correlation Matrix for Ship Performance",
   subtitle = "All pairs: no significant at p < 0.05"
 )
 ```
 
 ::: callout-important
 ## Observations
+
+-   Features do not have strong linear relationships with each other.
+
+-   None of the correlations between these features are statistically significant at the p \< 0.05 level, possibly due to over-scaling / normalization of the data.
+
+-   Other types of non-linear relationships (i.e. clustering) should be considered.
 :::
 
 ### 4.3 Bivariate: Factors affecting Numeric Features
@@ -411,22 +414,77 @@ ggplot(data = ship_data_numeric,
 ```
 :::
 
-### 4.4 Time Trend of Average Revenue and Cost
+::: callout-important
+## Observations
+
+-   Looking at the box plots for all 5 categorical features, the influence of categorical features on the numerical features (i.e. revenue, cost, turnaround time etc.) is minimal.
+
+-   There are no significant trends identified from the plots that compares averages across the categorical features.
+
+-   Next, we will try to identify if there is any time trends on key numerical features (i.e. revenue, cost and fuel efficiency).
+:::
+
+### 4.4 Time Trend of Fuel Efficiency, Average Revenue and Average Cost
 
 ::: panel-tabset
-## Average Revenue
+## Fuel Efficiency
+
+::: callout-important
+## Observations
+
+-   Overall trend that ships running on **Steam Turbine** is generally the most fuel efficient of the 3 engine types (highest nautical miles per kWh of energy).
+
+-   From the plot, it appears that there is a possiblity of seasonal trend, but this differs across all 3 engine types.
+
+-   For example in January 2024, Steam Turbine ships are at their lowest efficiency level (across the time period of July 2023 to June 2024) whereas for diesel ships, they are at highest efficiency level. This is indicative that other variables need to be taken into consideration when exploring fuel efficiency (i.e. what kind of routes are these ships on, load that each ship is carrying in different periods etc.)
+:::
 
 ```{r}
 #| code-fold: true
 # Extract Year-Month
 ship_data_Timetrend <- ship_data_clean %>%
   mutate(Year_Month = as.Date(format(Date, "%Y-%m-01"))) %>%
+  group_by(Year_Month, Engine_Type) %>%
+  summarise(Average_Efficiency = mean(Efficiency_nm_per_kWh, na.rm = TRUE), .groups = "drop")
+
+# Average Efficiency over time
+plot_efficiency <-plot_ly(data = ship_data_Timetrend, 
+        x = ~Year_Month, 
+        y = ~Average_Efficiency, 
+        color = ~Engine_Type, 
+        type = 'scatter', 
+        mode = 'lines+markers')
+
+# Apply layout for the Efficiency plot
+plot_efficiency <- plot_efficiency %>%
+ layout(title = "Fuel Efficiency Over Time",
+         font = list(size = 16, family = "Arial"),
+         xaxis = list(title = "Year-Month", titlefont = list(size = 14, family = "Arial")),
+         yaxis = list(title = "Efficiency (nm / kWh)", titlefont = list(size = 14, family = "Arial")),
+         plot_bgcolor = "#f9f9f9",   # Background color
+         paper_bgcolor = "#ffffff",  # Paper background color
+         font = list(family = "Arial", size = 14, color = "#333333"),  # General font style
+         showlegend = TRUE, 
+         legend = list(title = list(text = 'Engine Type')),
+         margin = list(l = 60, r = 60, t = 60, b = 60),  # Adjust margins
+         hovermode = "closest",   # Improve hover interaction
+         hoverlabel = list(bgcolor = "white", font = list(color = "black")))  # Hover label styling
+plot_efficiency
+```
+
+## Average Revenue
+
+```{r}
+#| code-fold: true
+# Extract Year-Month
+ship_data_Timetrend1 <- ship_data_clean %>%
+  mutate(Year_Month = as.Date(format(Date, "%Y-%m-01"))) %>%
   group_by(Year_Month, Route_Type) %>%
   summarise(Average_Revenue = mean(Revenue_per_Voyage_USD, na.rm = TRUE),
-            Average_Cost = mean(Operational_Cost_USD, na.rm = TRUE), .groups = "drop") 
+            Average_Cost = mean(Operational_Cost_USD, na.rm = TRUE),.groups = "drop")
 
 # Average Revenue over time
-plot_revenue <- plot_ly(data = ship_data_Timetrend, 
+plot_revenue <- plot_ly(data = ship_data_Timetrend1, 
         x = ~Year_Month, 
         y = ~Average_Revenue, 
         color = ~Route_Type, 
@@ -436,7 +494,7 @@ plot_revenue <- plot_ly(data = ship_data_Timetrend,
 # Apply layout for the revenue plot
 plot_revenue <- plot_revenue %>%
  layout(title = "Average Revenue Over Time",
-         font = list(size = 18, family = "Arial"),
+         font = list(size = 16, family = "Arial"),
          xaxis = list(title = "Year-Month", titlefont = list(size = 14, family = "Arial")),
          yaxis = list(title = "Average Revenue (USD)", titlefont = list(size = 14, family = "Arial")),
          plot_bgcolor = "#f9f9f9",   # Background color
@@ -455,7 +513,7 @@ plot_revenue
 ```{r}
 #| code-fold: true
 # Average Cost over time
-plot_cost <- plot_ly(data = ship_data_Timetrend, 
+plot_cost <- plot_ly(data = ship_data_Timetrend1, 
         x = ~Year_Month, 
         y = ~Average_Cost, 
         color = ~Route_Type, 
@@ -465,7 +523,7 @@ plot_cost <- plot_ly(data = ship_data_Timetrend,
 # Apply layout for the cost plot
 plot_cost <- plot_cost %>%
  layout(title = "Average Cost Over Time",
-         font = list(size = 18, family = "Arial"),
+         font = list(size = 16, family = "Arial"),
          xaxis = list(title = "Year-Month", titlefont = list(size = 14, family = "Arial")),
          yaxis = list(title = "Average Cost (USD)", titlefont = list(size = 14, family = "Arial")),
          plot_bgcolor = "#f9f9f9",   # Background color
@@ -479,23 +537,6 @@ plot_cost <- plot_cost %>%
 plot_cost
 ```
 :::
-
-```{r}
-#| code-fold: true
-# Extract Year-Month
-ship_Timetrend2 <- ship_data_clean %>%
-  mutate(Year_Month = as.Date(format(Date, "%Y-%m-01"))) %>%
-  group_by(Year_Month, Engine_Type) %>%
-  summarise(Average_Efficiency = mean(Efficiency_nm_per_kWh, na.rm = TRUE), .groups = "drop")
-
-# Average Efficiency over time
-plot_ly(data = ship_Timetrend2, 
-        x = ~Year_Month, 
-        y = ~Average_Efficiency, 
-        color = ~Engine_Type, 
-        type = 'scatter', 
-        mode = 'lines+markers')
-```
 
 ### 4.5 K-Means
 

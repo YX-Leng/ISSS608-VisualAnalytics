@@ -10,8 +10,16 @@ execute:
   freeze: true
 ---
 
-# 1 Overview of the Task
+## 1 Overview of the Task
 
 Since Mr. Donald Trump took office as the President of the United States on January 20, 2025, one of the most closely watched topics has been global trade.
 
 As a beginner in visual analytics, I will be applying newly learned skills to examine the **evolving trends in Singapore’s international trade since 2015** using data and visualisation from Department of Statistics Singapore and Singstat.
+
+-   select **three data visualisation** on [this page](https://www.singstat.gov.sg/modules/infographics/singapore-international-trade), comments on the pros and cons and provide sketches of the make-over,
+
+-   create the make-over of the three data visualisation critic above using appropriate packages, and
+
+-   analyse the data with either time-series analysis or time-series forecasting methods
+
+### 1.1 The Dataset

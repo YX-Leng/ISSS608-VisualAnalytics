@@ -1,0 +1,250 @@
+---
+title: "In-class Exercise 7"
+author: "Leng Yi Xiu"
+date: "March 01 2025"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+## 1 Visualising, Analysing and Forecasting Time-series Data: tidyverts methods
+
+### 1.1 Learning Outcome
+
+-   import and wrangling time-series data by using appropriate tidyverse methods,
+
+-   visualise and analyse time-series data,
+
+-   calibrate time-series forecasting models by using exponential smoothing and ARIMA techniques, and
+
+-   compare and evaluate the performance of forecasting models.
+
+### 1.2 Install Packages and Import Data
+
+```{r}
+pacman::p_load(tidyverse, tsibble, feasts, fable, seasonal)
+```
+
+```{r}
+ts_data <- read_csv(
+  "data/visitor_arrivals_by_air.csv")
+```
+
+```{r}
+ts_data$`Month-Year` <- dmy(
+  ts_data$`Month-Year`)
+```
+
+### 1.3 Conventional base `ts` object vs `tibble` object
+
+#### 1.3.1 tibble object
+
+```{r}
+ts_data
+```
+
+#### 1.3.2 ts object
+
+```{r}
+ts_data_ts <- ts(ts_data)       
+head(ts_data_ts)
+```
+
+::: {.callout-important appearance="simple"}
+If we check class(ts_data_ts), it will show that this is not a typical tibble data frame. It will return as "matrix" or "array".
+:::
+
+### 1.4 Converting `tibble` object to `tsibble` object
+
+Compared to the conventional time series objects in R, for example ts, zoo, and xts, the tsibble preserves time indices as the essential data column and makes heterogeneous data structures possible. Beyond the tibble-like representation, key comprised of single or multiple variables is introduced to uniquely identify observational units over time (index).
+
+```{r}
+ts_tsibble <- ts_data %>%
+  mutate(Month = yearmonth(`Month-Year`)) %>%
+  as_tsibble(index = `Month`)
+```
+
+```{r}
+ts_tsibble
+```
+
+### 1.5 Visualising Time-series Data
+
+In order to visualise the time-series data effectively, we need to organise the data frame from wide to long format:
+
+```{r}
+ts_longer <- ts_data %>%
+  pivot_longer(cols = c(2:34),
+               names_to = "Country",
+               values_to = "Arrivals")
+```
+
+#### 1.5.1 Visualising single time-series: ggplot2 methods
+
+```{r}
+ts_longer %>%
+  filter(Country == "Vietnam") %>%
+  ggplot(aes(x = `Month-Year`, 
+             y = Arrivals))+
+  geom_line(size = 0.5)
+```
+
+#### 1.5.2 Plotting multiple time-series data with ggplot2 methods
+
+```{r}
+ggplot(data = ts_longer, 
+       aes(x = `Month-Year`, 
+           y = Arrivals,
+           color = Country))+
+  geom_line(size = 0.5) +
+  theme(legend.position = "bottom", 
+        legend.box.spacing = unit(0.5, "cm"))
+```
+
+::: {.callout-tip appearance="simple"}
+In order to provide effective comparison, `facet_wrap()` of **ggplot2** package is used to create small multiple line graph also known as **trellis plot**.
+:::
+
+```{r}
+#| echo: false
+#| fig-height: 12
+ggplot(data = ts_longer, 
+       aes(x = `Month-Year`, 
+           y = Arrivals))+
+  geom_line(size = 0.5) +
+  facet_wrap(~ Country,
+             ncol = 3,
+             scales = "free_y") +
+  theme_bw()
+```
+
+### 1.6 Visual Analysis of Time-series Data
+
+-   Time series datasets can contain a **seasonal component**.
+
+-   This is a cycle that repeats over time, such as monthly or yearly. This repeating cycle may obscure the signal that we wish to model when forecasting, and in turn may provide a strong signal to our predictive models.
+
+In order to visualise the time-series data effectively, we need to organise the data frame from wide to long format:
+
+```{r}
+tsibble_longer <- ts_tsibble %>%
+  pivot_longer(cols = c(2:34),
+               names_to = "Country",
+               values_to = "Arrivals")
+```
+
+#### 1.6.1 **Visual Analysis of Seasonality with Seasonal Plot**
+
+```{r}
+tsibble_longer %>%
+  filter(Country == "Italy" |
+         Country == "Vietnam" |
+         Country == "United Kingdom" |
+         Country == "Germany") %>% 
+  gg_season(Arrivals)
+```
+
+#### 1.6.2 Visual Analysis of Seasonality with Cycle Plot
+
+A **cycle plot** shows how a trend or cycle changes over time. We can use them to see seasonal patterns. Typically, a cycle plot shows a measure on the Y-axis and then shows a time period (such as months or seasons) along the X-axis. For each time period, there is a trend line across a number of years.
+
+```{r}
+tsibble_longer %>%
+  filter(Country == "Vietnam" |
+         Country == "Italy") %>% 
+  autoplot(Arrivals) + 
+  facet_grid(Country ~ ., scales = "free_y")
+```
+
+::: {.callout-tip appearance="simple"}
+The figure shows 2 time-series lines of visitor arrivals from Vietnam and Italy - both lines show clear sign of seasonal patterns **but not the trend**.
+:::
+
+In the code chunk below, cycle plots using `gg_subseries()` of **feasts** package are created. Notice that the cycle plots show not only seasonal patterns but also trend.
+
+```{r}
+#| fig-height: 6
+tsibble_longer %>%
+  filter(Country == "Vietnam" |
+         Country == "Italy") %>% 
+  gg_subseries(Arrivals)
+```
+
+::: {.callout-tip appearance="simple"}
+-   Italy: For most months, arrivals are low except for month of August
+
+-   Vietnam: arrivals generally higher than Italy. Seasonal peak from June - July.
+:::
+
+### 1.7 Time series decomposition
+
+Time series decomposition allows us to isolate structural components such as trend and seasonality from the time-series data.
+
+#### 1.7.1 Single time series decomposition
+
+ACF curve of visitor arrival from Vietnam:
+
+```{r}
+tsibble_longer %>%
+  filter(`Country` == "Vietnam") %>%
+  ACF(Arrivals) %>% 
+  autoplot()
+```
+
+Partial ACF curve of visitor arrival from Vietnam:
+
+```{r}
+tsibble_longer %>%
+  filter(`Country` == "Vietnam") %>%
+  PACF(Arrivals) %>% 
+  autoplot()
+```
+
+#### 1.7.2 Multiple time-series decomposition
+
+Trellis plot of ACFs for visitor arrivals from 4 countries:
+
+```{r}
+#| fig-height: 4
+tsibble_longer %>%
+  filter(`Country` == "Vietnam" |
+         `Country` == "Italy" |
+         `Country` == "United Kingdom" |
+         `Country` == "China") %>%
+  ACF(Arrivals) %>%
+  autoplot()
+```
+
+::: {.callout-tip appearance="simple"}
+-   China trend is similar to Vietnam, but not exactly the same
+
+    -   Vietnam: the seasonal cycle repeats itself every 12 months
+
+    -   China: the seasonal cycle repeats itself every 6 months
+:::
+
+Trellis plot of PACFs for visitor arrivals from 4 countries:
+
+```{r}
+#| fig-height: 4
+tsibble_longer %>%
+  filter(`Country` == "Vietnam" |
+         `Country` == "Italy" |
+         `Country` == "United Kingdom" |
+         `Country` == "China") %>%
+  PACF(Arrivals) %>%
+  autoplot()
+```
+
+#### 1.7.3 Composite plot of time series decomposition
+
+Composite plot showing the original line graph on the top pane, ACF on the left and seasonal plot on the right:
+
+```{r}
+tsibble_longer %>%
+  filter(`Country` == "Vietnam") %>%
+  gg_tsdisplay(Arrivals)
+```

@@ -1,0 +1,17 @@
+---
+title: "Take-Home Exercise 2: Be Tradewise or Otherwise"
+author: "Leng Yi Xiu"
+date: "March 01 2025"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+# 1 Overview of the Task
+
+Since Mr. Donald Trump took office as the President of the United States on January 20, 2025, one of the most closely watched topics has been global trade.
+
+As a beginner in visual analytics, I will be applying newly learned skills to examine the **evolving trends in Singapore’s international trade since 2015** using data and visualisation from Department of Statistics Singapore and Singstat.

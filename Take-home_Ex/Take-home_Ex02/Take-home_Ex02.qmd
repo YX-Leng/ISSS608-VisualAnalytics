@@ -1,7 +1,7 @@
 ---
 title: "Take-Home Exercise 2: Be Tradewise or Otherwise"
 author: "Leng Yi Xiu"
-date: "March 01 2025"
+date: "March 03 2025"
 date-modified: "last-modified"
 execute: 
   eval: true
@@ -16,10 +16,72 @@ Since Mr. Donald Trump took office as the President of the United States on Jan
 
 As a beginner in visual analytics, I will be applying newly learned skills to examine the **evolving trends in Singapore’s international trade since 2015** using data and visualisation from Department of Statistics Singapore and Singstat.
 
--   select **three data visualisation** on [this page](https://www.singstat.gov.sg/modules/infographics/singapore-international-trade), comments on the pros and cons and provide sketches of the make-over,
+The task includes:
 
--   create the make-over of the three data visualisation critic above using appropriate packages, and
+-   selecting **three data visualisations** on [this page (Singstat Infographics)](https://www.singstat.gov.sg/modules/infographics/singapore-international-trade), comments on the pros and cons and provide sketches of the make-over,
 
--   analyse the data with either time-series analysis or time-series forecasting methods
+-   creating the make-over of the three data visualisation critic above using appropriate packages, and
 
-### 1.1 The Dataset
+-   analysing the data with either time-series analysis or time-series forecasting methods
+
+### 1.1 Principles of Data Visualisation Design
+
+Before starting on the critic for the 3 data visualisations, we would first need to understand the key principles of data visualisation design.
+
+Firstly, we need to ensure that we are using the right visuals to represent the data and ensure graphical integrity. Snapshots of the data over specific time periods, or across specific groups can be misleading and not representative of any trends.
+
+Visuals should also be simplified, using effective colours and clear labels to provide clarity for the audience. Annotations can be used to provide more insights to the visuals. Lastly, we should aim to create charts that fall within Quadrant 1, where it is clear and aesthetically beautiful.
+
+![](Screenshots/Four_Quadrants.png){width="478"}
+
+### 1.2 The Dataset
+
+The data visualisations on the Singstat Infographics website are on Singapore's international trade position, mainly describing the trade components and identifying Singapore's major trading partners from the period of 2020 to 2024.
+
+**Raw data?**
+
+### 1.3 Data Preparation
+
+## 2 Critic & Make-over of Data Visualisations
+
+### 2.1 Critic #1: Total Merchandise Trade at Current Prices, 2020 - 2024
+
+Data visualisation below aims to show the changes of **total merchandise trade** at current prices over the period of 5 years:
+
+![](Screenshots/Singstat-Fig1.png){width="659"}
+
+#### 2.1.1 Pros and Cons of existing data visualisation 
+
+✅ Year-on-year increase from previous to current year is clear (Increased 6.6% in 2024)
+
+✅ Chart is sufficiently labelled, with all the amounts standardized to 1 decimal place
+
+❌ Chart only shows year-on-year increase percentage for 1 year, yearly trend is not clear and cannot be visualised as Exports and Imports are separated in 2 bars
+
+❌ Colours used are not visually representative of year, or exports vs imports
+
+❌ Labels showing total amounts by year, but the total amounts cannot be visualised from the chart
+
+#### 2.1.2 Make-over of data visualisation
+
+### 2.2 Critic #2: Merchandise Trade Performance with Major Trading Partners, 2024
+
+![](Screenshots/Singstat-Fig2.png){width="594"}
+
+#### 2.2.1 Pros and Cons of existing data visualisation 
+
+✅ Can be visualised clearly which trading partners Singapore's exports to them exceed our imports from them
+
+✅ Size of bubble reflects the total merchandise trade value well
+
+❌ Bubble plot will not work well if the countries have similar merchandise trade values and the bubbles overlap each other
+
+#### 2.2.2 Make-over of data visualisation
+
+### 2.3 Critic #3: Overall Exports and Imports of Services, 2020-2024
+
+![](Screenshots/Singstat-Fig3.png){width="695"}
+
+#### 2.3.1 Pros and Cons of existing data visualisation 
+
+#### 2.3.2 Make-over of data visualisation

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Leng Yi Xiu">
-<meta name="dcterms.date" content="2025-03-01">
+<meta name="dcterms.date" content="2025-03-03">
 
 <title>ISSS608 Visual Analytics and Applications - Take-Home Exercise 2: Be Tradewise or Otherwise</title>
 <style>
@@ -179,7 +179,15 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#overview-of-the-task" id="toc-overview-of-the-task" class="nav-link active" data-scroll-target="#overview-of-the-task">1 Overview of the Task</a>
   <ul class="collapse">
-  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">1.1 The Dataset</a></li>
+  <li><a href="#principles-of-data-visualisation-design" id="toc-principles-of-data-visualisation-design" class="nav-link" data-scroll-target="#principles-of-data-visualisation-design">1.1 Principles of Data Visualisation Design</a></li>
+  <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">1.2 The Dataset</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">1.3 Data Preparation</a></li>
+  </ul></li>
+  <li><a href="#critic-make-over-of-data-visualisations" id="toc-critic-make-over-of-data-visualisations" class="nav-link" data-scroll-target="#critic-make-over-of-data-visualisations">2 Critic &amp; Make-over of Data Visualisations</a>
+  <ul class="collapse">
+  <li><a href="#critic-1-total-merchandise-trade-at-current-prices-2020---2024" id="toc-critic-1-total-merchandise-trade-at-current-prices-2020---2024" class="nav-link" data-scroll-target="#critic-1-total-merchandise-trade-at-current-prices-2020---2024">2.1 Critic #1: Total Merchandise Trade at Current Prices, 2020 - 2024</a></li>
+  <li><a href="#critic-2-merchandise-trade-performance-with-major-trading-partners-2024" id="toc-critic-2-merchandise-trade-performance-with-major-trading-partners-2024" class="nav-link" data-scroll-target="#critic-2-merchandise-trade-performance-with-major-trading-partners-2024">2.2 Critic #2: Merchandise Trade Performance with Major Trading Partners, 2024</a></li>
+  <li><a href="#critic-3-overall-exports-and-imports-of-services-2020-2024" id="toc-critic-3-overall-exports-and-imports-of-services-2020-2024" class="nav-link" data-scroll-target="#critic-3-overall-exports-and-imports-of-services-2020-2024">2.3 Critic #3: Overall Exports and Imports of Services, 2020-2024</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -206,14 +214,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 1, 2025</p>
+      <p class="date">March 3, 2025</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 1, 2025</p>
+      <p class="date-modified">March 8, 2025</p>
     </div>
   </div>
     
@@ -228,15 +236,70 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="overview-of-the-task">1 Overview of the Task</h2>
 <p>Since Mr.&nbsp;Donald Trump took office as the President of the United States on January 20, 2025, one of the most closely watched topics has been global trade.</p>
 <p>As a beginner in visual analytics, I will be applying newly learned skills to examine the <strong>evolving trends in Singapore’s international trade since 2015</strong> using data and visualisation from Department of Statistics Singapore and Singstat.</p>
+<p>The task includes:</p>
 <ul>
-<li><p>select <strong>three data visualisation</strong> on <a href="https://www.singstat.gov.sg/modules/infographics/singapore-international-trade">this page</a>, comments on the pros and cons and provide sketches of the make-over,</p></li>
-<li><p>create the make-over of the three data visualisation critic above using appropriate packages, and</p></li>
-<li><p>analyse the data with either time-series analysis or time-series forecasting methods</p></li>
+<li><p>selecting <strong>three data visualisations</strong> on <a href="https://www.singstat.gov.sg/modules/infographics/singapore-international-trade">this page (Singstat Infographics)</a>, comments on the pros and cons and provide sketches of the make-over,</p></li>
+<li><p>creating the make-over of the three data visualisation critic above using appropriate packages, and</p></li>
+<li><p>analysing the data with either time-series analysis or time-series forecasting methods</p></li>
 </ul>
+<section id="principles-of-data-visualisation-design" class="level3">
+<h3 class="anchored" data-anchor-id="principles-of-data-visualisation-design">1.1 Principles of Data Visualisation Design</h3>
+<p>Before starting on the critic for the 3 data visualisations, we would first need to understand the key principles of data visualisation design.</p>
+<p>Firstly, we need to ensure that we are using the right visuals to represent the data and ensure graphical integrity. Snapshots of the data over specific time periods, or across specific groups can be misleading and not representative of any trends.</p>
+<p>Visuals should also be simplified, using effective colours and clear labels to provide clarity for the audience. Annotations can be used to provide more insights to the visuals. Lastly, we should aim to create charts that fall within Quadrant 1, where it is clear and aesthetically beautiful.</p>
+<p><img src="Screenshots/Four_Quadrants.png" class="img-fluid" width="478"></p>
+</section>
 <section id="the-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="the-dataset">1.1 The Dataset</h3>
+<h3 class="anchored" data-anchor-id="the-dataset">1.2 The Dataset</h3>
+<p>The data visualisations on the Singstat Infographics website are on Singapore’s international trade position, mainly describing the trade components and identifying Singapore’s major trading partners from the period of 2020 to 2024.</p>
+<p><strong>Raw data?</strong></p>
+</section>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">1.3 Data Preparation</h3>
+</section>
+</section>
+<section id="critic-make-over-of-data-visualisations" class="level2">
+<h2 class="anchored" data-anchor-id="critic-make-over-of-data-visualisations">2 Critic &amp; Make-over of Data Visualisations</h2>
+<section id="critic-1-total-merchandise-trade-at-current-prices-2020---2024" class="level3">
+<h3 class="anchored" data-anchor-id="critic-1-total-merchandise-trade-at-current-prices-2020---2024">2.1 Critic #1: Total Merchandise Trade at Current Prices, 2020 - 2024</h3>
+<p>Data visualisation below aims to show the changes of <strong>total merchandise trade</strong> at current prices over the period of 5 years:</p>
+<p><img src="Screenshots/Singstat-Fig1.png" class="img-fluid" width="659"></p>
+<section id="pros-and-cons-of-existing-data-visualisation" class="level4">
+<h4 class="anchored" data-anchor-id="pros-and-cons-of-existing-data-visualisation">2.1.1 Pros and Cons of existing data visualisation</h4>
+<p>✅ Year-on-year increase from previous to current year is clear (Increased 6.6% in 2024)</p>
+<p>✅ Chart is sufficiently labelled, with all the amounts standardized to 1 decimal place</p>
+<p>❌ Chart only shows year-on-year increase percentage for 1 year, yearly trend is not clear and cannot be visualised as Exports and Imports are separated in 2 bars</p>
+<p>❌ Colours used are not visually representative of year, or exports vs imports</p>
+<p>❌ Labels showing total amounts by year, but the total amounts cannot be visualised from the chart</p>
+</section>
+<section id="make-over-of-data-visualisation" class="level4">
+<h4 class="anchored" data-anchor-id="make-over-of-data-visualisation">2.1.2 Make-over of data visualisation</h4>
+</section>
+</section>
+<section id="critic-2-merchandise-trade-performance-with-major-trading-partners-2024" class="level3">
+<h3 class="anchored" data-anchor-id="critic-2-merchandise-trade-performance-with-major-trading-partners-2024">2.2 Critic #2: Merchandise Trade Performance with Major Trading Partners, 2024</h3>
+<p><img src="Screenshots/Singstat-Fig2.png" class="img-fluid" width="594"></p>
+<section id="pros-and-cons-of-existing-data-visualisation-1" class="level4">
+<h4 class="anchored" data-anchor-id="pros-and-cons-of-existing-data-visualisation-1">2.2.1 Pros and Cons of existing data visualisation</h4>
+<p>✅ Can be visualised clearly which trading partners Singapore’s exports to them exceed our imports from them</p>
+<p>✅ Size of bubble reflects the total merchandise trade value well</p>
+<p>❌ Bubble plot will not work well if the countries have similar merchandise trade values and the bubbles overlap each other</p>
+</section>
+<section id="make-over-of-data-visualisation-1" class="level4">
+<h4 class="anchored" data-anchor-id="make-over-of-data-visualisation-1">2.2.2 Make-over of data visualisation</h4>
+</section>
+</section>
+<section id="critic-3-overall-exports-and-imports-of-services-2020-2024" class="level3">
+<h3 class="anchored" data-anchor-id="critic-3-overall-exports-and-imports-of-services-2020-2024">2.3 Critic #3: Overall Exports and Imports of Services, 2020-2024</h3>
+<p><img src="Screenshots/Singstat-Fig3.png" class="img-fluid" width="695"></p>
+<section id="pros-and-cons-of-existing-data-visualisation-2" class="level4">
+<h4 class="anchored" data-anchor-id="pros-and-cons-of-existing-data-visualisation-2">2.3.1 Pros and Cons of existing data visualisation</h4>
+</section>
+<section id="make-over-of-data-visualisation-2" class="level4">
+<h4 class="anchored" data-anchor-id="make-over-of-data-visualisation-2">2.3.2 Make-over of data visualisation</h4>
 
 
+</section>
 </section>
 </section>
 

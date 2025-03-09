@@ -492,6 +492,12 @@ ggplot(summarized_Crit) +
 
 ```
 
+::: callout-tip
+## Analysis
+
+We can see clearly from the stacked bar chart above that it can be misleading to show a year-on-year increase in total merchandise trade from 2023 to 2024 as 2023 seems to be an abnormal year after Covid where total merchandise trade **decreased by 11.7% from 2022**.
+:::
+
 ### 2.2 Critic #2: Merchandise Trade Performance with Major Trading Partners, 2024
 
 ![](Screenshots/Singstat-Fig2.png){width="594"}
@@ -555,7 +561,7 @@ ggplot(summarized_trade) +
   
   # Labels and theme
   labs(
-    title = "Merchandise Trade Performance with Top 10 Trading Partners, 2024",
+    title = "Merchandise Trade Performance with Major Trading Partners, 2024",
     x = "Trading Partners",
     y = "Amount (At Current Prices)",
     fill = "Category"
@@ -582,6 +588,14 @@ ggplot(summarized_trade) +
   )
 
 ```
+
+::: callout-tip
+## Analysis
+
+From the visualisation above, we can see that though countries like China and Malaysia may be Singapore's largest trading partners, they may not be providing as much **trade balances** (our exports - imports from them) as a country like Hong Kong or Indonesia.
+
+More insights can be gained if we further look at the major trading partners that we have the highest positive trade balances with.
+:::
 
 ### 2.3 Critic #3: Non-Oil Merchandise Trade by Major Commodity Sections, 2024
 
@@ -741,7 +755,7 @@ ggplot(data = grpdf_re_exports %>%
        aes(x = `Year_Month_Date`, 
            y = Annual_Amt,
            color = `Data Series`)) +
-  geom_line(size = 0.5) +
+  geom_line(line.width = 0.5) +
   labs(
     x = "Month-Year",
     y = "Amount (Mil)"
@@ -752,4 +766,120 @@ ggplot(data = grpdf_re_exports %>%
   )
 
 ```
+:::
+
+::: callout-tip
+## Analysis
+
+**Imports:**
+
+-   China has historically over the last 10 years been a trading partner that Singapore has gotten the most imports from.
+
+-   However in recent years, there is a spike in our imports from neighbouring countries, especially Malaysia.
+
+-   Overall imports have been on an increasing trend from 2015 to 2024, suggesting that Singapore is becoming more reliant on imports, particular from 4 countries - Taiwan, Malaysia, China and US.
+
+**Domestic Exports:**
+
+-   Again, Singapore has been consistently exporting to China over the last 10 years.
+
+-   Domestic exports to US is seasonal and spikes around once a year.
+
+**Re-Exports:**
+
+-   Singapore re-exports mainly to Hong Kong and China.
+:::
+
+### 3.2 Visual Analysis of Seasonality with Cycle Plot
+
+::: panel-tabset
+## Imports
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+ts_grpdf_imports <- grpdf_imports %>%
+  mutate(Month = yearmonth(`Year_Month_Date`)) %>%
+  as_tsibble(index = Month, key = `Data Series`)
+
+class(ts_grpdf_imports)
+```
+
+```{r}
+ts_grpdf_imports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  autoplot(Amount) + 
+  facet_grid(`Data Series` ~ ., scales = "free_y")
+```
+
+```{r}
+#| fig-height: 6
+ts_grpdf_imports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  gg_subseries(Amount)
+```
+
+## Domestic Exports
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+ts_grpdf_dom_exports <- grpdf_dom_exports %>%
+  mutate(Month = yearmonth(`Year_Month_Date`)) %>%
+  as_tsibble(index = Month, key = `Data Series`)
+
+class(ts_grpdf_dom_exports)
+```
+
+```{r}
+ts_grpdf_dom_exports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  autoplot(Amount) + 
+  facet_grid(`Data Series` ~ ., scales = "free_y")
+```
+
+```{r}
+#| fig-height: 6
+ts_grpdf_dom_exports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  gg_subseries(Amount)
+```
+
+## Re-Exports
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+ts_grpdf_re_exports <- grpdf_re_exports %>%
+  mutate(Month = yearmonth(`Year_Month_Date`)) %>%
+  as_tsibble(index = Month, key = `Data Series`)
+
+class(ts_grpdf_re_exports)
+```
+
+```{r}
+ts_grpdf_re_exports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  autoplot(Amount) + 
+  facet_grid(`Data Series` ~ ., scales = "free_y")
+```
+
+```{r}
+#| fig-height: 6
+ts_grpdf_re_exports %>%
+  filter(`Data Series` %in% c("China", "Malaysia", "United States", "Taiwan")) %>%
+   rename(Amount = Annual_Amt) %>%
+  gg_subseries(Amount)
+```
+:::
+
+::: callout-tip
+## Analysis
+
+Overall, merchandise trade shows an upward trend, with noticeable seasonality. February, in particular, tends to be a slower month for trade activities.
 :::

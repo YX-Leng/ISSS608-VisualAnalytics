@@ -12,7 +12,7 @@ execute:
 
 ## 1 Overview of the Task
 
-Since Mr. Donald Trump took office as the President of the United States on January 20, 2025, one of the most closely watched topics has been global trade.
+Since Mr. Donald Trump took office as the President of the United States on January 20, 2025, one of the most closely watched topics has been global trade.
 
 As a beginner in visual analytics, I will be applying newly learned skills to examine the **evolving trends in Singapore’s international trade since 2015** using data and visualisation from Department of Statistics Singapore and Singstat.
 
@@ -158,12 +158,16 @@ head(df_re_exports)
 As the data is structured to have repeated series name (see codes below), we will first need to create unique identifier names to separate between total merchandise, imports, domestic exports and re-exports before summing up the yearly amounts.
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 df_mer_trade %>%
   count(`Data Series`, name = "Count") %>%
   filter(Count > 1)
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 df_mer_trade <- df_mer_trade %>%
   mutate(ID = case_when(
     between(row_number(), 2, 14) ~ paste0("Tot_", `Data Series`),
@@ -176,12 +180,18 @@ df_mer_trade <- df_mer_trade %>%
   select(ID, everything())
 ```
 
-**1.3.3 Group Data by Year**
+```{r}
+head(df_mer_trade)
+```
+
+#### 1.3.3 Group Data by Year
 
 ::: panel-tabset
 ## Total Merchandise Trade
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 grpdf_mer_trade <- df_mer_trade %>%
   pivot_longer(
     cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
@@ -200,9 +210,15 @@ grpdf_mer_trade <- df_mer_trade %>%
   )
 ```
 
+```{r}
+head(grpdf_mer_trade)
+```
+
 ## By Region/Market - Imports
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 grpdf_imports <- df_imports %>%
   pivot_longer(
     cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
@@ -221,9 +237,15 @@ grpdf_imports <- df_imports %>%
   )
 ```
 
+```{r}
+head(grpdf_imports)
+```
+
 ## By Region/Market - Domestic Exports
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 grpdf_dom_exports <- df_dom_exports %>%
   pivot_longer(
     cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
@@ -242,9 +264,15 @@ grpdf_dom_exports <- df_dom_exports %>%
   )
 ```
 
+```{r}
+head(grpdf_dom_exports)
+```
+
 ## By Region/Market - Re-Exports
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
 grpdf_re_exports <- df_re_exports %>%
   pivot_longer(
     cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
@@ -262,9 +290,27 @@ grpdf_re_exports <- df_re_exports %>%
     .groups = "drop"
   )
 ```
+
+```{r}
+head(grpdf_re_exports)
+```
 :::
 
-#### 1.3.4 Merge datasets by region/market into 1 data frame
+#### 1.3.4 Merge datasets by region/market into 1 data frame and filter out continents (for Critic #2)
+
+```{r}
+summarized_list <- list(grpdf_dom_exports, grpdf_re_exports, grpdf_imports)
+```
+
+```{r}
+summarized_tradepartners <- Reduce(function(x, y) merge(x, y, by = c("Data Series", "Year"), all = TRUE, 
+                                                         suffixes = c("_dom_exports", "_re_exports")), summarized_list) %>%
+  mutate(`Total Exports` = rowSums(select(., contains("_exports")), na.rm = TRUE)) %>%
+  rename(`Total Imports` = `Annual_Amt`) %>%
+  rename(`Countries` = `Data Series`) %>%
+  select(`Countries`, Year, `Total Exports`, `Total Imports`) %>%
+  filter(!`Countries` %in% c("Total All Markets", "America", "Asia", "Europe", "Oceania", "Africa"))
+```
 
 ## 2 Critic & Make-over of Data Visualisations
 
@@ -394,8 +440,83 @@ Ideal scenario will be like the figure below, where the top 10 trading partners 
 
 #### 2.2.2 Make-over of data visualisation
 
-### 2.3 Critic #3: Overall Exports and Imports of Services, 2020-2024
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+
+# Filter by Year and Rank by Data Series for Top 10
+summarized_tradepartners <- summarized_tradepartners %>%
+  filter(Year %in% c(2024)) %>%  
+  mutate(Total_Trade = `Total Exports` + `Total Imports`) %>%
+  arrange(desc(`Total_Trade`)) %>%   
+  slice_head(n = 10)  
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+
+# Convert data to long format for ggplot
+summarized_trade <- summarized_tradepartners %>%
+  pivot_longer(cols = c(`Total Exports`, `Total Imports`), 
+               names_to = "Category", values_to = "Amount") %>%
+  mutate(Countries = reorder(Countries, Total_Trade, sum))
+
+# Calculate the percentage for each segment (export/import) relative to the total trade
+summarized_trade <- summarized_trade %>%
+  mutate(Percentage = Amount / Total_Trade * 100)
+
+  # Stacked bar chart for Exports and Imports 
+ggplot(summarized_trade) +
+  geom_bar(aes(x = as.factor(Countries), y = Amount, fill = Category), 
+           stat = "identity", position = "stack") +
+   
+  # Add labels to the stacked bars (convert values to billions)
+  geom_text(aes(x = as.factor(Countries), y = Amount, 
+                label = paste0(round(Amount / 1e3, 1), " Bil (", 
+                               round(Percentage, 1), "%)")),
+            position = position_stack(vjust = 0.5), size = 3, color = "white") +
+  
+  geom_text(data = summarized_tradepartners, 
+            aes(x = Countries, y = Total_Trade, 
+                label = paste0(round(Total_Trade / 1e3, 1), " Bil")),
+            size = 3, color = "black", vjust = -0.5) +
+  
+  # Labels and theme
+  labs(
+    title = "Merchandise Trade Performance, 2024",
+    x = "Year",
+    y = "Amount (At Current Prices)",
+    fill = "Category"
+  ) +
+  theme_minimal() +
+  
+  # Flip axes to make the chart horizontal
+  coord_flip() +
+  
+  # Custom colors for Exports and Imports
+  scale_fill_manual(values = c("Total Exports" = "purple", 
+                               "Total Imports" = "darkblue")) +
+  
+  # Adjust margins and legend position
+  theme(
+    legend.position = "top", 
+    legend.justification = "center",
+    plot.margin = margin(10, 20, 10, 20), 
+    axis.text.x = element_text(size = 8),  
+    axis.text.y = element_text(size = 8),  
+    axis.title.x = element_text(size = 10),  
+    axis.title.y = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    legend.direction = "horizontal"
+  )
+
+```
+
+### 2.3 Critic #3: Non-Oil Merchandise Trade by Major Commodity Sections, 2024
 
 #### 2.3.1 Pros and Cons of existing data visualisation
+
+![](Screenshots/Singstat-Fig3.png){width="901"}
 
 #### 2.3.2 Make-over of data visualisation

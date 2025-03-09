@@ -48,7 +48,8 @@ The data visualisations on the Singstat Infographics website are on Singapore's 
 ```{r}
 pacman::p_load(scales, viridis, lubridate, ggthemes,
                gridExtra, readxl, knitr, data.table,
-               CGPfunctions, ggHoriPlot, tidyverse)
+               CGPfunctions, ggHoriPlot, tidyverse, 
+               treemapify, patchwork)
 ```
 
 #### 1.2.2 Import Data
@@ -221,20 +222,20 @@ head(grpdf_mer_trade)
 #| code-summary: "Click to view code"
 grpdf_imports <- df_imports %>%
   pivot_longer(
-    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
-    names_to = "Month",
+    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Jan", "2024 Feb", etc.
+    names_to = "Year_Month",  # Keep Year-Month as a column
     values_to = "Value"
   ) %>%
   mutate(
-    Year = as.integer(sub("^(\\d{4}) .*", "\\1", Month)),  # Extract year (e.g., 2024 from "2024 Dec")
-    MonthName = sub("^\\d{4} (.*)", "\\1", Month),  # Extract month name (e.g., "Dec" from "2024 Dec")
-    Value = as.numeric(Value)
+    Value = as.numeric(Value),  # Convert the value to numeric
+    Year_Month_Date = ymd(paste0(Year_Month, "-01")), # Convert "2024 Jan" to a Date object (01-Jan-2024)
+    Year = year(Year_Month_Date)
   ) %>%
-  group_by(`Data Series`, Year) %>%
+  group_by(`Data Series`, Year_Month_Date, Year) %>%
   summarize(
     Annual_Amt = sum(Value, na.rm = TRUE),
     .groups = "drop"
-  )
+  ) 
 ```
 
 ```{r}
@@ -248,20 +249,20 @@ head(grpdf_imports)
 #| code-summary: "Click to view code"
 grpdf_dom_exports <- df_dom_exports %>%
   pivot_longer(
-    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
-    names_to = "Month",
+    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Jan", "2024 Feb", etc.
+    names_to = "Year_Month",  # Keep Year-Month as a column
     values_to = "Value"
   ) %>%
   mutate(
-    Year = as.integer(sub("^(\\d{4}) .*", "\\1", Month)),  # Extract year (e.g., 2024 from "2024 Dec")
-    MonthName = sub("^\\d{4} (.*)", "\\1", Month),  # Extract month name (e.g., "Dec" from "2024 Dec")
-    Value = as.numeric(Value)
+    Value = as.numeric(Value),  # Convert the value to numeric
+    Year_Month_Date = ymd(paste0(Year_Month, "-01")), # Convert "2024 Jan" to a Date object (01-Jan-2024)
+    Year = year(Year_Month_Date)
   ) %>%
-  group_by(`Data Series`, Year) %>%
+  group_by(`Data Series`, Year_Month_Date, Year) %>%
   summarize(
     Annual_Amt = sum(Value, na.rm = TRUE),
     .groups = "drop"
-  )
+  ) 
 ```
 
 ```{r}
@@ -275,20 +276,20 @@ head(grpdf_dom_exports)
 #| code-summary: "Click to view code"
 grpdf_re_exports <- df_re_exports %>%
   pivot_longer(
-    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
-    names_to = "Month",
+    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Jan", "2024 Feb", etc.
+    names_to = "Year_Month",  # Keep Year-Month as a column
     values_to = "Value"
   ) %>%
   mutate(
-    Year = as.integer(sub("^(\\d{4}) .*", "\\1", Month)),  # Extract year (e.g., 2024 from "2024 Dec")
-    MonthName = sub("^\\d{4} (.*)", "\\1", Month),  # Extract month name (e.g., "Dec" from "2024 Dec")
-    Value = as.numeric(Value)
+    Value = as.numeric(Value),  # Convert the value to numeric
+    Year_Month_Date = ymd(paste0(Year_Month, "-01")), # Convert "2024 Jan" to a Date object (01-Jan-2024)
+    Year = year(Year_Month_Date)
   ) %>%
-  group_by(`Data Series`, Year) %>%
+  group_by(`Data Series`, Year_Month_Date, Year) %>%
   summarize(
     Annual_Amt = sum(Value, na.rm = TRUE),
     .groups = "drop"
-  )
+  ) 
 ```
 
 ```{r}
@@ -299,17 +300,79 @@ head(grpdf_re_exports)
 #### 1.3.4 Merge datasets by region/market into 1 data frame and filter out continents (for Critic #2)
 
 ```{r}
-summarized_list <- list(grpdf_dom_exports, grpdf_re_exports, grpdf_imports)
+yr_grpdf_imports <- grpdf_imports %>%
+  group_by(`Data Series`, Year) %>%
+  summarize(
+    Annual_Amt = sum(Annual_Amt, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+yr_grpdf_dom_exports <- grpdf_dom_exports %>%
+  group_by(`Data Series`, Year) %>%
+  summarize(
+    Annual_Amt = sum(Annual_Amt, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+yr_grpdf_re_exports <- grpdf_re_exports %>%
+  group_by(`Data Series`, Year) %>%
+  summarize(
+    Annual_Amt = sum(Annual_Amt, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+summarized_list <- list(yr_grpdf_dom_exports, yr_grpdf_re_exports, yr_grpdf_imports)
 ```
 
 ```{r}
-summarized_tradepartners <- Reduce(function(x, y) merge(x, y, by = c("Data Series", "Year"), all = TRUE, 
-                                                         suffixes = c("_dom_exports", "_re_exports")), summarized_list) %>%
-  mutate(`Total Exports` = rowSums(select(., contains("_exports")), na.rm = TRUE)) %>%
-  rename(`Total Imports` = `Annual_Amt`) %>%
-  rename(`Countries` = `Data Series`) %>%
-  select(`Countries`, Year, `Total Exports`, `Total Imports`) %>%
-  filter(!`Countries` %in% c("Total All Markets", "America", "Asia", "Europe", "Oceania", "Africa"))
+summarized_tradepartners <- Reduce(function(x, y) merge(x, y, by = c("Data Series", "Year"), all = TRUE,
+                                                        suffixes = c("_dom_exports", "_re_exports")), summarized_list) %>%
+    mutate(`Total Exports` = rowSums(select(., contains("_exports")), na.rm = TRUE)) %>%
+    rename(`Total Imports` = `Annual_Amt`) %>%
+    rename(`Countries` = `Data Series`) %>%
+    select(`Countries`, `Year`, `Total Exports`, `Total Imports`) %>%
+    filter(!`Countries` %in% c("Total All Markets", "America", "Asia", "Europe", "Oceania", "Africa"))
+```
+
+#### 1.3.5 Create new data frames for non-oil merchandise exports and imports (for Critic #3)
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+df_nonoil <- df_mer_trade %>%
+  filter((str_detect(ID, "Imp_") | str_detect(ID, "Exp_")) & 
+         !(`Data Series` %in% c("Oil", "Petroleum", "Oil Bunkers", "Non-Oil")))
+```
+
+```{r}
+head(df_nonoil)
+```
+
+#### 1.3.6 Sum values by Years (for Critic #3)
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+grpdf_nonoil <- df_nonoil %>%
+  pivot_longer(
+    cols = matches("^\\d{4} [A-Za-z]{3}$"),  # Match columns like "2024 Dec", "2015 Jan", etc.
+    names_to = "Month",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Year = as.integer(sub("^(\\d{4}) .*", "\\1", Month)),  # Extract year (e.g., 2024 from "2024 Dec")
+    MonthName = sub("^\\d{4} (.*)", "\\1", Month),  # Extract month name (e.g., "Dec" from "2024 Dec")
+    Value = as.numeric(Value),
+    Category = case_when(
+      str_detect(ID, "Imp_") ~ "Imports",
+      str_detect(ID, "Exp_") ~ "Exports"
+    )
+  ) %>%
+  group_by(`Data Series`, Year, Category) %>%
+  summarize(
+    Annual_Amt = sum(Value, na.rm = TRUE),
+    .groups = "drop"
+  )
 ```
 
 ## 2 Critic & Make-over of Data Visualisations
@@ -445,7 +508,7 @@ Ideal scenario will be like the figure below, where the top 10 trading partners 
 #| code-summary: "Click to view code"
 
 # Filter by Year and Rank by Data Series for Top 10
-summarized_tradepartners <- summarized_tradepartners %>%
+summarized_trade <- summarized_tradepartners %>%
   filter(Year %in% c(2024)) %>%  
   mutate(Total_Trade = `Total Exports` + `Total Imports`) %>%
   arrange(desc(`Total_Trade`)) %>%   
@@ -457,7 +520,7 @@ summarized_tradepartners <- summarized_tradepartners %>%
 #| code-summary: "Click to view code"
 
 # Convert data to long format for ggplot
-summarized_trade <- summarized_tradepartners %>%
+summarized_trade <- summarized_trade %>%
   pivot_longer(cols = c(`Total Exports`, `Total Imports`), 
                names_to = "Category", values_to = "Amount") %>%
   mutate(Countries = reorder(Countries, Total_Trade, sum))
@@ -477,7 +540,7 @@ ggplot(summarized_trade) +
                                round(Percentage, 1), "%)")),
             position = position_stack(vjust = 0.5), size = 3, color = "white") +
   
-  geom_text(data = summarized_tradepartners, 
+  geom_text(data = summarized_trade, 
             aes(x = Countries, y = Total_Trade, 
                 label = paste0(round(Total_Trade / 1e3, 1), " Bil")),
             size = 3, color = "black", vjust = -0.5) +
@@ -520,3 +583,157 @@ ggplot(summarized_trade) +
 ![](Screenshots/Singstat-Fig3.png){width="901"}
 
 #### 2.3.2 Make-over of data visualisation
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+#| 
+# Summarize exports and get the top 3 exports
+top_exports <- grpdf_nonoil %>%
+  filter(Category == "Exports", Year == 2024) %>%
+  group_by(`Data Series`) %>%
+  summarize(Total_Amt = sum(Annual_Amt, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(Total_Amt))
+  
+# Get the top 3 exports by total amount
+top_3_exports <- top_exports %>%
+  arrange(desc(Total_Amt)) %>%
+  slice_head(n = 3)
+
+# Add a new category for "Others" to all rows
+top_exports <- top_exports %>%
+  mutate(Category = ifelse(`Data Series` %in% top_3_exports$`Data Series`, 
+                           `Data Series`, "Others"))
+tree_data_exp <- top_exports %>%
+  group_by(Category) %>%
+  summarize(Total_Amt = sum(Total_Amt, na.rm = TRUE), .groups = "drop")
+
+# Calculate percentage for exports
+tree_data_exp <- tree_data_exp %>%
+  mutate(Percent = Total_Amt / sum(Total_Amt) * 100)
+
+# Summarize imports and get the top 3 imports
+top_imports <- grpdf_nonoil %>%
+  filter(Category == "Imports", Year == 2024) %>%
+  group_by(`Data Series`) %>%
+  summarize(Total_Amt = sum(Annual_Amt, na.rm = TRUE), .groups = "drop") %>%
+  arrange(desc(Total_Amt))
+  
+# Get the top 3 imports by total amount
+top_3_imports <- top_imports %>%
+  arrange(desc(Total_Amt)) %>%
+  slice_head(n = 3)
+
+# Add a new category for "Others" to all rows
+top_imports <- top_imports %>%
+  mutate(Category = ifelse(`Data Series` %in% top_3_imports$`Data Series`, 
+                           `Data Series`, "Others"))
+tree_data_imp <- top_imports %>%
+  group_by(Category) %>%
+  summarize(Total_Amt = sum(Total_Amt, na.rm = TRUE), .groups = "drop")
+
+# Calculate percentage for imports
+tree_data_imp <- tree_data_imp %>%
+  mutate(Percent = Total_Amt / sum(Total_Amt) * 100)
+
+```
+
+```{r}
+# Create the treemap for exports
+export_treemap <- ggplot(tree_data_exp, aes(area = Total_Amt, fill = Category, label = paste0(Category, "\n", round(Percent, 1), "%"))) +
+  geom_treemap() +
+  geom_treemap_text(color = "black", place = "center", size = 6) +
+  scale_fill_brewer(palette = "Pastel2") +
+  labs(title = "Top 3 Exports vs Others") +
+  theme_void() +
+  theme(legend.position = "bottom")  
+
+# Create the treemap for imports with the legend
+import_treemap <- ggplot(tree_data_imp, aes(area = Total_Amt, fill = Category, label = paste0(Category, "\n", round(Percent, 1), "%"))) +
+  geom_treemap() +
+  geom_treemap_text(color = "black", place = "center", size = 6) +
+  scale_fill_brewer(palette = "Pastel2") +
+  labs(title = "Top 3 Imports vs Others") +
+  theme_void() +
+  theme(legend.position = "none")  
+
+# Combine the treemaps side by side using patchwork
+export_treemap + import_treemap + plot_layout(ncol = 2) +
+  plot_annotation(title = "Exports and Imports Treemaps") 
+  
+```
+
+## 3 Time-Series Analysis
+
+As the datasets used provide details on total exports and imports from various trading partners over the span of 10 years, time-series analysis can be performed.
+
+Using the Top 10 major trading partners of 2024 identified in the previous sections, we can explore a few time-series analysis methods to identify any seasonality and/or trends.
+
+### 3.1 multiple time-series data with ggplot2 methods
+
+::: panel-tabset
+## Imports
+
+```{r}
+# Filter by specific countries
+countries_top10 <- c("China", "Malaysia", "United States", "Taiwan", "Hong Kong", "Indonesia","Korea, Rep Of", "Japan", "Thailand","India")
+
+ggplot(data = grpdf_imports %>%
+         filter(`Data Series` %in% countries_top10), 
+       aes(x = `Year_Month_Date`, 
+           y = Annual_Amt,
+           color = `Data Series`)) +
+  geom_line(size = 0.5) +
+  labs(
+    x = "Month-Year",
+    y = "Amount (Mil)"
+  ) +
+  theme(
+    legend.position = "bottom", 
+    legend.box.spacing = unit(0.5, "cm")
+  )
+
+```
+
+## Domestic Exports
+
+```{r}
+
+ggplot(data = grpdf_dom_exports %>%
+         filter(`Data Series` %in% countries_top10), 
+       aes(x = `Year_Month_Date`, 
+           y = Annual_Amt,
+           color = `Data Series`)) +
+  geom_line(size = 0.5) +
+  labs(
+    x = "Month-Year",
+    y = "Amount (Mil)"
+  ) +
+  theme(
+    legend.position = "bottom", 
+    legend.box.spacing = unit(0.5, "cm")
+  )
+
+```
+
+## Re-Exports
+```{r}
+
+ggplot(data = grpdf_re_exports %>%
+         filter(`Data Series` %in% countries_top10), 
+       aes(x = `Year_Month_Date`, 
+           y = Annual_Amt,
+           color = `Data Series`)) +
+  geom_line(size = 0.5) +
+  labs(
+    x = "Month-Year",
+    y = "Amount (Mil)"
+  ) +
+  theme(
+    legend.position = "bottom", 
+    legend.box.spacing = unit(0.5, "cm")
+  )
+
+```
+
+:::

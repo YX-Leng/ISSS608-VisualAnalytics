@@ -1,0 +1,141 @@
+---
+title: "Take-home Exercise 3: Prototyping Modules for Visual Analytics Shiny Application"
+author: "Leng Yi Xiu"
+date: "Mar 22 2025"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  message: false
+  freeze: true
+---
+
+## 1 Overview of Task
+
+In this take-home exercise, we are required to select one of the module of our proposed Shiny application and complete the following tasks:
+
+-   To evaluate and determine the necessary R packages needed for your Shiny application are supported in R CRAN,
+
+-   To prepare and test the specific R codes can be run and returned the correct output as expected,
+
+-   To determine the parameters and outputs that will be exposed on the Shiny applications, and
+
+-   To select the appropriate Shiny UI components for exposing the parameters determine above.
+
+1️⃣ This take-home exercise must provide detail discussion and explanation of:
+
+-   the data preparation process,
+
+-   the selection of data visualisation techniques used,
+
+-   and the data visualisation design and interactivity principles and best practices implemented.
+
+2️⃣ It should also include a section called **UI design** for the different components of the UIs for the proposed design.
+
+Our group has chosen to develop an interactive R Shiny application (Weather Pulse) designed to enhance the exploration and understanding of **Singapore’s evolving climate** by addressing gaps in historical trend analysis, spatial insights, and future projections.
+
+## 2 Data Preparation
+
+### 2.1 The Dataset
+
+The dataset from [MSS website](https://www.weather.gov.sg/climate-historical-daily/) features extensive historical daily records that include measurements of daily rainfall, temperature, and wind speed. These records are collected from 64 weather stations across Singapore, covering a period from 1980 to 2025.
+
+As the data is stored disparately on the website, segmented by both month and by weather station, it must be scraped from the website and consolidated into a single dataset to be effectively utilised.
+
+**R packages** that will be used for the data scraping and consolidation process are listed below:
+
+1.  `dplyr`: This will be used in the data consolidation process as it offers functions for data manipulation and transformation.
+
+2.  `lubridate`: This will be used for parsing, manipulating, and performing arithmetic on date-time objects.
+
+```{r}
+pacman::p_load(readxl, dplyr, readr, lubridate)
+```
+
+## 2.2 Scraping data from MSS website
+
+The goal of our R Shiny application is to examine and analyze weather trends in Singapore **from 2020 to 2024**. To achieve this, we will first scrape the data readings of 20 automated weather stations across Singapore from the MSS website and then proceed with data wrangling.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for reading list of stations"
+stations_df <- read_excel("data/StationList.xlsx")  
+station_codes <- stations_df$StationID   
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for data scraping"
+# setting Year and Month
+years <- 2020:2024
+months <- sprintf("%02d", 1:12)
+
+# Base URL Template
+base_url <- "https://www.weather.gov.sg/files/dailydata/DAILYDATA_%s_%d%s.csv"
+
+# Initialize an empty list
+all_data <- list()
+i <- 1
+
+# Loop through 
+for (station in station_codes) {
+  for (year in years) {
+    for (month in months) {
+      url <- sprintf(base_url, station, year, month)
+      cat("Downloading:", url, "\n")
+    
+    try({
+      res <- read_csv(url, show_col_types = FALSE) %>%
+        mutate(across(
+          contains(c("Temperature", "Rainfall", "Wind")),
+          ~ suppressWarnings(as.numeric(.))
+        )) %>%
+        mutate(
+          station = as.character(station),
+          year = as.integer(year),
+          month = as.integer(month),
+          Day = as.integer(Day)
+        )
+  
+      all_data[[i]] <- res
+      i <- i + 1
+      }, silent = TRUE)
+    }
+  }
+}
+```
+
+## 2.3 Merging data and creating variables
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for combining extracted data and creating date column"
+climate_data <- bind_rows(all_data)
+
+climate_data <- climate_data %>%
+  mutate(
+    # Create 'date' column from 'year', 'month', and 'day'
+    date = make_date(year, month, Day)
+  )
+
+# View the first few rows to check the date column
+head(climate_data)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for merging aspatial data with station coordinates"
+climate_data_2020to2024 <- left_join(climate_data, stations_df, by = c("Station" = "StationName"))
+
+# Write the combined data to a separate CSV file
+write_csv(climate_data, "data/climate_data_2020to2024.csv")
+
+# View the first few rows of the merged data
+head(climate_data_2020to2024)
+```
+
+## 3 Exploratory Data Analysis
+
+## 4 Confirmatory Data Analysis
+
+## 5 Geospatial Analysis & UI Prototype

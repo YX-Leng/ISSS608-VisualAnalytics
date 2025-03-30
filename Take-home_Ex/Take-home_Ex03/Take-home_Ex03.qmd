@@ -38,7 +38,7 @@ Our group has chosen to develop an interactive R Shiny application (Weather Puls
 
 ### 2.1 The Dataset
 
-The dataset from [MSS website](https://www.weather.gov.sg/climate-historical-daily/) features extensive historical daily records that include measurements of daily rainfall, temperature, and wind speed. These records are collected from 64 weather stations across Singapore, covering a period from 1980 to 2025.
+The dataset from [MSS website](https://www.weather.gov.sg/climate-historical-daily/) features extensive historical daily records that include measurements of daily rainfall, temperature, and wind speed. These records are collected from 64 weather stations (active and closed) cross Singapore, covering a period from 1980 to 2025.
 
 As the data is stored disparately on the website, segmented by both month and by weather station, it must be scraped from the website and consolidated into a single dataset to be effectively utilised.
 
@@ -49,89 +49,320 @@ As the data is stored disparately on the website, segmented by both month and by
 2.  `lubridate`: This will be used for parsing, manipulating, and performing arithmetic on date-time objects.
 
 ```{r}
-pacman::p_load(readxl, dplyr, readr, lubridate)
+pacman::p_load(readxl, dplyr, readr, lubridate, sf, 
+               tmap, tidyverse, DT, zoo, plotly)
 ```
 
-## 2.2 Scraping data from MSS website
+## 2.2 Scraping climate data from MSS website
 
-The goal of our R Shiny application is to examine and analyze weather trends in Singapore **from 2020 to 2024**. To achieve this, we will first scrape the data readings of 20 automated weather stations across Singapore from the MSS website and then proceed with data wrangling.
+The goal of our R Shiny application is to examine and analyze weather trends in Singapore **from 2020 to 2024**. To achieve this, we will first scrape the data readings of 44 active weather stations (19 full AWS stations, 25 rainfall stations) across Singapore from the MSS website and then proceed with data wrangling.
+
+Code blocks below initializes the data scraping process by reading a list of station codes from a CSV file and setting up a loop to download data for the specified years and months:
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Click to view code for reading list of stations"
 stations_df <- read_excel("data/StationList.xlsx")  
 station_codes <- stations_df$StationID   
 ```
 
-```{r}
+Code block to detail the main scraping loop:
+
+```{r, eval=FALSE}
 #| code-fold: true
-#| code-summary: "Click to view code for data scraping"
-# setting Year and Month
+#| code-summary: "Click to view full code for data scraping"
 years <- 2020:2024
 months <- sprintf("%02d", 1:12)
 
-# Base URL Template
 base_url <- "https://www.weather.gov.sg/files/dailydata/DAILYDATA_%s_%d%s.csv"
 
-# Initialize an empty list
 all_data <- list()
 i <- 1
 
-# Loop through 
-for (station in station_codes) {
-  for (year in years) {
-    for (month in months) {
-      url <- sprintf(base_url, station, year, month)
-      cat("Downloading:", url, "\n")
-    
-    try({
-      res <- read_csv(url, show_col_types = FALSE) %>%
-        mutate(across(
-          contains(c("Temperature", "Rainfall", "Wind")),
-          ~ suppressWarnings(as.numeric(.))
-        )) %>%
-        mutate(
-          station = as.character(station),
-          year = as.integer(year),
-          month = as.integer(month),
-          Day = as.integer(Day)
-        )
-  
-      all_data[[i]] <- res
-      i <- i + 1
-      }, silent = TRUE)
+invisible({
+  for (station in station_codes) {
+    for (year in years) {
+      for (month in months) {
+        url <- sprintf(base_url, station, year, month)
+        cat("Downloading:", url, "\n")
+        
+        # Attempt to read with latin1, if it fails, try UTF-8
+        res <- try({
+          read_csv(url, locale = locale(encoding = "latin1"), show_col_types = FALSE)
+        }, silent = TRUE)
+        
+        if (inherits(res, "try-error")) {
+          res <- try({
+            read_csv(url, locale = locale(encoding = "UTF-8"), show_col_types = FALSE)
+          }, silent = TRUE)
+        }
+
+        # If both fail, continue to the next file
+        if (inherits(res, "try-error")) {
+          cat("Failed to read:", url, "\n")
+          next
+        }
+
+        res <- res %>%
+          mutate(across(
+            contains(c("Temperature", "Rainfall", "Wind")),
+            ~ suppressWarnings(as.numeric(.))
+          )) %>%
+          mutate(
+            station = as.character(station),
+            year = as.integer(year),
+            month = as.integer(month),
+            Day = as.integer(Day)
+          )
+        
+        all_data[[i]] <- res
+        i <- i + 1
+      }
     }
   }
-}
+})
 ```
 
-## 2.3 Merging data and creating variables
+::: callout-important
+The data from January 2020 to March 2020 are encoded in `latin1`, while the data starting from April 2020 are encoded in `UTF-8`. Therefore, it is essential for the main scraping loop to be robust enough to accommodate both encodings effectively.
+:::
 
-```{r}
+## 2.3 Preparing Aspatial Data
+
+### 2.3.1 Merging climate data and creating variables
+
+```{r, eval=FALSE}
 #| code-fold: true
 #| code-summary: "Click to view code for combining extracted data and creating date column"
 climate_data <- bind_rows(all_data)
 
 climate_data <- climate_data %>%
   mutate(
-    # Create 'date' column from 'year', 'month', and 'day'
     date = make_date(year, month, Day)
   )
 
-# View the first few rows to check the date column
-head(climate_data)
+write_csv(climate_data, "data/aspatial/climate_data.csv")
+```
+
+```{r}
+climate_data <- read_csv("data/aspatial/climate_data.csv")
+glimpse(climate_data)
+```
+
+### 2.3.2 Separating data into 3 datasets - rainfall, temperature and wind speed
+
+To facilitate the development of the R Shiny application, the weather data was split into three separate datasets — rainfall, temperature, and wind speed. Each dataset contains only the relevant variables for the respective weather parameter, alongside essential metadata such as station name, date, and time components.
+
+By isolating each weather component, users can independently explore trends, seasonality, and anomalies for rainfall, temperature, and wind speed. Additionally, this approach simplifies backend logic, improves processing efficiency, and avoids unnecessary overhead from unrelated columns during visualisation and analysis.
+
+```{r}
+climate_rainfall <- climate_data %>%
+  select(Station, Year, Month, Day, date, station, year, month,
+         contains("Rainfall"))
+
+climate_temperature <- climate_data %>%
+  select(Station, Year, Month, Day, date, station, year, month,
+         contains("Temperature"))
+
+climate_windspeed <- climate_data %>%
+  select(Station, Year, Month, Day, date, station, year, month,
+         contains("Wind"))
+```
+
+## 2.4 Checking for Missing Data
+
+### 2.4.1 Checking for missing values in datasets
+
+Code blocks below identify and calculate the percentage of missing values for each of the weather variable dataset:
+
+::: panel-tabset
+## Rainfall
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+rainfall_missing_by_station <- climate_rainfall %>%
+  group_by(station) %>%
+  summarise(across(
+    contains("Rainfall"),
+    ~mean(is.na(.)) * 100,
+    .names = "missing_{.col}"
+  )) %>%
+  arrange(across(starts_with("missing"), desc))
+rainfall_missing_by_station
+```
+
+::: callout-important
+Based on the missing values analysis for the rainfall dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.
+
+From the rainfall dataset, we have identified that weather stations **S29, S92, S64 and S06** should be excluded from the analysis.
+:::
+
+## Temperature
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+temperature_missing_by_station <- climate_temperature %>%
+  group_by(station) %>%
+  summarise(across(
+    contains("Temperature"),
+    ~mean(is.na(.)) * 100,
+    .names = "missing_{.col}"
+  )) %>%
+  arrange(across(starts_with("missing"), desc))
+temperature_missing_by_station
+```
+
+::: callout-important
+Based on the missing values analysis for the temperature dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.
+
+From the temperature dataset, we have identified that weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S108, S23, S80, S25 and S06** should be excluded from the analysis.
+:::
+
+## Windspeed
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+windspeed_missing_by_station <- climate_windspeed %>%
+  group_by(station) %>%
+  summarise(across(
+    contains("Wind"),
+    ~mean(is.na(.)) * 100,
+    .names = "missing_{.col}"
+  )) %>%
+  arrange(across(starts_with("missing"), desc))
+windspeed_missing_by_station
+```
+
+::: callout-important
+Based on the missing values analysis for the windspeed dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.
+
+From the temperature dataset, we have identified that weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43 and S117** should be excluded from the analysis.
+:::
+:::
+
+### 2.4.2 Filtering datasets and employing linear interpolation
+
+For the purpose of analysis and the UI design, we should exclude the weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43, S117, S108, S25 and S06**.
+
+Apart from that, we employ linear interpolation to estimate the missing values for the weather stations with \<5% missing data, assuming a linear relationship between two known data points. This method is effective for datasets where changes between consecutive data points are expected to be gradual / linear (i.e. weather parameters).
+
+Filtering weather stations for analysis (final = **9 automated weather stations**):
+
+```{r}
+stations_filtered <- stations_df %>%
+  filter(!StationID %in% c("S07", "S08", "S112", "S113", "S114", "S119", "S123", "S29", "S33", "S35", "S40", "S64", "S66", "S69", "S71", "S77", "S78", "S79", "S81", "S84", "S88", "S89", "S90", "S92", "S94", "S80", "S23", "S60", "S44", "S50", "S43", "S117", "S108", "S25", "S06"))
+```
+
+Linear interpolation for missing values:
+
+::: panel-tabset
+## Rainfall
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+
+
+climate_rainfall_interpolated <- climate_rainfall %>%
+  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  arrange(station, date) %>%
+  group_by(station) %>%
+  mutate(
+    `Daily Rainfall Total (mm)`     = na.approx(`Daily Rainfall Total (mm)`, x = date, na.rm = FALSE),
+    `Highest 30 Min Rainfall (mm)`  = na.approx(`Highest 30 Min Rainfall (mm)`, x = date, na.rm = FALSE),
+    `Highest 60 Min Rainfall (mm)`  = na.approx(`Highest 60 Min Rainfall (mm)`, x = date, na.rm = FALSE),
+    `Highest 120 Min Rainfall (mm)` = na.approx(`Highest 120 Min Rainfall (mm)`, x = date, na.rm = FALSE)
+  ) %>%
+  ungroup()
+climate_rainfall_interpolated
+```
+
+## Temperature
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+
+
+climate_temperature_interpolated <- climate_temperature %>%
+  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  arrange(station, date) %>%
+  group_by(station) %>%
+  mutate(
+    `Mean Temperature (°C)`     = na.approx(`Mean Temperature (°C)`, x = date, na.rm = FALSE),
+    `Maximum Temperature (°C)`  = na.approx(`Maximum Temperature (°C)`, x = date, na.rm = FALSE),
+    `Minimum Temperature (°C)`  = na.approx(`Minimum Temperature (°C)`, x = date, na.rm = FALSE)
+  ) %>%
+  ungroup()
+climate_temperature_interpolated
+```
+
+## Windspeed
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+
+
+climate_windspeed_interpolated <- climate_windspeed %>%
+  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  arrange(station, date) %>%
+  group_by(station) %>%
+  mutate(
+    `Mean Wind Speed (km/h)`     = na.approx(`Mean Wind Speed (km/h)`, x = date, na.rm = FALSE),
+    `Max Wind Speed (km/h)`  = na.approx(`Max Wind Speed (km/h)`, x = date, na.rm = FALSE)
+  ) %>%
+  ungroup()
+climate_windspeed_interpolated
+```
+:::
+
+::: callout-important
+To check for completeness of data, each dataset should have 16,443 observations for 9 weather stations and 5 full years of data (from 2020 to 2024).
+
+\[365 days x 5 years + 2 days\*\] x 9 stations = 16,443 observations
+
+*\*Year 2020 and 2024 are leap years*
+:::
+
+## 2.5 Preparing Geospatial data frame
+
+In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform any objects and map them in the **SVY21 system**.
+
+### 2.5.1 Setting stations_df `Long, Lat` data to coordinates
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for setting crs = 3414"
+stations_filtered <- st_as_sf(stations_filtered, coords = c("Long", "Lat"), crs = 4326)
+stations_df_svy21 <- st_transform(stations_filtered, 3414)
+```
+
+### 2.5.2 Visualizing geospatial data
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+tmap_mode("view")
 ```
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Click to view code for merging aspatial data with station coordinates"
-climate_data_2020to2024 <- left_join(climate_data, stations_df, by = c("Station" = "StationName"))
+#| code-summary: "Click to view code for plotting points on map" 
+  tm_shape(stations_df_svy21) +
+  tm_bubbles(col = "StationType",
+             size = 1,
+             border.col = "black",
+             border.lwd = 1,
+             popup.vars = "StationName"
+             )
+```
 
-# Write the combined data to a separate CSV file
-write_csv(climate_data, "data/climate_data_2020to2024.csv")
-
-# View the first few rows of the merged data
-head(climate_data_2020to2024)
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+tmap_mode("plot")
 ```
 
 ## 3 Exploratory Data Analysis

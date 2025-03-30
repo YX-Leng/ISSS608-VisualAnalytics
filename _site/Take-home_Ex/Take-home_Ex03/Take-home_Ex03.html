@@ -102,6 +102,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="../../site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+
+<script src="../../site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+
+<link href="../../site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+
+<script src="../../site_libs/leaflet-1.3.1/leaflet.js"></script>
+
+<link href="../../site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+
+<script src="../../site_libs/proj4-2.6.2/proj4.min.js"></script>
+
+<script src="../../site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+
+<link href="../../site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+
+<script src="../../site_libs/leaflet-binding-2.2.2/leaflet.js"></script>
+
+<script src="../../site_libs/leaflet-providers-2.0.0/leaflet-providers_2.0.0.js"></script>
+
+<script src="../../site_libs/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script>
+
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -164,6 +188,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex09/Hands-on_Ex09.html">
  <span class="dropdown-text">Hands-on Exercise 9</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html">
+ <span class="dropdown-text">Hands-on Exercise 10</span></a>
   </li>  
     </ul>
   </li>
@@ -232,8 +260,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#the-dataset" id="toc-the-dataset" class="nav-link" data-scroll-target="#the-dataset">2.1 The Dataset</a></li>
   </ul></li>
-  <li><a href="#scraping-data-from-mss-website" id="toc-scraping-data-from-mss-website" class="nav-link" data-scroll-target="#scraping-data-from-mss-website">2.2 Scraping data from MSS website</a></li>
-  <li><a href="#merging-data-and-creating-variables" id="toc-merging-data-and-creating-variables" class="nav-link" data-scroll-target="#merging-data-and-creating-variables">2.3 Merging data and creating variables</a></li>
+  <li><a href="#scraping-climate-data-from-mss-website" id="toc-scraping-climate-data-from-mss-website" class="nav-link" data-scroll-target="#scraping-climate-data-from-mss-website">2.2 Scraping climate data from MSS website</a></li>
+  <li><a href="#preparing-aspatial-data" id="toc-preparing-aspatial-data" class="nav-link" data-scroll-target="#preparing-aspatial-data">2.3 Preparing Aspatial Data</a>
+  <ul class="collapse">
+  <li><a href="#merging-climate-data-and-creating-variables" id="toc-merging-climate-data-and-creating-variables" class="nav-link" data-scroll-target="#merging-climate-data-and-creating-variables">2.3.1 Merging climate data and creating variables</a></li>
+  <li><a href="#separating-data-into-3-datasets---rainfall-temperature-and-wind-speed" id="toc-separating-data-into-3-datasets---rainfall-temperature-and-wind-speed" class="nav-link" data-scroll-target="#separating-data-into-3-datasets---rainfall-temperature-and-wind-speed">2.3.2 Separating data into 3 datasets - rainfall, temperature and wind speed</a></li>
+  </ul></li>
+  <li><a href="#checking-for-missing-data" id="toc-checking-for-missing-data" class="nav-link" data-scroll-target="#checking-for-missing-data">2.4 Checking for Missing Data</a>
+  <ul class="collapse">
+  <li><a href="#checking-for-missing-values-in-datasets" id="toc-checking-for-missing-values-in-datasets" class="nav-link" data-scroll-target="#checking-for-missing-values-in-datasets">2.4.1 Checking for missing values in datasets</a></li>
+  <li><a href="#filtering-datasets-and-employing-linear-interpolation" id="toc-filtering-datasets-and-employing-linear-interpolation" class="nav-link" data-scroll-target="#filtering-datasets-and-employing-linear-interpolation">2.4.2 Filtering datasets and employing linear interpolation</a></li>
+  </ul></li>
+  <li><a href="#preparing-geospatial-data-frame" id="toc-preparing-geospatial-data-frame" class="nav-link" data-scroll-target="#preparing-geospatial-data-frame">2.5 Preparing Geospatial data frame</a>
+  <ul class="collapse">
+  <li><a href="#setting-stations_df-long-lat-data-to-coordinates" id="toc-setting-stations_df-long-lat-data-to-coordinates" class="nav-link" data-scroll-target="#setting-stations_df-long-lat-data-to-coordinates">2.5.1 Setting stations_df <code>Long, Lat</code> data to coordinates</a></li>
+  <li><a href="#visualizing-geospatial-data" id="toc-visualizing-geospatial-data" class="nav-link" data-scroll-target="#visualizing-geospatial-data">2.5.2 Visualizing geospatial data</a></li>
+  </ul></li>
   <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">3 Exploratory Data Analysis</a></li>
   <li><a href="#confirmatory-data-analysis" id="toc-confirmatory-data-analysis" class="nav-link" data-scroll-target="#confirmatory-data-analysis">4 Confirmatory Data Analysis</a></li>
   <li><a href="#geospatial-analysis-ui-prototype" id="toc-geospatial-analysis-ui-prototype" class="nav-link" data-scroll-target="#geospatial-analysis-ui-prototype">5 Geospatial Analysis &amp; UI Prototype</a></li>
@@ -269,7 +311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 23, 2025</p>
+      <p class="date-modified">March 30, 2025</p>
     </div>
   </div>
     
@@ -302,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="data-preparation">2 Data Preparation</h2>
 <section id="the-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="the-dataset">2.1 The Dataset</h3>
-<p>The dataset from <a href="https://www.weather.gov.sg/climate-historical-daily/">MSS website</a> features extensive historical daily records that include measurements of daily rainfall, temperature, and wind speed. These records are collected from 64 weather stations across Singapore, covering a period from 1980 to 2025.</p>
+<p>The dataset from <a href="https://www.weather.gov.sg/climate-historical-daily/">MSS website</a> features extensive historical daily records that include measurements of daily rainfall, temperature, and wind speed. These records are collected from 64 weather stations (active and closed) cross Singapore, covering a period from 1980 to 2025.</p>
 <p>As the data is stored disparately on the website, segmented by both month and by weather station, it must be scraped from the website and consolidated into a single dataset to be effectively utilised.</p>
 <p><strong>R packages</strong> that will be used for the data scraping and consolidation process are listed below:</p>
 <ol type="1">
@@ -310,1329 +352,511 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p><code>lubridate</code>: This will be used for parsing, manipulating, and performing arithmetic on date-time objects.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, dplyr, readr, lubridate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, dplyr, readr, lubridate, sf, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               tmap, tidyverse, DT, zoo, plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="scraping-data-from-mss-website" class="level2">
-<h2 class="anchored" data-anchor-id="scraping-data-from-mss-website">2.2 Scraping data from MSS website</h2>
-<p>The goal of our R Shiny application is to examine and analyze weather trends in Singapore <strong>from 2020 to 2024</strong>. To achieve this, we will first scrape the data readings of 20 automated weather stations across Singapore from the MSS website and then proceed with data wrangling.</p>
+<section id="scraping-climate-data-from-mss-website" class="level2">
+<h2 class="anchored" data-anchor-id="scraping-climate-data-from-mss-website">2.2 Scraping climate data from MSS website</h2>
+<p>The goal of our R Shiny application is to examine and analyze weather trends in Singapore <strong>from 2020 to 2024</strong>. To achieve this, we will first scrape the data readings of 44 active weather stations (19 full AWS stations, 25 rainfall stations) across Singapore from the MSS website and then proceed with data wrangling.</p>
+<p>Code blocks below initializes the data scraping process by reading a list of station codes from a CSV file and setting up a loop to download data for the specified years and months:</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Click to view code for reading list of stations</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stations_df <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/StationList.xlsx"</span>)  </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>station_codes <span class="ot">&lt;-</span> stations_df<span class="sc">$</span>StationID   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 </div>
+<p>Code block to detail the main scraping loop:</p>
 <div class="cell">
 <details class="code-fold">
-<summary>Click to view code for data scraping</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># setting Year and Month</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">2020</span><span class="sc">:</span><span class="dv">2024</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>months <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%02d"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Base URL Template</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>base_url <span class="ot">&lt;-</span> <span class="st">"https://www.weather.gov.sg/files/dailydata/DAILYDATA_%s_%d%s.csv"</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an empty list</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>all_data <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through </span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (station <span class="cf">in</span> station_codes) {</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (year <span class="cf">in</span> years) {</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (month <span class="cf">in</span> months) {</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>      url <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(base_url, station, year, month)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">cat</span>(<span class="st">"Downloading:"</span>, url, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">try</span>({</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>      res <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(url, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>          <span class="fu">contains</span>(<span class="fu">c</span>(<span class="st">"Temperature"</span>, <span class="st">"Rainfall"</span>, <span class="st">"Wind"</span>)),</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>          <span class="sc">~</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(.))</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        )) <span class="sc">%&gt;%</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">station =</span> <span class="fu">as.character</span>(station),</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">year =</span> <span class="fu">as.integer</span>(year),</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">month =</span> <span class="fu">as.integer</span>(month),</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">Day =</span> <span class="fu">as.integer</span>(Day)</span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>      all_data[[i]] <span class="ot">&lt;-</span> res</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>      i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>      }, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>Click to view full code for data scraping</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>years <span class="ot">&lt;-</span> <span class="dv">2020</span><span class="sc">:</span><span class="dv">2024</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>months <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(<span class="st">"%02d"</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>base_url <span class="ot">&lt;-</span> <span class="st">"https://www.weather.gov.sg/files/dailydata/DAILYDATA_%s_%d%s.csv"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>all_data <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>({</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (station <span class="cf">in</span> station_codes) {</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (year <span class="cf">in</span> years) {</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span> (month <span class="cf">in</span> months) {</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        url <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(base_url, station, year, month)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cat</span>(<span class="st">"Downloading:"</span>, url, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Attempt to read with latin1, if it fails, try UTF-8</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> <span class="fu">try</span>({</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>          <span class="fu">read_csv</span>(url, <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"latin1"</span>), <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        }, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">inherits</span>(res, <span class="st">"try-error"</span>)) {</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>          res <span class="ot">&lt;-</span> <span class="fu">try</span>({</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            <span class="fu">read_csv</span>(url, <span class="at">locale =</span> <span class="fu">locale</span>(<span class="at">encoding =</span> <span class="st">"UTF-8"</span>), <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>          }, <span class="at">silent =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>        <span class="co"># If both fail, continue to the next file</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (<span class="fu">inherits</span>(res, <span class="st">"try-error"</span>)) {</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>          <span class="fu">cat</span>(<span class="st">"Failed to read:"</span>, url, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>          <span class="cf">next</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        res <span class="ot">&lt;-</span> res <span class="sc">%&gt;%</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(<span class="fu">across</span>(</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>            <span class="fu">contains</span>(<span class="fu">c</span>(<span class="st">"Temperature"</span>, <span class="st">"Rainfall"</span>, <span class="st">"Wind"</span>)),</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>            <span class="sc">~</span> <span class="fu">suppressWarnings</span>(<span class="fu">as.numeric</span>(.))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>          )) <span class="sc">%&gt;%</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            <span class="at">station =</span> <span class="fu">as.character</span>(station),</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>            <span class="at">year =</span> <span class="fu">as.integer</span>(year),</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>            <span class="at">month =</span> <span class="fu">as.integer</span>(month),</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>            <span class="at">Day =</span> <span class="fu">as.integer</span>(Day)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        all_data[[i]] <span class="ot">&lt;-</span> res</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S104_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S109_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S24_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S121_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S50_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S107_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S44_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S117_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S108_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S111_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S116_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S06_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S106_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S25_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S102_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S80_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S60_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S43_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S23_202412.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202001.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202002.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202003.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202004.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202005.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202006.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202007.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202008.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202009.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202010.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202011.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202012.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202101.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202102.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202103.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202104.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202105.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202106.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202107.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202108.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202109.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202110.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202111.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202112.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202201.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202202.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202203.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202204.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202205.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202206.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202207.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202208.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202209.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202210.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202211.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202212.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202301.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202302.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202303.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202304.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202305.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202306.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202307.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202308.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202309.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202310.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202311.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202312.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202401.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202402.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202403.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202404.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202405.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202406.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202407.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202408.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202409.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202410.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202411.csv 
-Downloading: https://www.weather.gov.sg/files/dailydata/DAILYDATA_S115_202412.csv </code></pre>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The data from January 2020 to March 2020 are encoded in <code>latin1</code>, while the data starting from April 2020 are encoded in <code>UTF-8</code>. Therefore, it is essential for the main scraping loop to be robust enough to accommodate both encodings effectively.</p>
 </div>
 </div>
 </section>
-<section id="merging-data-and-creating-variables" class="level2">
-<h2 class="anchored" data-anchor-id="merging-data-and-creating-variables">2.3 Merging data and creating variables</h2>
+<section id="preparing-aspatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-aspatial-data">2.3 Preparing Aspatial Data</h2>
+<section id="merging-climate-data-and-creating-variables" class="level3">
+<h3 class="anchored" data-anchor-id="merging-climate-data-and-creating-variables">2.3.1 Merging climate data and creating variables</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Click to view code for combining extracted data and creating date column</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>climate_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(all_data)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>climate_data <span class="ot">&lt;-</span> climate_data <span class="sc">%&gt;%</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create 'date' column from 'year', 'month', and 'day'</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> <span class="fu">make_date</span>(year, month, Day)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># View the first few rows to check the date column</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(climate_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>climate_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(all_data)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>climate_data <span class="ot">&lt;-</span> climate_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">date =</span> <span class="fu">make_date</span>(year, month, Day)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(climate_data, <span class="st">"data/aspatial/climate_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>climate_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/aspatial/climate_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 80388 Columns: 17
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr   (2): Station, station
+dbl  (14): Year, Month, Day, Daily Rainfall Total (mm), Highest 30 Min Rainf...
+date  (1): date
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(climate_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 80,388
+Columns: 17
+$ Station                         &lt;chr&gt; "Paya Lebar", "Paya Lebar", "Paya Leba…
+$ Year                            &lt;dbl&gt; 2020, 2020, 2020, 2020, 2020, 2020, 20…
+$ Month                           &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ Day                             &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,…
+$ `Daily Rainfall Total (mm)`     &lt;dbl&gt; 0.0, 0.2, 0.0, 0.8, 0.0, 31.2, 1.8, 0.…
+$ `Highest 30 Min Rainfall (mm)`  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Highest 60 Min Rainfall (mm)`  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Highest 120 Min Rainfall (mm)` &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Mean Temperature (°C)`         &lt;dbl&gt; 28.7, 28.5, 28.6, 28.0, 28.7, 27.3, 26…
+$ `Maximum Temperature (°C)`      &lt;dbl&gt; 32.3, 31.2, 32.2, 31.6, 33.2, 32.6, 30…
+$ `Minimum Temperature (°C)`      &lt;dbl&gt; 26.3, 26.4, 26.0, 25.4, 25.5, 24.0, 24…
+$ `Mean Wind Speed (km/h)`        &lt;dbl&gt; 20.2, 17.3, 18.0, 19.1, 20.2, 14.8, 15…
+$ `Max Wind Speed (km/h)`         &lt;dbl&gt; 46.4, 42.5, 46.4, 48.2, 38.9, 46.4, 44…
+$ station                         &lt;chr&gt; "S06", "S06", "S06", "S06", "S06", "S0…
+$ year                            &lt;dbl&gt; 2020, 2020, 2020, 2020, 2020, 2020, 20…
+$ month                           &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+$ date                            &lt;date&gt; 2020-01-01, 2020-01-02, 2020-01-03, 2…</code></pre>
+</div>
+</div>
+</section>
+<section id="separating-data-into-3-datasets---rainfall-temperature-and-wind-speed" class="level3">
+<h3 class="anchored" data-anchor-id="separating-data-into-3-datasets---rainfall-temperature-and-wind-speed">2.3.2 Separating data into 3 datasets - rainfall, temperature and wind speed</h3>
+<p>To facilitate the development of the R Shiny application, the weather data was split into three separate datasets — rainfall, temperature, and wind speed. Each dataset contains only the relevant variables for the respective weather parameter, alongside essential metadata such as station name, date, and time components.</p>
+<p>By isolating each weather component, users can independently explore trends, seasonality, and anomalies for rainfall, temperature, and wind speed. Additionally, this approach simplifies backend logic, improves processing efficiency, and avoids unnecessary overhead from unrelated columns during visualisation and analysis.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>climate_rainfall <span class="ot">&lt;-</span> climate_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Year, Month, Day, date, station, year, month,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>         <span class="fu">contains</span>(<span class="st">"Rainfall"</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>climate_temperature <span class="ot">&lt;-</span> climate_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Year, Month, Day, date, station, year, month,</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>         <span class="fu">contains</span>(<span class="st">"Temperature"</span>))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>climate_windspeed <span class="ot">&lt;-</span> climate_data <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Year, Month, Day, date, station, year, month,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>         <span class="fu">contains</span>(<span class="st">"Wind"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="checking-for-missing-data" class="level2">
+<h2 class="anchored" data-anchor-id="checking-for-missing-data">2.4 Checking for Missing Data</h2>
+<section id="checking-for-missing-values-in-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="checking-for-missing-values-in-datasets">2.4.1 Checking for missing values in datasets</h3>
+<p>Code blocks below identify and calculate the percentage of missing values for each of the weather variable dataset:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Rainfall</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Temperature</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Windspeed</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rainfall_missing_by_station <span class="ot">&lt;-</span> climate_rainfall <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"Rainfall"</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">mean</span>(<span class="fu">is.na</span>(.)) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.names =</span> <span class="st">"missing_{.col}"</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"missing"</span>), desc))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>rainfall_missing_by_station</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 17
-  Station    Year Month   Day `Daily Rainfall Total (mm)` Highest 30 min Rainf…¹
-  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;                       &lt;dbl&gt;                  &lt;dbl&gt;
-1 Admiralty  2020     4     1                         0.4                    0.4
-2 Admiralty  2020     4     2                         5                      3  
-3 Admiralty  2020     4     3                         8.6                    6.2
-4 Admiralty  2020     4     4                         0                      0  
-5 Admiralty  2020     4     5                         0                      0  
-6 Admiralty  2020     4     6                         0                      0  
-# ℹ abbreviated name: ¹​`Highest 30 min Rainfall (mm)`
-# ℹ 11 more variables: `Highest 60 min Rainfall (mm)` &lt;dbl&gt;,
-#   `Highest 120 min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature (°C)` &lt;dbl&gt;,
+<pre><code># A tibble: 44 × 5
+   station missing_Daily Rainfal…¹ missing_Highest 30 M…² missing_Highest 60 M…³
+   &lt;chr&gt;                     &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
+ 1 S29                       17.4                   19.4                   19.4 
+ 2 S92                       11.8                   12.7                   12.8 
+ 3 S64                        7.72                   7.83                   7.77
+ 4 S60                        4.05                   4.49                   4.49
+ 5 S108                       3.56                   4.49                   4.54
+ 6 S112                       3.50                   4.05                   4.11
+ 7 S69                        3.45                   3.83                   3.89
+ 8 S123                       3.34                   3.61                   3.67
+ 9 S114                       3.12                   3.45                   3.50
+10 S35                        3.07                   4.00                   4.05
+# ℹ 34 more rows
+# ℹ abbreviated names: ¹​`missing_Daily Rainfall Total (mm)`,
+#   ²​`missing_Highest 30 Min Rainfall (mm)`,
+#   ³​`missing_Highest 60 Min Rainfall (mm)`
+# ℹ 1 more variable: `missing_Highest 120 Min Rainfall (mm)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Based on the missing values analysis for the rainfall dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.</p>
+<p>From the rainfall dataset, we have identified that weather stations <strong>S29, S92, S64 and S06</strong> should be excluded from the analysis.</p>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>temperature_missing_by_station <span class="ot">&lt;-</span> climate_temperature <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"Temperature"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">mean</span>(<span class="fu">is.na</span>(.)) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.names =</span> <span class="st">"missing_{.col}"</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"missing"</span>), desc))</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>temperature_missing_by_station</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44 × 4
+   station missing_Mean Temperat…¹ missing_Maximum Temp…² missing_Minimum Temp…³
+   &lt;chr&gt;                     &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
+ 1 S07                         100                    100                    100
+ 2 S08                         100                    100                    100
+ 3 S112                        100                    100                    100
+ 4 S113                        100                    100                    100
+ 5 S114                        100                    100                    100
+ 6 S119                        100                    100                    100
+ 7 S123                        100                    100                    100
+ 8 S29                         100                    100                    100
+ 9 S33                         100                    100                    100
+10 S35                         100                    100                    100
+# ℹ 34 more rows
+# ℹ abbreviated names: ¹​`missing_Mean Temperature (°C)`,
+#   ²​`missing_Maximum Temperature (°C)`, ³​`missing_Minimum Temperature (°C)`</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Based on the missing values analysis for the temperature dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.</p>
+<p>From the temperature dataset, we have identified that weather stations <strong>S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S108, S23, S80, S25 and S06</strong> should be excluded from the analysis.</p>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>windspeed_missing_by_station <span class="ot">&lt;-</span> climate_windspeed <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">contains</span>(<span class="st">"Wind"</span>),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span><span class="fu">mean</span>(<span class="fu">is.na</span>(.)) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.names =</span> <span class="st">"missing_{.col}"</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"missing"</span>), desc))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>windspeed_missing_by_station</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 44 × 3
+   station `missing_Mean Wind Speed (km/h)` `missing_Max Wind Speed (km/h)`
+   &lt;chr&gt;                              &lt;dbl&gt;                           &lt;dbl&gt;
+ 1 S07                                  100                             100
+ 2 S08                                  100                             100
+ 3 S112                                 100                             100
+ 4 S113                                 100                             100
+ 5 S114                                 100                             100
+ 6 S119                                 100                             100
+ 7 S123                                 100                             100
+ 8 S29                                  100                             100
+ 9 S33                                  100                             100
+10 S35                                  100                             100
+# ℹ 34 more rows</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Based on the missing values analysis for the windspeed dataset, a few weather stations exhibit a significantly higher proportion of missing data (more than 5% of missing data), hence should be excluded from the analysis. This is because it may lead to biased trends and unreliable forecasts.</p>
+<p>From the temperature dataset, we have identified that weather stations <strong>S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43 and S117</strong> should be excluded from the analysis.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="filtering-datasets-and-employing-linear-interpolation" class="level3">
+<h3 class="anchored" data-anchor-id="filtering-datasets-and-employing-linear-interpolation">2.4.2 Filtering datasets and employing linear interpolation</h3>
+<p>For the purpose of analysis and the UI design, we should exclude the weather stations <strong>S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43, S117, S108, S25 and S06</strong>.</p>
+<p>Apart from that, we employ linear interpolation to estimate the missing values for the weather stations with &lt;5% missing data, assuming a linear relationship between two known data points. This method is effective for datasets where changes between consecutive data points are expected to be gradual / linear (i.e.&nbsp;weather parameters).</p>
+<p>Filtering weather stations for analysis (final = <strong>9 automated weather stations</strong>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>stations_filtered <span class="ot">&lt;-</span> stations_df <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>StationID <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"S07"</span>, <span class="st">"S08"</span>, <span class="st">"S112"</span>, <span class="st">"S113"</span>, <span class="st">"S114"</span>, <span class="st">"S119"</span>, <span class="st">"S123"</span>, <span class="st">"S29"</span>, <span class="st">"S33"</span>, <span class="st">"S35"</span>, <span class="st">"S40"</span>, <span class="st">"S64"</span>, <span class="st">"S66"</span>, <span class="st">"S69"</span>, <span class="st">"S71"</span>, <span class="st">"S77"</span>, <span class="st">"S78"</span>, <span class="st">"S79"</span>, <span class="st">"S81"</span>, <span class="st">"S84"</span>, <span class="st">"S88"</span>, <span class="st">"S89"</span>, <span class="st">"S90"</span>, <span class="st">"S92"</span>, <span class="st">"S94"</span>, <span class="st">"S80"</span>, <span class="st">"S23"</span>, <span class="st">"S60"</span>, <span class="st">"S44"</span>, <span class="st">"S50"</span>, <span class="st">"S43"</span>, <span class="st">"S117"</span>, <span class="st">"S108"</span>, <span class="st">"S25"</span>, <span class="st">"S06"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Linear interpolation for missing values:</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Rainfall</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Temperature</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Windspeed</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>climate_rainfall_interpolated <span class="ot">&lt;-</span> climate_rainfall <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(stations_filtered, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"station"</span> <span class="ot">=</span> <span class="st">"StationID"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(station, date) <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Daily Rainfall Total (mm)</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Daily Rainfall Total (mm)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Highest 60 Min Rainfall (mm)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Highest 60 Min Rainfall (mm)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Highest 120 Min Rainfall (mm)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Highest 120 Min Rainfall (mm)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>climate_rainfall_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16,443 × 16
+   Station    Year Month   Day date       station  year month
+   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+ 1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
+ 2 Admiralty  2020     1     2 2020-01-02 S104     2020     1
+ 3 Admiralty  2020     1     3 2020-01-03 S104     2020     1
+ 4 Admiralty  2020     1     4 2020-01-04 S104     2020     1
+ 5 Admiralty  2020     1     5 2020-01-05 S104     2020     1
+ 6 Admiralty  2020     1     6 2020-01-06 S104     2020     1
+ 7 Admiralty  2020     1     7 2020-01-07 S104     2020     1
+ 8 Admiralty  2020     1     8 2020-01-08 S104     2020     1
+ 9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
+10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
+# ℹ 16,433 more rows
+# ℹ 8 more variables: `Daily Rainfall Total (mm)` &lt;dbl&gt;,
+#   `Highest 30 Min Rainfall (mm)` &lt;dbl&gt;, `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, StationType &lt;chr&gt;,
+#   StationName &lt;chr&gt;, Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>climate_temperature_interpolated <span class="ot">&lt;-</span> climate_temperature <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(stations_filtered, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"station"</span> <span class="ot">=</span> <span class="st">"StationID"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(station, date) <span class="sc">%&gt;%</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Mean Temperature (°C)</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Mean Temperature (°C)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Maximum Temperature (°C)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Maximum Temperature (°C)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Minimum Temperature (°C)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Minimum Temperature (°C)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>climate_temperature_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16,443 × 15
+   Station    Year Month   Day date       station  year month
+   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+ 1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
+ 2 Admiralty  2020     1     2 2020-01-02 S104     2020     1
+ 3 Admiralty  2020     1     3 2020-01-03 S104     2020     1
+ 4 Admiralty  2020     1     4 2020-01-04 S104     2020     1
+ 5 Admiralty  2020     1     5 2020-01-05 S104     2020     1
+ 6 Admiralty  2020     1     6 2020-01-06 S104     2020     1
+ 7 Admiralty  2020     1     7 2020-01-07 S104     2020     1
+ 8 Admiralty  2020     1     8 2020-01-08 S104     2020     1
+ 9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
+10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
+# ℹ 16,433 more rows
+# ℹ 7 more variables: `Mean Temperature (°C)` &lt;dbl&gt;,
 #   `Maximum Temperature (°C)` &lt;dbl&gt;, `Minimum Temperature (°C)` &lt;dbl&gt;,
-#   `Mean Wind Speed (km/h)` &lt;dbl&gt;, `Max Wind Speed (km/h)` &lt;dbl&gt;,
-#   station &lt;chr&gt;, year &lt;int&gt;, month &lt;int&gt;, date &lt;date&gt;</code></pre>
+#   StationType &lt;chr&gt;, StationName &lt;chr&gt;, Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>climate_windspeed_interpolated <span class="ot">&lt;-</span> climate_windspeed <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(stations_filtered, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"station"</span> <span class="ot">=</span> <span class="st">"StationID"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(station, date) <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(station) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Mean Wind Speed (km/h)</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Mean Wind Speed (km/h)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Max Wind Speed (km/h)</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">na.approx</span>(<span class="st">`</span><span class="at">Max Wind Speed (km/h)</span><span class="st">`</span>, <span class="at">x =</span> date, <span class="at">na.rm =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>climate_windspeed_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16,443 × 14
+   Station    Year Month   Day date       station  year month
+   &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
+ 1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
+ 2 Admiralty  2020     1     2 2020-01-02 S104     2020     1
+ 3 Admiralty  2020     1     3 2020-01-03 S104     2020     1
+ 4 Admiralty  2020     1     4 2020-01-04 S104     2020     1
+ 5 Admiralty  2020     1     5 2020-01-05 S104     2020     1
+ 6 Admiralty  2020     1     6 2020-01-06 S104     2020     1
+ 7 Admiralty  2020     1     7 2020-01-07 S104     2020     1
+ 8 Admiralty  2020     1     8 2020-01-08 S104     2020     1
+ 9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
+10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
+# ℹ 16,433 more rows
+# ℹ 6 more variables: `Mean Wind Speed (km/h)` &lt;dbl&gt;,
+#   `Max Wind Speed (km/h)` &lt;dbl&gt;, StationType &lt;chr&gt;, StationName &lt;chr&gt;,
+#   Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To check for completeness of data, each dataset should have 16,443 observations for 9 weather stations and 5 full years of data (from 2020 to 2024).</p>
+<p>[365 days x 5 years + 2 days*] x 9 stations = 16,443 observations</p>
+<p><em>*Year 2020 and 2024 are leap years</em></p>
+</div>
+</div>
+</section>
+</section>
+<section id="preparing-geospatial-data-frame" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-geospatial-data-frame">2.5 Preparing Geospatial data frame</h2>
+<p>In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform any objects and map them in the <strong>SVY21 system</strong>.</p>
+<section id="setting-stations_df-long-lat-data-to-coordinates" class="level3">
+<h3 class="anchored" data-anchor-id="setting-stations_df-long-lat-data-to-coordinates">2.5.1 Setting stations_df <code>Long, Lat</code> data to coordinates</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code for setting crs = 3414</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>stations_filtered <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(stations_filtered, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Long"</span>, <span class="st">"Lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>stations_df_svy21 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(stations_filtered, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="visualizing-geospatial-data" class="level3">
+<h3 class="anchored" data-anchor-id="visualizing-geospatial-data">2.5.2 Visualizing geospatial data</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to interactive viewing</code></pre>
 </div>
 </div>
 <div class="cell">
 <details class="code-fold">
-<summary>Click to view code for merging aspatial data with station coordinates</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>climate_data_2020to2024 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(climate_data, stations_df, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Station"</span> <span class="ot">=</span> <span class="st">"StationName"</span>))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Write the combined data to a separate CSV file</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(climate_data, <span class="st">"data/climate_data_2020to2024.csv"</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># View the first few rows of the merged data</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(climate_data_2020to2024)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>Click to view code for plotting points on map</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(stations_df_svy21) <span class="sc">+</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_bubbles</span>(<span class="at">col =</span> <span class="st">"StationType"</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">1</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">border.col =</span> <span class="st">"black"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">border.lwd =</span> <span class="dv">1</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">popup.vars =</span> <span class="st">"StationName"</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 21
-  Station    Year Month   Day `Daily Rainfall Total (mm)` Highest 30 min Rainf…¹
-  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;                       &lt;dbl&gt;                  &lt;dbl&gt;
-1 Admiralty  2020     4     1                         0.4                    0.4
-2 Admiralty  2020     4     2                         5                      3  
-3 Admiralty  2020     4     3                         8.6                    6.2
-4 Admiralty  2020     4     4                         0                      0  
-5 Admiralty  2020     4     5                         0                      0  
-6 Admiralty  2020     4     6                         0                      0  
-# ℹ abbreviated name: ¹​`Highest 30 min Rainfall (mm)`
-# ℹ 15 more variables: `Highest 60 min Rainfall (mm)` &lt;dbl&gt;,
-#   `Highest 120 min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature (°C)` &lt;dbl&gt;,
-#   `Maximum Temperature (°C)` &lt;dbl&gt;, `Minimum Temperature (°C)` &lt;dbl&gt;,
-#   `Mean Wind Speed (km/h)` &lt;dbl&gt;, `Max Wind Speed (km/h)` &lt;dbl&gt;,
-#   station &lt;chr&gt;, year &lt;int&gt;, month &lt;int&gt;, date &lt;date&gt;, StationType &lt;chr&gt;,
-#   StationID &lt;chr&gt;, Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-3f9669e4cda928156bd7" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-3f9669e4cda928156bd7">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addCircles","args":[[1.4439,1.3793,1.3678,1.3729,1.3133,1.3106,1.2824,1.416800000000001,1.2938],[103.7854,103.85,103.9823,103.7224,103.962,103.8365,103.7545,103.9673,103.6184],[399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487],["AWS","AWS.1","AWS.2","AWS.3","AWS.4","AWS.5","AWS.6","AWS.7","AWS.8"],"stations_df_svy21",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#000000","weight":1,"opacity":0.5,"fill":true,"fillColor":["#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7"],"fillOpacity":[1,1,1,1,1,1,1,1,1]},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Admiralty<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Ang Mo Kio<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Changi<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Choa Chu Kang (South)<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>East Coast Parkway<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Newton<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Pasir Panjang<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Pulau Ubin<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Tuas South<\/nobr><\/td><\/tr><\/table><\/div>"],null,["AWS","AWS","AWS","AWS","AWS","AWS","AWS","AWS","AWS"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]},{"method":"addLegend","args":[{"colors":["#8DD3C7"],"labels":["AWS"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"StationType","extra":null,"layerId":"legend401","className":"info legend stations_df_svy21","group":"stations_df_svy21"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"stations_df_svy21",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[1.2824,1.4439],"lng":[103.6184,103.9823]},"fitBounds":[1.2824,103.6184,1.4439,103.9823,[]]},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to plotting</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">3 Exploratory Data Analysis</h2>

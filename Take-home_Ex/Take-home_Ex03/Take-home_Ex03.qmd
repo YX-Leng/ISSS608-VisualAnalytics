@@ -50,7 +50,7 @@ As the data is stored disparately on the website, segmented by both month and by
 
 ```{r}
 pacman::p_load(readxl, dplyr, readr, lubridate, sf, 
-               tmap, tidyverse, DT, zoo, plotly)
+               tmap, tidyverse, DT, zoo, plotly, spdep)
 ```
 
 ## 2.2 Scraping climate data from MSS website
@@ -61,7 +61,11 @@ Code blocks below initializes the data scraping process by reading a list of sta
 
 ```{r}
 stations_df <- read_excel("data/StationList.xlsx")  
-station_codes <- stations_df$StationID   
+station_codes <- stations_df$StationID
+
+
+stations_df <- st_as_sf(stations_df, coords = c("Long", "Lat"), crs = 4326)
+stations_df <- st_transform(stations_df, 3414)
 ```
 
 Code block to detail the main scraping loop:
@@ -319,54 +323,206 @@ climate_windspeed_interpolated
 :::
 
 ::: callout-important
-To check for completeness of data, each dataset should have 16,443 observations for 9 weather stations and 5 full years of data (from 2020 to 2024).
+To check for completeness of data, each dataset should have **16,443** observations for 9 weather stations and 5 full years of data (from 2020 to 2024).
 
 \[365 days x 5 years + 2 days\*\] x 9 stations = 16,443 observations
 
 *\*Year 2020 and 2024 are leap years*
 :::
 
-## 2.5 Preparing Geospatial data frame
+## 2.5 Preparing Geospatial Data
 
-In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform any objects and map them in the **SVY21 system**.
+In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform the data and map the 9 weather station points to the **SVY21 system**.
 
-### 2.5.1 Setting stations_df `Long, Lat` data to coordinates
+```{r}
+climate_rainfall3414 <- st_as_sf(climate_rainfall_interpolated, crs = 3414)
+climate_temperature3414 <- st_as_sf(climate_temperature_interpolated, crs = 3414)
+climate_windspeed3414 <- st_as_sf(climate_windspeed_interpolated, crs = 3414)
+```
+
+## 3 Geospatial Exploratory Data Analysis
+
+### 3.1 Bubble Map - Visualising Weather Variables
+
+Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:
+
+| Parameter | Description                             | UI for Parameter Selection |
+|------------------|-------------------------------|------------------------|
+| `Year`    | The year from which the data is drawn.  | Dropdown List              |
+| `Month`   | The month from which the data is drawn. | Dropdown List              |
+
+There will be 3 functions created namely for (i) monthly total rainfall, (ii) average temperature and (iii) average windspeed which will all output interactive plots that will visually show the distribution of weather variables across Singapore.
+
+#### 3.1.1 Function to visualise monthly total rainfall
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Click to view code for setting crs = 3414"
-stations_filtered <- st_as_sf(stations_filtered, coords = c("Long", "Lat"), crs = 4326)
-stations_df_svy21 <- st_transform(stations_filtered, 3414)
+#| code-summary: "Click to view code block for function to calculate monthly total rainfall"
+plot_rainfall_map <- function(data, year, month) {
+ data <- data %>%
+    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    summarise(Total_Rainfall = sum(`Daily Rainfall Total (mm)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  tmap_mode("view")
+  
+  map <- tm_shape(sf_data) +
+    tm_bubbles(size = "Total_Rainfall", col = "Total_Rainfall", 
+               scale = 4, style = "jenks", palette = "Blues", 
+               title.size = "Total Rainfall (mm)", 
+               title.col = "Total Rainfall (mm)",
+               popup.vars = c("Station")) +
+    tm_layout(title = paste("Total Rainfall Distribution for", month, year))
+  
+  return(map)
+}
 ```
 
-### 2.5.2 Visualizing geospatial data
+```{r}
+plot_rainfall_map(climate_rainfall3414, 2024, "December")
+```
+
+#### 3.1.2 Function to visualise average monthly temperature
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Click to view code"
-tmap_mode("view")
+#| code-summary: "Click to view code block for function to calculate average monthly temperature"
+plot_temp_map <- function(data, year, month) {
+ data <- data %>%
+    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    summarise(Avg_Temp = mean(`Mean Temperature (°C)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  tmap_mode("view")
+  
+  map <- tm_shape(sf_data) +
+    tm_bubbles(size = "Avg_Temp", col = "Avg_Temp", 
+               scale = 4, style = "jenks", palette = "Reds", 
+               title.size = "Average Temperature (°C)", 
+               title.col = "Average Temperature (°C)",
+               popup.vars = c("Station")) +
+    tm_layout(title = paste("Average Temperature for", month, year))
+  
+  return(map)
+}
 ```
 
 ```{r}
-#| code-fold: true
-#| code-summary: "Click to view code for plotting points on map" 
-  tm_shape(stations_df_svy21) +
-  tm_bubbles(col = "StationType",
-             size = 1,
-             border.col = "black",
-             border.lwd = 1,
-             popup.vars = "StationName"
-             )
+plot_temp_map(climate_temperature3414, 2024, "December")
 ```
+
+#### 3.1.3 Function to visualise average monthly wind speed
 
 ```{r}
 #| code-fold: true
-#| code-summary: "Click to view code"
-tmap_mode("plot")
+#| code-summary: "Click to view code block for function to calculate average monthly windspeed"
+plot_wind_map <- function(data, year, month) {
+ data <- data %>%
+    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    summarise(Avg_Wind = mean(`Mean Wind Speed (km/h)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  tmap_mode("view")
+  
+  map <- tm_shape(sf_data) +
+    tm_bubbles(size = "Avg_Wind", col = "Avg_Wind", 
+               scale = 4, style = "jenks", palette = "Greens", 
+               title.size = "Average Wind Speed (km/h)", 
+               title.col = "Average Wind Speed (km/h)",
+               popup.vars = c("Station")) +
+    tm_layout(title = paste("Average Wind Speed for", month, year))
+  
+  return(map)
+}
+
 ```
 
-## 3 Exploratory Data Analysis
+```{r}
+plot_wind_map(climate_windspeed3414, 2024, "December")
+```
 
-## 4 Confirmatory Data Analysis
+### 3.2 Spatial autocorrelation - Local Moran's I
 
-## 5 Geospatial Analysis & UI Prototype
+Moran's I is a measure of spatial autocorrelation, which **quantifies the degree to which a variable is similar to its neighbors in a geographic area.** It is often used in spatial statistics to assess patterns of clustering or dispersion in spatial data.
+
+**Local Moran's I** (also known as Local Indicators of Spatial Association - LISA) will further identify any localized clusters or outliers in the data.
+
+::: callout-important
+**Local Moran's I** **\> 0** indicates that similar values are clustered together in space. In other words, if the value of a variable at one location is high, nearby locations are likely to have high values as well.
+
+**Local Moran's I = 0** indicates random spatial autocorrelation, meaning that the values are randomly distributed.
+
+**Local Moran's I \< 0** indicates spatial dissimilarity — locations with high values of the variable are surrounded by locations with low values, or vice versa.
+:::
+
+#### 3.2.1 Function to visualise spatial association for rainfall
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code block for functions to calculate and plot LISA"
+
+localmoran_i_rainfall <- function(data, year, month, k_neighbors = 2) {
+  
+  data <- data %>%
+    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    summarise(Total_Rainfall = sum(`Daily Rainfall Total (mm)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  coordinates <- st_coordinates(sf_data)
+  coordinates <- as.data.frame(coordinates)
+  coordinates[] <- lapply(coordinates, as.numeric)
+  
+  neighbors <- knearneigh(coordinates, k = k_neighbors)  
+  weights <- nb2listw(knn2nb(neighbors), style = "W")  
+
+  variable <- filtered_data$Total_Rainfall
+  local_moran_result <- localmoran(variable, weights)
+  
+  filtered_data$Local_Moran_I <- local_moran_result[, 1]  
+  
+  sf_data$Local_Moran_I <- filtered_data$Local_Moran_I
+  
+  return(sf_data)
+}
+
+plot_rainfall_map <- function(data, year, month, k_neighbors = 2) {
+  tmap_mode("view")
+  
+  rainfall_map <- tm_shape(data) +
+    tm_bubbles(size = "Total_Rainfall", col = "Local_Moran_I", 
+               scale = 4, style = "jenks", palette = "RdYlBu", 
+               title.size = "Local Moran's I", 
+               title.col = "Local Moran's I",
+               popup.vars = c("Station", "Total_Rainfall","Local_Moran_I")) +
+    tm_layout(title = paste("Total Rainfall - Spatial Association (Local Moran's I) for", month, year))
+  
+  return(rainfall_map)
+}
+
+```
+
+```{r}
+rainfall_map_data <- localmoran_i_rainfall(climate_rainfall3414, 2024, "December")
+print(rainfall_map_data)
+rainfall_map <- plot_rainfall_map(rainfall_map_data, 2024, "December")
+print(rainfall_map)
+```
+
+
+## 5 UI Prototype

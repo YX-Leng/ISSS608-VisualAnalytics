@@ -271,14 +271,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#checking-for-missing-values-in-datasets" id="toc-checking-for-missing-values-in-datasets" class="nav-link" data-scroll-target="#checking-for-missing-values-in-datasets">2.4.1 Checking for missing values in datasets</a></li>
   <li><a href="#filtering-datasets-and-employing-linear-interpolation" id="toc-filtering-datasets-and-employing-linear-interpolation" class="nav-link" data-scroll-target="#filtering-datasets-and-employing-linear-interpolation">2.4.2 Filtering datasets and employing linear interpolation</a></li>
   </ul></li>
-  <li><a href="#preparing-geospatial-data-frame" id="toc-preparing-geospatial-data-frame" class="nav-link" data-scroll-target="#preparing-geospatial-data-frame">2.5 Preparing Geospatial data frame</a>
+  <li><a href="#preparing-geospatial-data" id="toc-preparing-geospatial-data" class="nav-link" data-scroll-target="#preparing-geospatial-data">2.5 Preparing Geospatial Data</a></li>
+  <li><a href="#geospatial-exploratory-data-analysis" id="toc-geospatial-exploratory-data-analysis" class="nav-link" data-scroll-target="#geospatial-exploratory-data-analysis">3 Geospatial Exploratory Data Analysis</a>
   <ul class="collapse">
-  <li><a href="#setting-stations_df-long-lat-data-to-coordinates" id="toc-setting-stations_df-long-lat-data-to-coordinates" class="nav-link" data-scroll-target="#setting-stations_df-long-lat-data-to-coordinates">2.5.1 Setting stations_df <code>Long, Lat</code> data to coordinates</a></li>
-  <li><a href="#visualizing-geospatial-data" id="toc-visualizing-geospatial-data" class="nav-link" data-scroll-target="#visualizing-geospatial-data">2.5.2 Visualizing geospatial data</a></li>
+  <li><a href="#bubble-map---visualising-weather-variables" id="toc-bubble-map---visualising-weather-variables" class="nav-link" data-scroll-target="#bubble-map---visualising-weather-variables">3.1 Bubble Map - Visualising Weather Variables</a></li>
+  <li><a href="#spatial-autocorrelation---local-morans-i" id="toc-spatial-autocorrelation---local-morans-i" class="nav-link" data-scroll-target="#spatial-autocorrelation---local-morans-i">3.2 Spatial autocorrelation - Local Moran’s I</a></li>
   </ul></li>
-  <li><a href="#exploratory-data-analysis" id="toc-exploratory-data-analysis" class="nav-link" data-scroll-target="#exploratory-data-analysis">3 Exploratory Data Analysis</a></li>
-  <li><a href="#confirmatory-data-analysis" id="toc-confirmatory-data-analysis" class="nav-link" data-scroll-target="#confirmatory-data-analysis">4 Confirmatory Data Analysis</a></li>
-  <li><a href="#geospatial-analysis-ui-prototype" id="toc-geospatial-analysis-ui-prototype" class="nav-link" data-scroll-target="#geospatial-analysis-ui-prototype">5 Geospatial Analysis &amp; UI Prototype</a></li>
+  <li><a href="#ui-prototype" id="toc-ui-prototype" class="nav-link" data-scroll-target="#ui-prototype">5 UI Prototype</a></li>
   </ul>
 </nav>
     </div>
@@ -353,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ol>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, dplyr, readr, lubridate, sf, </span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               tmap, tidyverse, DT, zoo, plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               tmap, tidyverse, DT, zoo, plotly, spdep)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
@@ -363,7 +362,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Code blocks below initializes the data scraping process by reading a list of station codes from a CSV file and setting up a loop to download data for the specified years and months:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stations_df <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/StationList.xlsx"</span>)  </span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>station_codes <span class="ot">&lt;-</span> stations_df<span class="sc">$</span>StationID   </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>station_codes <span class="ot">&lt;-</span> stations_df<span class="sc">$</span>StationID</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>stations_df <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(stations_df, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Long"</span>, <span class="st">"Lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>stations_df <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(stations_df, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Code block to detail the main scraping loop:</p>
 <div class="cell">
@@ -694,7 +697,7 @@ Important
 <span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>climate_rainfall_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 16,443 × 16
+<pre><code># A tibble: 16,443 × 15
    Station    Year Month   Day date       station  year month
    &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
  1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
@@ -708,10 +711,10 @@ Important
  9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
 10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
 # ℹ 16,433 more rows
-# ℹ 8 more variables: `Daily Rainfall Total (mm)` &lt;dbl&gt;,
+# ℹ 7 more variables: `Daily Rainfall Total (mm)` &lt;dbl&gt;,
 #   `Highest 30 Min Rainfall (mm)` &lt;dbl&gt;, `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
 #   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, StationType &lt;chr&gt;,
-#   StationName &lt;chr&gt;, Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+#   StationName &lt;chr&gt;, geometry &lt;POINT [m]&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -732,7 +735,7 @@ Important
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>climate_temperature_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 16,443 × 15
+<pre><code># A tibble: 16,443 × 14
    Station    Year Month   Day date       station  year month
    &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
  1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
@@ -746,9 +749,9 @@ Important
  9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
 10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
 # ℹ 16,433 more rows
-# ℹ 7 more variables: `Mean Temperature (°C)` &lt;dbl&gt;,
+# ℹ 6 more variables: `Mean Temperature (°C)` &lt;dbl&gt;,
 #   `Maximum Temperature (°C)` &lt;dbl&gt;, `Minimum Temperature (°C)` &lt;dbl&gt;,
-#   StationType &lt;chr&gt;, StationName &lt;chr&gt;, Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+#   StationType &lt;chr&gt;, StationName &lt;chr&gt;, geometry &lt;POINT [m]&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -768,7 +771,7 @@ Important
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>climate_windspeed_interpolated</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 16,443 × 14
+<pre><code># A tibble: 16,443 × 13
    Station    Year Month   Day date       station  year month
    &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;
  1 Admiralty  2020     1     1 2020-01-01 S104     2020     1
@@ -782,9 +785,9 @@ Important
  9 Admiralty  2020     1     9 2020-01-09 S104     2020     1
 10 Admiralty  2020     1    10 2020-01-10 S104     2020     1
 # ℹ 16,433 more rows
-# ℹ 6 more variables: `Mean Wind Speed (km/h)` &lt;dbl&gt;,
+# ℹ 5 more variables: `Mean Wind Speed (km/h)` &lt;dbl&gt;,
 #   `Max Wind Speed (km/h)` &lt;dbl&gt;, StationType &lt;chr&gt;, StationName &lt;chr&gt;,
-#   Lat &lt;dbl&gt;, Long &lt;dbl&gt;</code></pre>
+#   geometry &lt;POINT [m]&gt;</code></pre>
 </div>
 </div>
 </div>
@@ -800,72 +803,293 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>To check for completeness of data, each dataset should have 16,443 observations for 9 weather stations and 5 full years of data (from 2020 to 2024).</p>
+<p>To check for completeness of data, each dataset should have <strong>16,443</strong> observations for 9 weather stations and 5 full years of data (from 2020 to 2024).</p>
 <p>[365 days x 5 years + 2 days*] x 9 stations = 16,443 observations</p>
 <p><em>*Year 2020 and 2024 are leap years</em></p>
 </div>
 </div>
 </section>
 </section>
-<section id="preparing-geospatial-data-frame" class="level2">
-<h2 class="anchored" data-anchor-id="preparing-geospatial-data-frame">2.5 Preparing Geospatial data frame</h2>
-<p>In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform any objects and map them in the <strong>SVY21 system</strong>.</p>
-<section id="setting-stations_df-long-lat-data-to-coordinates" class="level3">
-<h3 class="anchored" data-anchor-id="setting-stations_df-long-lat-data-to-coordinates">2.5.1 Setting stations_df <code>Long, Lat</code> data to coordinates</h3>
+<section id="preparing-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-geospatial-data">2.5 Preparing Geospatial Data</h2>
+<p>In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform the data and map the 9 weather station points to the <strong>SVY21 system</strong>.</p>
 <div class="cell">
-<details class="code-fold">
-<summary>Click to view code for setting crs = 3414</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>stations_filtered <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(stations_filtered, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Long"</span>, <span class="st">"Lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>stations_df_svy21 <span class="ot">&lt;-</span> <span class="fu">st_transform</span>(stations_filtered, <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>climate_rainfall3414 <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(climate_rainfall_interpolated, <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>climate_temperature3414 <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(climate_temperature_interpolated, <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>climate_windspeed3414 <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(climate_windspeed_interpolated, <span class="at">crs =</span> <span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualizing-geospatial-data" class="level3">
-<h3 class="anchored" data-anchor-id="visualizing-geospatial-data">2.5.2 Visualizing geospatial data</h3>
+<section id="geospatial-exploratory-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="geospatial-exploratory-data-analysis">3 Geospatial Exploratory Data Analysis</h2>
+<section id="bubble-map---visualising-weather-variables" class="level3">
+<h3 class="anchored" data-anchor-id="bubble-map---visualising-weather-variables">3.1 Bubble Map - Visualising Weather Variables</h3>
+<p>Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 42%">
+<col style="width: 32%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>UI for Parameter Selection</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Year</code></td>
+<td>The year from which the data is drawn.</td>
+<td>Dropdown List</td>
+</tr>
+<tr class="even">
+<td><code>Month</code></td>
+<td>The month from which the data is drawn.</td>
+<td>Dropdown List</td>
+</tr>
+</tbody>
+</table>
+<p>There will be 3 functions created namely for (i) monthly total rainfall, (ii) average temperature and (iii) average windspeed which will all output interactive plots that will visually show the distribution of weather variables across Singapore.</p>
+<section id="function-to-visualise-monthly-total-rainfall" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-visualise-monthly-total-rainfall">3.1.1 Function to visualise monthly total rainfall</h4>
 <div class="cell">
 <details class="code-fold">
-<summary>Click to view code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>Click to view code block for function to calculate monthly total rainfall</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plot_rainfall_map <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year, month) {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a> data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Station, <span class="at">Year =</span> <span class="fu">year</span>(date), <span class="at">Month =</span> <span class="fu">month</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Total_Rainfall =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Daily Rainfall Total (mm)</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  filtered_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Year <span class="sc">==</span> year, Month <span class="sc">==</span> month)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  sf_data <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(filtered_data, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(sf_data) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_bubbles</span>(<span class="at">size =</span> <span class="st">"Total_Rainfall"</span>, <span class="at">col =</span> <span class="st">"Total_Rainfall"</span>, </span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">style =</span> <span class="st">"jenks"</span>, <span class="at">palette =</span> <span class="st">"Blues"</span>, </span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.size =</span> <span class="st">"Total Rainfall (mm)"</span>, </span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.col =</span> <span class="st">"Total Rainfall (mm)"</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"Station"</span>)) <span class="sc">+</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Total Rainfall Distribution for"</span>, month, year))</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(map)</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_rainfall_map</span>(climate_rainfall3414, <span class="dv">2024</span>, <span class="st">"December"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>tmap mode set to interactive viewing</code></pre>
 </div>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Click to view code for plotting points on map</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(stations_df_svy21) <span class="sc">+</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_bubbles</span>(<span class="at">col =</span> <span class="st">"StationType"</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">size =</span> <span class="dv">1</span>,</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">border.col =</span> <span class="st">"black"</span>,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">border.lwd =</span> <span class="dv">1</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">popup.vars =</span> <span class="st">"StationName"</span></span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<div class="leaflet html-widget html-fill-item" id="htmlwidget-3f9669e4cda928156bd7" style="width:100%;height:464px;"></div>
-<script type="application/json" data-for="htmlwidget-3f9669e4cda928156bd7">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addCircles","args":[[1.4439,1.3793,1.3678,1.3729,1.3133,1.3106,1.2824,1.416800000000001,1.2938],[103.7854,103.85,103.9823,103.7224,103.962,103.8365,103.7545,103.9673,103.6184],[399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487,399.0668631147487],["AWS","AWS.1","AWS.2","AWS.3","AWS.4","AWS.5","AWS.6","AWS.7","AWS.8"],"stations_df_svy21",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#000000","weight":1,"opacity":0.5,"fill":true,"fillColor":["#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7","#8DD3C7"],"fillOpacity":[1,1,1,1,1,1,1,1,1]},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Admiralty<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Ang Mo Kio<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Changi<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Choa Chu Kang (South)<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>East Coast Parkway<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Newton<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Pasir Panjang<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Pulau Ubin<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>AWS<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>StationName<\/nobr><\/td><td align=\"right\"><nobr>Tuas South<\/nobr><\/td><\/tr><\/table><\/div>"],null,["AWS","AWS","AWS","AWS","AWS","AWS","AWS","AWS","AWS"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]},{"method":"addLegend","args":[{"colors":["#8DD3C7"],"labels":["AWS"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"StationType","extra":null,"layerId":"legend401","className":"info legend stations_df_svy21","group":"stations_df_svy21"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"stations_df_svy21",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[1.2824,1.4439],"lng":[103.6184,103.9823]},"fitBounds":[1.2824,103.6184,1.4439,103.9823,[]]},"evals":[],"jsHooks":[]}</script>
-</div>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Click to view code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stderr">
-<pre><code>tmap mode set to plotting</code></pre>
+<pre><code>Legend for symbol sizes not available in view mode.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-e814cfca527978efadca" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-e814cfca527978efadca">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addCircles","args":[[1.2938,1.3133,1.3678,1.3106,1.4439,1.3793,1.3729,1.2824,1.416800000000001],[103.6184,103.962,103.9823,103.8365,103.7854,103.85,103.7224,103.7545,103.9673],[1197.200589344246,1090.186827259337,1088.794209921956,1086.469214294283,1065.790574008913,938.6227458085267,920.6700301828542,915.436560538879,726.6365652893077],["Tuas.South","East.Coast.Parkway","Changi","Newton","Admiralty","Ang.Mo.Kio","Choa.Chu.Kang..South.","Pasir.Panjang","Pulau.Ubin"],"sf_data",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#666666","weight":1,"opacity":0.5,"fill":true,"fillColor":["#1664AB","#4090C5","#4090C5","#4090C5","#7FB9DA","#BFD8EC","#BFD8EC","#BFD8EC","#E3EEF8"],"fillOpacity":[1,1,1,1,1,1,1,1,1]},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Tuas South<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Tuas South<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>East Coast Parkway<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>East Coast Parkway<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Changi<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Changi<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Newton<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Newton<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Admiralty<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Admiralty<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Ang Mo Kio<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Ang Mo Kio<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Choa Chu Kang (South)<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Choa Chu Kang (South)<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pasir Panjang<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pasir Panjang<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pulau Ubin<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pulau Ubin<\/nobr><\/td><\/tr><\/table><\/div>"],null,["Tuas South","East Coast Parkway","Changi","Newton","Admiralty","Ang Mo Kio","Choa Chu Kang (South)","Pasir Panjang","Pulau Ubin"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]},{"method":"addLegend","args":[{"colors":["#E3EEF8","#BFD8EC","#7FB9DA","#4090C5","#1664AB"],"labels":["104.4 to 104.4","104.4 to 174.2","174.2 to 224.6","224.6 to 235.0","235.0 to 283.4"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"Total Rainfall (mm)","extra":null,"layerId":"legend401","className":"info legend sf_data","group":"sf_data"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"sf_data",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[1.2824,1.4439],"lng":[103.6184,103.9823]},"fitBounds":[1.2824,103.6184,1.4439,103.9823,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n\t\t\t\t\t\tfunction(el, x) {\n\t\t\t\t\t\t\tvar tldiv = el.getElementsByClassName(\"leaflet-top leaflet-left\")[0];\n\t\t\t\t\t\t\tvar titlediv = document.createElement('div');\n\t\t\t\t\t\t\ttitlediv.className = \"info legend leaflet-control\";\n\t\t\t\t\t\t\ttitlediv.innerHTML = \"<b>Total Rainfall Distribution for December 2024<\/b>\";\n\t\t\t\t\t\t\ttldiv.insertBefore(titlediv, tldiv.childNodes[0]);\n\t\t\t\t\t\t}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+</div>
+</div>
+</section>
+<section id="function-to-visualise-average-monthly-temperature" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-visualise-average-monthly-temperature">3.1.2 Function to visualise average monthly temperature</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code block for function to calculate average monthly temperature</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plot_temp_map <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year, month) {</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a> data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Station, <span class="at">Year =</span> <span class="fu">year</span>(date), <span class="at">Month =</span> <span class="fu">month</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Avg_Temp =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">Mean Temperature (°C)</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  filtered_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Year <span class="sc">==</span> year, Month <span class="sc">==</span> month)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  sf_data <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(filtered_data, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(sf_data) <span class="sc">+</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_bubbles</span>(<span class="at">size =</span> <span class="st">"Avg_Temp"</span>, <span class="at">col =</span> <span class="st">"Avg_Temp"</span>, </span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">style =</span> <span class="st">"jenks"</span>, <span class="at">palette =</span> <span class="st">"Reds"</span>, </span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.size =</span> <span class="st">"Average Temperature (°C)"</span>, </span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.col =</span> <span class="st">"Average Temperature (°C)"</span>,</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"Station"</span>)) <span class="sc">+</span></span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Average Temperature for"</span>, month, year))</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(map)</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_temp_map</span>(climate_temperature3414, <span class="dv">2024</span>, <span class="st">"December"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to interactive viewing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Legend for symbol sizes not available in view mode.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-6015647f1e1e3017670b" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-6015647f1e1e3017670b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addCircles","args":[[1.2824,1.3133,1.2938,1.3678,1.3793,1.3729,1.4439,1.3106,1.416800000000001],[103.7545,103.962,103.6184,103.9823,103.85,103.7224,103.7854,103.8365,103.9673],[1197.200589344246,1197.062559645356,1195.128469999536,1190.279496610052,1190.14066421947,1187.986687465488,1185.480383645334,1184.713511018396,1184.015923069425],["Pasir.Panjang","East.Coast.Parkway","Tuas.South","Changi","Ang.Mo.Kio","Choa.Chu.Kang..South.","Admiralty","Newton","Pulau.Ubin"],"sf_data",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#666666","weight":1,"opacity":0.5,"fill":true,"fillColor":["#BB1419","#BB1419","#ED392B","#FB795A","#FB795A","#FCB499","#FEE4D8","#FEE4D8","#FEE4D8"],"fillOpacity":[1,1,1,1,1,1,1,1,1]},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pasir Panjang<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pasir Panjang<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>East Coast Parkway<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>East Coast Parkway<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Tuas South<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Tuas South<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Changi<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Changi<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Ang Mo Kio<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Ang Mo Kio<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Choa Chu Kang (South)<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Choa Chu Kang (South)<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Admiralty<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Admiralty<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Newton<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Newton<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pulau Ubin<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pulau Ubin<\/nobr><\/td><\/tr><\/table><\/div>"],null,["Pasir Panjang","East Coast Parkway","Tuas South","Changi","Ang Mo Kio","Choa Chu Kang (South)","Admiralty","Newton","Pulau Ubin"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]},{"method":"addLegend","args":[{"colors":["#FEE4D8","#FCB499","#FB795A","#ED392B","#BB1419"],"labels":["27.37 to 27.44","27.44 to 27.55","27.55 to 27.66","27.66 to 27.88","27.88 to 27.98"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"Average Temperature (°C)","extra":null,"layerId":"legend401","className":"info legend sf_data","group":"sf_data"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"sf_data",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[1.2824,1.4439],"lng":[103.6184,103.9823]},"fitBounds":[1.2824,103.6184,1.4439,103.9823,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n\t\t\t\t\t\tfunction(el, x) {\n\t\t\t\t\t\t\tvar tldiv = el.getElementsByClassName(\"leaflet-top leaflet-left\")[0];\n\t\t\t\t\t\t\tvar titlediv = document.createElement('div');\n\t\t\t\t\t\t\ttitlediv.className = \"info legend leaflet-control\";\n\t\t\t\t\t\t\ttitlediv.innerHTML = \"<b>Average Temperature for December 2024<\/b>\";\n\t\t\t\t\t\t\ttldiv.insertBefore(titlediv, tldiv.childNodes[0]);\n\t\t\t\t\t\t}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+</div>
+</div>
+</section>
+<section id="function-to-visualise-average-monthly-wind-speed" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-visualise-average-monthly-wind-speed">3.1.3 Function to visualise average monthly wind speed</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code block for function to calculate average monthly windspeed</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plot_wind_map <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year, month) {</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a> data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Station, <span class="at">Year =</span> <span class="fu">year</span>(date), <span class="at">Month =</span> <span class="fu">month</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Avg_Wind =</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">Mean Wind Speed (km/h)</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  filtered_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Year <span class="sc">==</span> year, Month <span class="sc">==</span> month)</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  sf_data <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(filtered_data, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>  map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(sf_data) <span class="sc">+</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_bubbles</span>(<span class="at">size =</span> <span class="st">"Avg_Wind"</span>, <span class="at">col =</span> <span class="st">"Avg_Wind"</span>, </span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">style =</span> <span class="st">"jenks"</span>, <span class="at">palette =</span> <span class="st">"Greens"</span>, </span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.size =</span> <span class="st">"Average Wind Speed (km/h)"</span>, </span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.col =</span> <span class="st">"Average Wind Speed (km/h)"</span>,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"Station"</span>)) <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Average Wind Speed for"</span>, month, year))</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(map)</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_wind_map</span>(climate_windspeed3414, <span class="dv">2024</span>, <span class="st">"December"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to interactive viewing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Legend for symbol sizes not available in view mode.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-188aac59c543546ee7ba" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-188aac59c543546ee7ba">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"createMapPane","args":["tmap401",401]},{"method":"addProviderTiles","args":["Esri.WorldGrayCanvas",null,"Esri.WorldGrayCanvas",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap",null,"OpenStreetMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,"Esri.WorldTopoMap",{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"pane":"tilePane"}]},{"method":"addCircles","args":[[1.2824,1.3133,1.3678,1.4439,1.3106,1.2938,1.3793,1.3729,1.416800000000001],[103.7545,103.962,103.9823,103.7854,103.8365,103.6184,103.85,103.7224,103.9673],[1197.200589344246,1153.124368902522,1111.796625606283,1078.520445543833,904.443589773918,857.1892893245604,855.0284860657209,840.8479259746969,766.5003593777915],["Pasir.Panjang","East.Coast.Parkway","Changi","Admiralty","Newton","Tuas.South","Ang.Mo.Kio","Choa.Chu.Kang..South.","Pulau.Ubin"],"sf_data",{"interactive":true,"className":"","pane":"tmap401","stroke":true,"color":"#666666","weight":1,"opacity":0.5,"fill":true,"fillColor":["#147E3A","#147E3A","#3FA95C","#3FA95C","#85CC84","#C0E6BA","#C0E6BA","#C0E6BA","#E8F6E4"],"fillOpacity":[1,1,1,1,1,1,1,1,1]},["<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pasir Panjang<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pasir Panjang<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>East Coast Parkway<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>East Coast Parkway<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Changi<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Changi<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Admiralty<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Admiralty<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Newton<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Newton<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Tuas South<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Tuas South<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Ang Mo Kio<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Ang Mo Kio<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Choa Chu Kang (South)<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Choa Chu Kang (South)<\/nobr><\/td><\/tr><\/table><\/div>","<style> div.leaflet-popup-content {width:auto !important;overflow-y:auto; overflow-x:hidden;}<\/style><div style=\"max-height:25em;padding-right:0px;\"><table>\n\t\t\t   <thead><tr><th colspan=\"2\"><b>Pulau Ubin<\/b><\/th><\/thead><\/tr><tr><td style=\"color: #888888;\"><nobr>Station<\/nobr><\/td><td align=\"right\"><nobr>Pulau Ubin<\/nobr><\/td><\/tr><\/table><\/div>"],null,["Pasir Panjang","East Coast Parkway","Changi","Admiralty","Newton","Tuas South","Ang Mo Kio","Choa Chu Kang (South)","Pulau Ubin"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null,null]},{"method":"addLegend","args":[{"colors":["#E8F6E4","#C0E6BA","#85CC84","#3FA95C","#147E3A"],"labels":["5.12 to 5.12","5.12 to 6.41","6.41 to 7.13","7.13 to 10.78","10.78 to 12.50"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"unknown","title":"Average Wind Speed (km/h)","extra":null,"layerId":"legend401","className":"info legend sf_data","group":"sf_data"}]},{"method":"addLayersControl","args":[["Esri.WorldGrayCanvas","OpenStreetMap","Esri.WorldTopoMap"],"sf_data",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]}],"limits":{"lat":[1.2824,1.4439],"lng":[103.6184,103.9823]},"fitBounds":[1.2824,103.6184,1.4439,103.9823,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n\t\t\t\t\t\tfunction(el, x) {\n\t\t\t\t\t\t\tvar tldiv = el.getElementsByClassName(\"leaflet-top leaflet-left\")[0];\n\t\t\t\t\t\t\tvar titlediv = document.createElement('div');\n\t\t\t\t\t\t\ttitlediv.className = \"info legend leaflet-control\";\n\t\t\t\t\t\t\ttitlediv.innerHTML = \"<b>Average Wind Speed for December 2024<\/b>\";\n\t\t\t\t\t\t\ttldiv.insertBefore(titlediv, tldiv.childNodes[0]);\n\t\t\t\t\t\t}).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
 </div>
 </div>
 </section>
 </section>
-<section id="exploratory-data-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="exploratory-data-analysis">3 Exploratory Data Analysis</h2>
+<section id="spatial-autocorrelation---local-morans-i" class="level3">
+<h3 class="anchored" data-anchor-id="spatial-autocorrelation---local-morans-i">3.2 Spatial autocorrelation - Local Moran’s I</h3>
+<p>Moran’s I is a measure of spatial autocorrelation, which <strong>quantifies the degree to which a variable is similar to its neighbors in a geographic area.</strong> It is often used in spatial statistics to assess patterns of clustering or dispersion in spatial data.</p>
+<p><strong>Local Moran’s I</strong> (also known as Local Indicators of Spatial Association - LISA) will further identify any localized clusters or outliers in the data.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Local Moran’s I</strong> <strong>&gt; 0</strong> indicates that similar values are clustered together in space. In other words, if the value of a variable at one location is high, nearby locations are likely to have high values as well.</p>
+<p><strong>Local Moran’s I = 0</strong> indicates random spatial autocorrelation, meaning that the values are randomly distributed.</p>
+<p><strong>Local Moran’s I &lt; 0</strong> indicates spatial dissimilarity — locations with high values of the variable are surrounded by locations with low values, or vice versa.</p>
+</div>
+</div>
+<section id="function-to-visualise-spatial-association-for-rainfall" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-visualise-spatial-association-for-rainfall">3.2.1 Function to visualise spatial association for rainfall</h4>
+<div class="cell">
+<details class="code-fold">
+<summary>Click to view code block for functions to calculate and plot LISA</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>localmoran_i_rainfall <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year, month, <span class="at">k_neighbors =</span> <span class="dv">2</span>) {</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Station, <span class="at">Year =</span> <span class="fu">year</span>(date), <span class="at">Month =</span> <span class="fu">month</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">FALSE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">Total_Rainfall =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Daily Rainfall Total (mm)</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  filtered_data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(Year <span class="sc">==</span> year, Month <span class="sc">==</span> month)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  sf_data <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(filtered_data, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"Longitude"</span>, <span class="st">"Latitude"</span>), <span class="at">crs =</span> <span class="dv">3414</span>)</span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  coordinates <span class="ot">&lt;-</span> <span class="fu">st_coordinates</span>(sf_data)</span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  coordinates <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(coordinates)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  coordinates[] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(coordinates, as.numeric)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>  neighbors <span class="ot">&lt;-</span> <span class="fu">knearneigh</span>(coordinates, <span class="at">k =</span> k_neighbors)  </span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>  weights <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(<span class="fu">knn2nb</span>(neighbors), <span class="at">style =</span> <span class="st">"W"</span>)  </span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  variable <span class="ot">&lt;-</span> filtered_data<span class="sc">$</span>Total_Rainfall</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  local_moran_result <span class="ot">&lt;-</span> <span class="fu">localmoran</span>(variable, weights)</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  filtered_data<span class="sc">$</span>Local_Moran_I <span class="ot">&lt;-</span> local_moran_result[, <span class="dv">1</span>]  </span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  sf_data<span class="sc">$</span>Local_Moran_I <span class="ot">&lt;-</span> filtered_data<span class="sc">$</span>Local_Moran_I</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(sf_data)</span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>plot_rainfall_map <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year, month, <span class="at">k_neighbors =</span> <span class="dv">2</span>) {</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>  rainfall_map <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(data) <span class="sc">+</span></span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_bubbles</span>(<span class="at">size =</span> <span class="st">"Total_Rainfall"</span>, <span class="at">col =</span> <span class="st">"Local_Moran_I"</span>, </span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>               <span class="at">scale =</span> <span class="dv">4</span>, <span class="at">style =</span> <span class="st">"jenks"</span>, <span class="at">palette =</span> <span class="st">"RdYlBu"</span>, </span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.size =</span> <span class="st">"Local Moran's I"</span>, </span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>               <span class="at">title.col =</span> <span class="st">"Local Moran's I"</span>,</span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>               <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"Station"</span>, <span class="st">"Total_Rainfall"</span>,<span class="st">"Local_Moran_I"</span>)) <span class="sc">+</span></span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tm_layout</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Total Rainfall - Spatial Association (Local Moran's I) for"</span>, month, year))</span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(rainfall_map)</span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>rainfall_map_data <span class="ot">&lt;-</span> <span class="fu">localmoran_i_rainfall</span>(climate_rainfall3414, <span class="dv">2024</span>, <span class="st">"December"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in knn2nb(neighbors): neighbour object has 2 sub-graphs</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rainfall_map_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 9 features and 5 fields
+Geometry type: POINT
+Dimension:     XY
+Bounding box:  xmin: 4081.375 ymin: 29426.93 xmax: 44579.86 ymax: 47284.7
+Projected CRS: SVY21 / Singapore TM
+# A tibble: 9 × 6
+  Station      Year Month Total_Rainfall            geometry Local_Moran_I
+* &lt;chr&gt;       &lt;dbl&gt; &lt;ord&gt;          &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;dbl&gt;
+1 Admiralty    2024 Dece…           225.  (22667.41 47284.7)       -0.272 
+2 Ang Mo Kio   2024 Dece…           174. (29856.43 40141.51)       -0.293 
+3 Changi       2024 Dece…           234.  (44579.86 38870.4)       -0.408 
+4 Choa Chu K…  2024 Dece…           168. (15656.11 39434.11)        0.100 
+5 East Coast…  2024 Dece…           235  (42321.02 32843.93)       -0.420 
+6 Newton       2024 Dece…           233. (28354.06 32545.01)       -0.393 
+7 Pasir Panj…  2024 Dece…           166. (19228.14 29426.93)        0.0291
+8 Pulau Ubin   2024 Dece…           104. (42910.23 44288.49)       -1.23  
+9 Tuas South   2024 Dece…           283. (4081.375 30688.36)       -1.13  </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>rainfall_map <span class="ot">&lt;-</span> <span class="fu">plot_rainfall_map</span>(rainfall_map_data, <span class="dv">2024</span>, <span class="st">"December"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to interactive viewing</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(rainfall_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Variable(s) "Local_Moran_I" contains positive and negative values, so midpoint is set to 0. Set midpoint = NA to show the full spectrum of the color palette.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Legend for symbol sizes not available in view mode.</code></pre>
+</div>
+</div>
 </section>
-<section id="confirmatory-data-analysis" class="level2">
-<h2 class="anchored" data-anchor-id="confirmatory-data-analysis">4 Confirmatory Data Analysis</h2>
 </section>
-<section id="geospatial-analysis-ui-prototype" class="level2">
-<h2 class="anchored" data-anchor-id="geospatial-analysis-ui-prototype">5 Geospatial Analysis &amp; UI Prototype</h2>
+</section>
+<section id="ui-prototype" class="level2">
+<h2 class="anchored" data-anchor-id="ui-prototype">5 UI Prototype</h2>
 
 
 </section>

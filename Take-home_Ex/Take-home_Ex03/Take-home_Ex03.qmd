@@ -529,12 +529,14 @@ print(rainfall_map_selected)
 plot_rainfall_map(rainfall_map_data, 2024, "December")
 ```
 
-## 5 UI Prototype Design
+### 3.3 
 
-### 5.1 Home Page
+## 4 UI Prototype Design
+
+### 4.1 Home Page
 
 ![](screenshots/Home_Page.png)
 
-### 5.2 Geospatial Exploratory Data Analysis
+### 4.2 Geospatial Exploratory Data Analysis
 
 ![](screenshots/Geospatial.png)

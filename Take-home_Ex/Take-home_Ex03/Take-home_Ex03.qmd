@@ -50,7 +50,8 @@ As the data is stored disparately on the website, segmented by both month and by
 
 ```{r}
 pacman::p_load(readxl, dplyr, readr, lubridate, sf, 
-               tmap, tidyverse, DT, zoo, plotly, spdep)
+               tmap, DT, zoo, plotly, spdep, tidyverse,
+               sp, ggplot2)
 ```
 
 ## 2.2 Scraping climate data from MSS website
@@ -518,6 +519,8 @@ plot_rainfall_map <- function(data, year, month, k_neighbors = 2) {
 ```
 
 ```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for printing summary table"
 rainfall_map_data <- localmoran_i_rainfall(climate_rainfall3414, 2024, "December")
 rainfall_map_selected <- rainfall_map_data %>%
   st_drop_geometry() %>%
@@ -529,7 +532,53 @@ print(rainfall_map_selected)
 plot_rainfall_map(rainfall_map_data, 2024, "December")
 ```
 
-### 3.3 
+::: callout-warning
+As the geospatial data studied is from limited number of weather stations, the spatial correlation results may not be accurate as the spatial points are spread out across the country with similar distance between each other (i.e. not a good analysis to find out if geospatial distance have an impact on the weather variables).
+:::
+
+### 3.3 Inverse Distance Weighted (IDW) interpolation
+
+Inverse Distance Weighted (IDW) interpolation is a spatial interpolation technique used to **estimate values at unknown locations based on nearby observed data points.** It assumes that points closer to the unknown location have a greater influence on the estimated value than points farther away.
+
+### 3.3.1 IDW interpolation for total rainfall
+
+```{r}
+pacman::p_load(raster, gstat)
+```
+
+**Convert coordinates to x, y spatial points:**
+
+```{r}
+climate_rainfall3414 <- cbind(climate_rainfall3414, st_coordinates(climate_rainfall3414))
+```
+
+**Define intepolation grid and create grid of points:**
+
+```{r}
+x_rainfall <- seq(min(climate_rainfall3414$X), max(climate_rainfall3414$X), by = 20)
+y_rainfall <- seq(min(climate_rainfall3414$Y), max(climate_rainfall3414$Y), by = 20)
+
+grid_rainfall <- expand.grid(x = x_rainfall, y = y_rainfall)
+
+grid_rainfall_sf <- st_as_sf(grid_rainfall, coords = c("x", "y"), crs = 3414)
+st_crs(grid_rainfall_sf)
+```
+
+**Perform IDW Interpolation:**
+
+```{r}
+idw_rainfall <- idw(formula = Daily.Rainfall.Total..mm. ~ 1, locations = climate_rainfall3414, newdata = grid_rainfall_sf)
+
+```
+
+```{r}
+summary(idw_rainfall)
+head(idw_rainfall)
+```
+
+**Visualize results using ggplot2:**
+
+TBC
 
 ## 4 UI Prototype Design
 
@@ -540,3 +589,7 @@ plot_rainfall_map(rainfall_map_data, 2024, "December")
 ### 4.2 Geospatial Exploratory Data Analysis
 
 ![](screenshots/Geospatial.png)
+
+### 4.3 Inverse Distance Weighted (IDW) interpolation
+
+![](screenshots/IDW.png)

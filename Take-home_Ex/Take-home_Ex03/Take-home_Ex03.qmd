@@ -348,7 +348,7 @@ climate_windspeed3414 <- st_as_sf(climate_windspeed_interpolated, crs = 3414)
 Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:
 
 | Parameter | Description                             | UI for Parameter Selection |
-|------------------|------------------------------|------------------------|
+|------------------|--------------------------------|----------------------|
 | `Year`    | The year from which the data is drawn.  | Dropdown List              |
 | `Month`   | The month from which the data is drawn. | Dropdown List              |
 
@@ -540,45 +540,106 @@ As the geospatial data studied is from limited number of weather stations, the s
 
 Inverse Distance Weighted (IDW) interpolation is a spatial interpolation technique used to **estimate values at unknown locations based on nearby observed data points.** It assumes that points closer to the unknown location have a greater influence on the estimated value than points farther away.
 
-### 3.3.1 IDW interpolation for total rainfall
+### 3.3.1 Loading Packages and Boundary Shapefile
 
 ```{r}
-pacman::p_load(raster, gstat)
-```
-
-**Convert coordinates to x, y spatial points:**
-
-```{r}
-climate_rainfall3414 <- cbind(climate_rainfall3414, st_coordinates(climate_rainfall3414))
-```
-
-**Define intepolation grid and create grid of points:**
-
-```{r}
-x_rainfall <- seq(min(climate_rainfall3414$X), max(climate_rainfall3414$X), by = 20)
-y_rainfall <- seq(min(climate_rainfall3414$Y), max(climate_rainfall3414$Y), by = 20)
-
-grid_rainfall <- expand.grid(x = x_rainfall, y = y_rainfall)
-
-grid_rainfall_sf <- st_as_sf(grid_rainfall, coords = c("x", "y"), crs = 3414)
-st_crs(grid_rainfall_sf)
-```
-
-**Perform IDW Interpolation:**
-
-```{r}
-idw_rainfall <- idw(formula = Daily.Rainfall.Total..mm. ~ 1, locations = climate_rainfall3414, newdata = grid_rainfall_sf)
-
+pacman::p_load(gstat)
 ```
 
 ```{r}
-summary(idw_rainfall)
-head(idw_rainfall)
+#| code-fold: true
+#| code-summary: "Click to view code for loading Singapore boundary shapefile"
+mpsz <- st_read(dsn = "data/geospatial", 
+                layer = "MP14_SUBZONE_WEB_PL")
+mpsz <- st_transform(mpsz, crs = 3414)
+st_crs(mpsz)
 ```
 
-**Visualize results using ggplot2:**
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for setting minimum and maximum for interpolation random points" 
 
-TBC
+bbox <- st_bbox(mpsz)
+
+bbox <- st_transform(bbox, crs = 3414)
+
+lon_min <- bbox["xmin"]
+lon_max <- bbox["xmax"]
+lat_min <- bbox["ymin"]
+lat_max <- bbox["ymax"]
+```
+
+### 3.3.2 IDW interpolation function for total rainfall
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code block for function - rainfall"
+generate_idw_rainfall <- function(data, resolution, nmax) {
+  
+  set.seed(123)
+  
+  # Calculate the number of random points based on resolution
+  n_points <- ceiling((lon_max - lon_min) / resolution) * ceiling((lat_max - lat_min) / resolution)
+  
+  # Generate random points within the bounding box
+  random_points <- data.frame(
+    X = runif(n_points, lon_min, lon_max),
+    Y = runif(n_points, lat_min, lat_max)
+  )
+  
+  # Convert these random points to an sf object with the correct CRS
+  random_points_sf <- st_as_sf(random_points, coords = c("X", "Y"), crs = 3414)
+  
+  # Perform IDW interpolation using the provided climate data
+  idw_rainfall_random <- idw(formula = Daily.Rainfall.Total..mm. ~ 1, 
+                              locations = data, 
+                              newdata = random_points_sf, 
+                              nmax = nmax)  # Set nmax for interpolation
+  
+  # Convert the IDW results into a spatial object
+  coords <- st_coordinates(idw_rainfall_random)
+  idw_rainfall_sf <- cbind(idw_rainfall_random, coords)
+  idw_rainfall_sf <- st_as_sf(idw_rainfall_sf, coords = c("X", "Y"), crs = 3414)
+
+  # Clip points to Singapore boundary
+  idw_rainfall_sf <- idw_rainfall_sf[mpsz, ]
+  
+  # Visualize the result using tmap
+  tmap_mode("view")
+  map <- tm_shape(idw_rainfall_sf) +
+    tm_bubbles(col = "var1.pred", 
+               size = "var1.pred", 
+               scale = 4, style = "jenks", palette = "Blues",  
+               border.col = "black", 
+               border.lwd = 0.5) +
+  tm_layout(
+    title = "Interpolated Rainfall at Random Points in Singapore",
+    frame = TRUE,          
+    frame.lwd = 2,         
+    title.size = 1.5
+  )
+  
+  # Return the map object and the interpolation result
+  return(list(map = map, idw_result = idw_rainfall_sf))
+}
+
+```
+
+To convert climate_rainfall to `sf object` with the same crs :
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+climate_rainfall3414 <- st_as_sf(climate_rainfall3414, coords = c("X", "Y"), crs = 3414)
+inherits(climate_rainfall3414, "sf") 
+```
+
+Plot the IDW interpolation map:
+
+```{r}
+results <- generate_idw_rainfall(climate_rainfall3414, resolution = 5000, nmax = 5)
+results
+```
 
 ## 4 UI Prototype Design
 

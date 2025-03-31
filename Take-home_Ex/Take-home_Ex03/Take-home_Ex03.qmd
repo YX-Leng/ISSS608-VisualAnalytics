@@ -174,7 +174,7 @@ climate_windspeed <- climate_data %>%
 
 ## 2.4 Checking for Missing Data
 
-### 2.4.1 Checking for missing values in datasets
+### 2.4.1 Checking for missing values in datasets & filtering stations
 
 Code blocks below identify and calculate the percentage of missing values for each of the weather variable dataset:
 
@@ -201,6 +201,11 @@ Based on the missing values analysis for the rainfall dataset, a few weather sta
 From the rainfall dataset, we have identified that weather stations **S29, S92, S64 and S06** should be excluded from the analysis.
 :::
 
+```{r}
+stations_rainfall <- stations_df %>%
+  filter(!StationID %in% c("S29", "S92", "S64", "S06"))
+```
+
 ## Temperature
 
 ```{r}
@@ -223,6 +228,11 @@ Based on the missing values analysis for the temperature dataset, a few weather 
 From the temperature dataset, we have identified that weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S108, S23, S80, S25 and S06** should be excluded from the analysis.
 :::
 
+```{r}
+stations_temperature <- stations_df %>%
+  filter(!StationID %in% c("S07", "S08", "S112", "S113", "S114", "S119", "S123", "S29", "S33", "S35", "S40", "S64", "S66", "S69", "S71", "S77", "S78", "S79", "S81", "S84", "S88", "S89", "S90", "S92", "S94", "S80", "S23", "S108", "S25", "S06"))
+```
+
 ## Windspeed
 
 ```{r}
@@ -244,20 +254,18 @@ Based on the missing values analysis for the windspeed dataset, a few weather st
 
 From the temperature dataset, we have identified that weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43 and S117** should be excluded from the analysis.
 :::
-:::
-
-### 2.4.2 Filtering datasets and employing linear interpolation
-
-For the purpose of analysis and the UI design, we should exclude the weather stations **S07, S08, S112, S113, S114, S119, S123, S29, S33, S35, S40, S64, S66, S69, S71, S77, S78, S79, S81, S84, S88, S89, S90, S92, S94, S80, S23, S60, S44, S50, S43, S117, S108, S25 and S06**.
-
-Apart from that, we employ linear interpolation to estimate the missing values for the weather stations with \<5% missing data, assuming a linear relationship between two known data points. This method is effective for datasets where changes between consecutive data points are expected to be gradual / linear (i.e. weather parameters).
-
-Filtering weather stations for analysis (final = **9 automated weather stations**):
 
 ```{r}
-stations_filtered <- stations_df %>%
-  filter(!StationID %in% c("S07", "S08", "S112", "S113", "S114", "S119", "S123", "S29", "S33", "S35", "S40", "S64", "S66", "S69", "S71", "S77", "S78", "S79", "S81", "S84", "S88", "S89", "S90", "S92", "S94", "S80", "S23", "S60", "S44", "S50", "S43", "S117", "S108", "S25", "S06"))
+stations_wind <- stations_df %>%
+  filter(!StationID %in% c("S07", "S08", "S112", "S113", "S114", "S119", "S123", "S29", "S33", "S35", "S40", "S64", "S66", "S69", "S71", "S77", "S78", "S79", "S81", "S84", "S88", "S89", "S90", "S92", "S94", "S80", "S23", "S60", "S44", "S50", "S43", "S117"))
 ```
+:::
+
+### 2.4.2 Employing linear interpolation
+
+For the purpose of analysis and the UI design, we should exclude the weather stations **that have more than 5% missing data.**
+
+Apart from that, we employ linear interpolation to estimate the missing values for the weather stations with \<5% missing data, assuming a linear relationship between two known data points. This method is effective for datasets where changes between consecutive data points are expected to be gradual / linear (i.e. weather parameters).
 
 Linear interpolation for missing values:
 
@@ -270,7 +278,7 @@ Linear interpolation for missing values:
 
 
 climate_rainfall_interpolated <- climate_rainfall %>%
-  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  inner_join(stations_rainfall, by = c("station" = "StationID")) %>%
   arrange(station, date) %>%
   group_by(station) %>%
   mutate(
@@ -291,7 +299,7 @@ climate_rainfall_interpolated
 
 
 climate_temperature_interpolated <- climate_temperature %>%
-  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  inner_join(stations_temperature, by = c("station" = "StationID")) %>%
   arrange(station, date) %>%
   group_by(station) %>%
   mutate(
@@ -311,7 +319,7 @@ climate_temperature_interpolated
 
 
 climate_windspeed_interpolated <- climate_windspeed %>%
-  inner_join(stations_filtered, by = c("station" = "StationID")) %>%
+  inner_join(stations_wind, by = c("station" = "StationID")) %>%
   arrange(station, date) %>%
   group_by(station) %>%
   mutate(
@@ -321,14 +329,6 @@ climate_windspeed_interpolated <- climate_windspeed %>%
   ungroup()
 climate_windspeed_interpolated
 ```
-:::
-
-::: callout-important
-To check for completeness of data, each dataset should have **16,443** observations for 9 weather stations and 5 full years of data (from 2020 to 2024).
-
-\[365 days x 5 years + 2 days\*\] x 9 stations = 16,443 observations
-
-*\*Year 2020 and 2024 are leap years*
 :::
 
 ## 2.5 Preparing Geospatial Data
@@ -372,11 +372,11 @@ plot_rainfall_map <- function(data, year, month) {
   tmap_mode("view")
   
   map <- tm_shape(sf_data) +
-    tm_bubbles(size = "Total_Rainfall", col = "Total_Rainfall", 
-               scale = 4, style = "jenks", palette = "Blues", 
+    tm_bubbles(size = 1, col = "Total_Rainfall", 
+               scale = 3, style = "jenks", palette = "Blues", 
                title.size = "Total Rainfall (mm)", 
                title.col = "Total Rainfall (mm)",
-               popup.vars = c("Station")) +
+               popup.vars = c("Station", "Total_Rainfall")) +
     tm_layout(title = paste("Total Rainfall Distribution for", month, year))
   
   return(map)
@@ -405,8 +405,8 @@ plot_temp_map <- function(data, year, month) {
   tmap_mode("view")
   
   map <- tm_shape(sf_data) +
-    tm_bubbles(size = "Avg_Temp", col = "Avg_Temp", 
-               scale = 4, style = "jenks", palette = "Reds", 
+    tm_bubbles(size = 1, col = "Avg_Temp", 
+               scale = 3, style = "jenks", palette = "Reds", 
                title.size = "Average Temperature (°C)", 
                title.col = "Average Temperature (°C)",
                popup.vars = c("Station")) +
@@ -438,8 +438,8 @@ plot_wind_map <- function(data, year, month) {
   tmap_mode("view")
   
   map <- tm_shape(sf_data) +
-    tm_bubbles(size = "Avg_Wind", col = "Avg_Wind", 
-               scale = 4, style = "jenks", palette = "Greens", 
+    tm_bubbles(size = 1, col = "Avg_Wind", 
+               scale = 3, style = "jenks", palette = "Greens", 
                title.size = "Average Wind Speed (km/h)", 
                title.col = "Average Wind Speed (km/h)",
                popup.vars = c("Station")) +
@@ -507,7 +507,7 @@ plot_rainfall_map <- function(data, year, month, k_neighbors = 2) {
   
   rainfall_map <- tm_shape(data) +
     tm_bubbles(size = "Total_Rainfall", col = "Local_Moran_I", 
-               scale = 4, style = "jenks", palette = "RdYlBu", 
+               scale = 3, style = "jenks", palette = "Blues", 
                title.size = "Local Moran's I", 
                title.col = "Local Moran's I",
                popup.vars = c("Station", "Total_Rainfall","Local_Moran_I")) +
@@ -532,8 +532,8 @@ print(rainfall_map_selected)
 plot_rainfall_map(rainfall_map_data, 2024, "December")
 ```
 
-::: callout-warning
-As the geospatial data studied is from limited number of weather stations, the spatial correlation results may not be accurate as the spatial points are spread out across the country with similar distance between each other (i.e. not a good analysis to find out if geospatial distance have an impact on the weather variables).
+::: callout-important
+Areas like Tuas South and Jurong Island have Local Moran I values indicative of a spatial cluster, hence the high rainfall could be due to a spatial correlation.
 :::
 
 ### 3.3 Inverse Distance Weighted (IDW) interpolation
@@ -591,7 +591,7 @@ generate_idw_rainfall <- function(data, resolution, nmax) {
   random_points_sf <- st_as_sf(random_points, coords = c("X", "Y"), crs = 3414)
   
   # Perform IDW interpolation using the provided climate data
-  idw_rainfall_random <- idw(formula = Daily.Rainfall.Total..mm. ~ 1, 
+  idw_rainfall_random <- idw(formula = value_rainfall ~ 1, 
                               locations = data, 
                               newdata = random_points_sf, 
                               nmax = nmax)  # Set nmax for interpolation
@@ -605,7 +605,7 @@ generate_idw_rainfall <- function(data, resolution, nmax) {
   idw_rainfall_sf <- idw_rainfall_sf[mpsz, ]
   
   # Visualize the result using tmap
-  tmap_mode("view")
+  tmap_mode("plot")
   map <- tm_shape(idw_rainfall_sf) +
     tm_bubbles(col = "var1.pred", 
                size = "var1.pred", 
@@ -619,9 +619,20 @@ generate_idw_rainfall <- function(data, resolution, nmax) {
     title.size = 1.5
   )
   
+  tmap_mode("view")
   # Return the map object and the interpolation result
-  return(list(map = map, idw_result = idw_rainfall_sf))
+  return(map)
 }
+```
+
+To rename column name to be used in function and replace NA values:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code"
+names(climate_rainfall3414)[names(climate_rainfall3414) == "Daily Rainfall Total (mm)"] <- "value_rainfall"
+
+climate_rainfall3414$value_rainfall[is.na(climate_rainfall3414$value_rainfall)] <- 0
 
 ```
 
@@ -637,8 +648,8 @@ inherits(climate_rainfall3414, "sf")
 Plot the IDW interpolation map:
 
 ```{r}
-results <- generate_idw_rainfall(climate_rainfall3414, resolution = 5000, nmax = 5)
-results
+generate_idw_rainfall(climate_rainfall3414, resolution = 4000, nmax = 5)
+
 ```
 
 ## 4 UI Prototype Design

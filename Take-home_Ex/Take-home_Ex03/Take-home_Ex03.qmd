@@ -354,7 +354,7 @@ write_rds(climate_windspeed3414, "data/rds/climate_windspeed3414.rds")
 Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:
 
 | Parameter | Description                             | UI for Parameter Selection |
-|----------------|----------------------------------|-----------------------|
+|-----------|-----------------------------------------|----------------------------|
 | `Year`    | The year from which the data is drawn.  | Dropdown List              |
 | `Month`   | The month from which the data is drawn. | Dropdown List              |
 

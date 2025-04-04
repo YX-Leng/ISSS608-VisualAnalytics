@@ -21,8 +21,9 @@ library(ggrepel)
 library(tmap)
 library(sf)
 library(spdep)
+library(leaflet)
 library(raster)
-
+library(terra)
 
 # Load datasets
 climate_temperature_interpolated <- read_csv("data/climate_temperature_interpolated.csv")

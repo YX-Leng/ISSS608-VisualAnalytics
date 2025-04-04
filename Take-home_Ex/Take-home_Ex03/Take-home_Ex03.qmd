@@ -341,6 +341,12 @@ climate_temperature3414 <- st_as_sf(climate_temperature_interpolated, crs = 3414
 climate_windspeed3414 <- st_as_sf(climate_windspeed_interpolated, crs = 3414)
 ```
 
+```{r}
+write_rds(climate_rainfall3414, "data/rds/climate_rainfall3414.rds")
+write_rds(climate_temperature3414, "data/rds/climate_temperature3414.rds")
+write_rds(climate_windspeed3414, "data/rds/climate_windspeed3414.rds")
+```
+
 ## 3 Geospatial Exploratory Data Analysis
 
 ### 3.1 Bubble Map - Visualising Weather Variables
@@ -348,7 +354,7 @@ climate_windspeed3414 <- st_as_sf(climate_windspeed_interpolated, crs = 3414)
 Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:
 
 | Parameter | Description                             | UI for Parameter Selection |
-|------------------|--------------------------------|----------------------|
+|----------------|----------------------------------|-----------------------|
 | `Year`    | The year from which the data is drawn.  | Dropdown List              |
 | `Month`   | The month from which the data is drawn. | Dropdown List              |
 
@@ -359,32 +365,56 @@ There will be 3 functions created namely for (i) monthly total rainfall, (ii) av
 ```{r}
 #| code-fold: true
 #| code-summary: "Click to view code block for function to calculate monthly total rainfall"
-plot_rainfall_map <- function(data, year, month) {
- data <- data %>%
-    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
-    summarise(Total_Rainfall = sum(`Daily Rainfall Total (mm)`, na.rm = TRUE), .groups = "drop")
+# Function to generate rainfall map
+plot_rainfall_map <- function(data, selected_year, selected_month) {
   
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
+  # Aggregate rainfall data by Station, Year, and Month
+  aggregated_data <- data %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
+    summarise(
+      Total_Rainfall = sum(`Daily Rainfall Total (mm)`, na.rm = TRUE),
+      geometry = first(geometry),  # Preserve unique geometry for each station
+      .groups = "drop"
+    ) %>%
+    st_as_sf(crs = 3414)
   
-  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  # Convert Month to character before filtering
+  filtered_data <- aggregated_data %>%
+    filter(Year == selected_year, as.character(Month) == as.character(selected_month))
   
+  # Handle empty data case
+  if (nrow(filtered_data) == 0) {
+    return(tm_shape() + tm_layout(main.title = "No data available for the selected year and month."))
+  }
+  
+  # Set interactive map mode
   tmap_mode("view")
   
-  map <- tm_shape(sf_data) +
-    tm_bubbles(size = 1, col = "Total_Rainfall", 
-               scale = 3, style = "jenks", palette = "Blues", 
-               title.size = "Total Rainfall (mm)", 
-               title.col = "Total Rainfall (mm)",
-               popup.vars = c("Station", "Total_Rainfall")) +
-    tm_layout(title = paste("Total Rainfall Distribution for", month, year))
+  # Create map with new syntax for tmap v4
+  map <- tm_shape(filtered_data) +
+    tm_bubbles(
+      size = "Total_Rainfall",
+      col = "Total_Rainfall",  # Fill color for the bubbles
+      palette = "Blues",       # Palette for fill color
+      size.legend.size = 0.5,  # Adjust the size legend scaling
+      legend.size.show = TRUE, # Show size legend
+      legend.fill.show = TRUE, # Show fill color legend
+      border.col = "black",    # Outline color for bubbles
+      title.size = "Total Rainfall (mm)"
+    ) +
+    tm_layout(
+      main.title = paste("Total Rainfall for", selected_month, selected_year),
+      main.title.size = 1.5,
+      legend.outside = TRUE
+    )
   
   return(map)
 }
 ```
 
 ```{r}
-plot_rainfall_map(climate_rainfall3414, 2024, "December")
+plot_rainfall_map(climate_rainfall3414, 2024, "June")
 ```
 
 #### 3.1.2 Function to visualise average monthly temperature
@@ -392,32 +422,56 @@ plot_rainfall_map(climate_rainfall3414, 2024, "December")
 ```{r}
 #| code-fold: true
 #| code-summary: "Click to view code block for function to calculate average monthly temperature"
-plot_temp_map <- function(data, year, month) {
- data <- data %>%
-    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
-    summarise(Avg_Temp = mean(`Mean Temperature (°C)`, na.rm = TRUE), .groups = "drop")
+# Function to generate temperature map  
+plot_temperature_map <- function(data, selected_year, selected_month) {
   
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
+  # Aggregate temperature data by Station, Year, and Month
+  aggregated_data <- data %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
+    summarise(
+      Mean_Temperature = mean(`Mean Temperature (°C)`, na.rm = TRUE),
+      geometry = first(geometry),  # Preserve unique geometry for each station
+      .groups = "drop"
+    ) %>%
+    st_as_sf(crs = 3414)  # Ensure it's an sf object
   
-  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  # Filter data for the selected year and month
+  filtered_data <- aggregated_data %>%
+    filter(Year == selected_year, as.character(Month) == as.character(selected_month))
   
+  # Handle empty data case
+  if (nrow(filtered_data) == 0) {
+    return(tm_shape() + tm_layout(main.title = "No data available for the selected year and month."))
+  }
+  
+  # Set interactive map mode
   tmap_mode("view")
   
-  map <- tm_shape(sf_data) +
-    tm_bubbles(size = 1, col = "Avg_Temp", 
-               scale = 3, style = "jenks", palette = "Reds", 
-               title.size = "Average Temperature (°C)", 
-               title.col = "Average Temperature (°C)",
-               popup.vars = c("Station")) +
-    tm_layout(title = paste("Average Temperature for", month, year))
+  # Create map with bubbles
+  map <- tm_shape(filtered_data) +
+    tm_bubbles(
+      size = "Mean_Temperature",       # Bubble size based on Mean Temperature
+      col = "Mean_Temperature",        # Bubble color based on Mean Temperature
+      palette = "Reds",                # Change the color palette to Reds
+      size.legend.size = 0.5,          # Adjust the size legend scaling factor
+      legend.size.show = TRUE,         # Show size legend
+      legend.fill.show = TRUE,         # Show fill color legend
+      border.col = "black",            # Outline color for bubbles
+      title.size = "Mean Temperature (°C)"
+    ) +
+    tm_layout(
+      main.title = paste("Mean Temperature for", selected_month, selected_year),
+      main.title.size = 1.5,
+      legend.outside = TRUE
+    )
   
   return(map)
 }
 ```
 
 ```{r}
-plot_temp_map(climate_temperature3414, 2024, "December")
+plot_temperature_map(climate_temperature3414, 2024, "December")
 ```
 
 #### 3.1.3 Function to visualise average monthly wind speed
@@ -425,25 +479,49 @@ plot_temp_map(climate_temperature3414, 2024, "December")
 ```{r}
 #| code-fold: true
 #| code-summary: "Click to view code block for function to calculate average monthly windspeed"
-plot_wind_map <- function(data, year, month) {
- data <- data %>%
-    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
-    summarise(Avg_Wind = mean(`Mean Wind Speed (km/h)`, na.rm = TRUE), .groups = "drop")
+# Function to generate wind speed map  
+plot_windspeed_map <- function(data, selected_year, selected_month) {
   
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
+  # Aggregate wind speed data by Station, Year, and Month
+  aggregated_data <- data %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
+    summarise(
+      Mean_Wind_Speed = mean(`Mean Wind Speed (km/h)`, na.rm = TRUE),
+      geometry = first(geometry),  # Preserve unique geometry for each station
+      .groups = "drop"
+    ) %>%
+    st_as_sf(crs = 3414)  # Ensure it's an sf object
   
-  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  # Filter data for the selected year and month
+  filtered_data <- aggregated_data %>%
+    filter(Year == selected_year, as.character(Month) == as.character(selected_month))
   
+  # Handle empty data case
+  if (nrow(filtered_data) == 0) {
+    return(tm_shape() + tm_layout(main.title = "No data available for the selected year and month."))
+  }
+  
+  # Set interactive map mode
   tmap_mode("view")
   
-  map <- tm_shape(sf_data) +
-    tm_bubbles(size = 1, col = "Avg_Wind", 
-               scale = 3, style = "jenks", palette = "Greens", 
-               title.size = "Average Wind Speed (km/h)", 
-               title.col = "Average Wind Speed (km/h)",
-               popup.vars = c("Station")) +
-    tm_layout(title = paste("Average Wind Speed for", month, year))
+  # Create map with bubbles
+  map <- tm_shape(filtered_data) +
+    tm_bubbles(
+      size = "Mean_Wind_Speed",       # Bubble size based on Mean Wind Speed
+      col = "Mean_Wind_Speed",        # Bubble color based on Mean Wind Speed
+      palette = "Greens",             # Change the color palette to Greens
+      size.legend.size = 0.5,         # Adjust the size legend scaling factor
+      legend.size.show = TRUE,        # Show size legend
+      legend.fill.show = TRUE,        # Show fill color legend
+      border.col = "black",           # Outline color for bubbles
+      title.size = "Mean Wind Speed (km/h)"
+    ) +
+    tm_layout(
+      main.title = paste("Mean Wind Speed for", selected_month, selected_year),
+      main.title.size = 1.5,
+      legend.outside = TRUE
+    )
   
   return(map)
 }
@@ -451,7 +529,7 @@ plot_wind_map <- function(data, year, month) {
 ```
 
 ```{r}
-plot_wind_map(climate_windspeed3414, 2024, "December")
+plot_windspeed_map(climate_windspeed3414, 2024, "December")
 ```
 
 ### 3.2 Spatial autocorrelation - Local Moran's I
@@ -477,7 +555,8 @@ Moran's I is a measure of spatial autocorrelation, which **quantifies the degree
 localmoran_i_rainfall <- function(data, year, month, k_neighbors = 2) {
   
   data <- data %>%
-    group_by(Station, Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
     summarise(Total_Rainfall = sum(`Daily Rainfall Total (mm)`, na.rm = TRUE), .groups = "drop")
   
   filtered_data <- data %>%
@@ -491,7 +570,7 @@ localmoran_i_rainfall <- function(data, year, month, k_neighbors = 2) {
   
   neighbors <- knearneigh(coordinates, k = k_neighbors)  
   weights <- nb2listw(knn2nb(neighbors), style = "W")  
-
+  
   variable <- filtered_data$Total_Rainfall
   local_moran_result <- localmoran(variable, weights)
   
@@ -502,18 +581,18 @@ localmoran_i_rainfall <- function(data, year, month, k_neighbors = 2) {
   return(sf_data)
 }
 
-plot_rainfall_map <- function(data, year, month, k_neighbors = 2) {
+plot_rainfall_morani <- function(data, year, month, k_neighbors = 2) {
   tmap_mode("view")
   
-  rainfall_map <- tm_shape(data) +
-    tm_bubbles(size = "Total_Rainfall", col = "Local_Moran_I", 
+  rainfall_morani <- tm_shape(data) +
+    tm_symbols(size = "Total_Rainfall", col = "Local_Moran_I", 
                scale = 3, style = "jenks", palette = "Blues", 
                title.size = "Local Moran's I", 
                title.col = "Local Moran's I",
-               popup.vars = c("Station", "Total_Rainfall","Local_Moran_I")) +
+               popup.vars = c("Station", "Total_Rainfall", "Local_Moran_I")) +
     tm_layout(title = paste("Local Indicators of Spatial Association for", month, year))
   
-  return(rainfall_map)
+  return(rainfall_morani)
 }
 
 ```
@@ -529,12 +608,137 @@ print(rainfall_map_selected)
 ```
 
 ```{r}
-plot_rainfall_map(rainfall_map_data, 2024, "December")
+plot_rainfall_morani(rainfall_map_data, 2024, "December")
 ```
 
 ::: callout-important
 Areas like Tuas South and Jurong Island have Local Moran I values indicative of a spatial cluster, hence the high rainfall could be due to a spatial correlation.
 :::
+
+#### 3.2.2 Function to visualise spatial association for mean temperature
+
+```{r}
+localmoran_i_temperature <- function(data, year, month, k_neighbors = 2) {
+  
+  data <- data %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
+    summarise(Mean_Temperature = mean(`Mean Temperature (°C)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  coordinates <- st_coordinates(sf_data)
+  coordinates <- as.data.frame(coordinates)
+  coordinates[] <- lapply(coordinates, as.numeric)
+  
+  neighbors <- knearneigh(coordinates, k = k_neighbors)  
+  weights <- nb2listw(knn2nb(neighbors), style = "W")  
+  
+  variable <- filtered_data$Mean_Temperature
+  local_moran_result <- localmoran(variable, weights)
+  
+  filtered_data$Local_Moran_I <- local_moran_result[, 1]  
+  
+  sf_data$Local_Moran_I <- filtered_data$Local_Moran_I
+  
+  return(sf_data)
+}
+
+plot_temperature_morani <- function(data, year, month, k_neighbors = 2) {
+  tmap_mode("view")
+  
+  temperature_morani <- tm_shape(data) +
+    tm_symbols(size = "Mean_Temperature", col = "Local_Moran_I", 
+               scale = 3, style = "jenks", palette = "Reds", 
+               title.size = "Local Moran's I", 
+               title.col = "Local Moran's I",
+               popup.vars = c("Station", "Mean_Temperature", "Local_Moran_I")) +
+    tm_layout(title = paste("Local Indicators of Spatial Association for", month, year))
+  
+  return(temperature_morani)
+}
+
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for printing summary table"
+temperature_map_data <- localmoran_i_temperature(climate_temperature3414, 2024, "December")
+temperature_map_selected <- temperature_map_data %>%
+  st_drop_geometry() %>%
+  select(Station, Mean_Temperature, Local_Moran_I)
+print(temperature_map_selected)
+```
+
+```{r}
+plot_temperature_morani(temperature_map_data, 2024, "December")
+```
+
+#### 3.2.3 Function to visualise spatial association for mean windspeed
+
+```{r}
+# Function to generate mean wind speed auto correlation map
+localmoran_i_windspeed <- function(data, year, month, k_neighbors = 2) {
+  
+  data <- data %>%
+    mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
+    group_by(Station, Year, Month) %>%
+    summarise(Mean_Wind_Speed = mean(`Mean Wind Speed (km/h)`, na.rm = TRUE), .groups = "drop")
+  
+  filtered_data <- data %>%
+    filter(Year == year, Month == month)
+  
+  sf_data <- st_as_sf(filtered_data, coords = c("Longitude", "Latitude"), crs = 3414)
+  
+  coordinates <- st_coordinates(sf_data)
+  coordinates <- as.data.frame(coordinates)
+  coordinates[] <- lapply(coordinates, as.numeric)
+  
+  neighbors <- knearneigh(coordinates, k = k_neighbors)  
+  weights <- nb2listw(knn2nb(neighbors), style = "W")  
+  
+  variable <- filtered_data$Mean_Wind_Speed
+  local_moran_result <- localmoran(variable, weights)
+  
+  filtered_data$Local_Moran_I <- local_moran_result[, 1]  
+  
+  sf_data$Local_Moran_I <- filtered_data$Local_Moran_I
+  
+  return(sf_data)
+}
+
+plot_windspeed_morani <- function(data, year, month, k_neighbors = 2) {
+  tmap_mode("view")
+  
+  windspeed_morani <- tm_shape(data) +
+    tm_symbols(size = "Mean_Wind_Speed", col = "Local_Moran_I", 
+               scale = 3, style = "jenks", palette = "Blues", 
+               title.size = "Local Moran's I", 
+               title.col = "Local Moran's I",
+               popup.vars = c("Station", "Mean_Wind_Speed", "Local_Moran_I")) +
+    tm_layout(title = paste("Local Indicators of Spatial Association for", month, year))
+  
+  return(windspeed_morani)
+}
+
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Click to view code for printing summary table"
+windspeed_map_data <- localmoran_i_windspeed(climate_windspeed3414, 2024, "December")
+windspeed_map_selected <- windspeed_map_data %>%
+  st_drop_geometry() %>%
+  select(Station, Mean_Wind_Speed, Local_Moran_I)
+print(windspeed_map_selected)
+```
+
+```{r}
+plot_windspeed_morani(windspeed_map_data, 2024, "December")
+```
 
 ### 3.3 Inverse Distance Weighted (IDW) interpolation
 

@@ -178,7 +178,7 @@ climate_windspeed <- climate_data %>%
 
 Code blocks below identify and calculate the percentage of missing values for each of the weather variable dataset:
 
-::: panel-tabset
+:::::: panel-tabset
 ## Rainfall
 
 ```{r}
@@ -259,7 +259,7 @@ From the temperature dataset, we have identified that weather stations **S07, S0
 stations_wind <- stations_df %>%
   filter(!StationID %in% c("S07", "S08", "S112", "S113", "S114", "S119", "S123", "S29", "S33", "S35", "S40", "S64", "S66", "S69", "S71", "S77", "S78", "S79", "S81", "S84", "S88", "S89", "S90", "S92", "S94", "S80", "S23", "S60", "S44", "S50", "S43", "S117"))
 ```
-:::
+::::::
 
 ### 2.4.2 Employing linear interpolation
 
@@ -353,10 +353,10 @@ write_rds(climate_windspeed3414, "data/rds/climate_windspeed3414.rds")
 
 Before going into the actual UI design of the Shiny app for geospatial analysis, we will first develop the function which will allow users to select and interact with the following parameters:
 
-| Parameter | Description                             | UI for Parameter Selection |
-|-----------|-----------------------------------------|----------------------------|
-| `Year`    | The year from which the data is drawn.  | Dropdown List              |
-| `Month`   | The month from which the data is drawn. | Dropdown List              |
+| Parameter | Description | UI for Parameter Selection |
+|----|----|----|
+| `Year` | The year from which the data is drawn. | Dropdown List |
+| `Month` | The month from which the data is drawn. | Dropdown List |
 
 There will be 3 functions created namely for (i) monthly total rainfall, (ii) average temperature and (iii) average windspeed which will all output interactive plots that will visually show the distribution of weather variables across Singapore.
 

@@ -18,14 +18,12 @@ library(stats)
 library(urca)
 library(tidyr)
 library(ggrepel)
+library(sf)
 library(tmap)
 library(tmaptools)
 library(leaflet)
 library(units)
-library(sf)
-library(sp)
-library(automap)
-
+library(spdep)
 
 # Load datasets
 climate_temperature_interpolated <- read_csv("data/climate_temperature_interpolated.csv")
@@ -1175,16 +1173,6 @@ create_station_comparison <- function(dataset_type,
 
 # Bubble Plot - Rainfall
 plot_rainfall_map <- function(data, selected_year, selected_month) {
-  # Ensure data is in the correct format and CRS
-  if (!inherits(data, "sf")) {
-    stop("Input data must be an sf object")
-  }
-  
-  # Ensure valid CRS
-  if (is.na(st_crs(data))) {
-    data <- st_set_crs(data, 3414)
-  }
-  
   # Aggregate rainfall data
   aggregated_data <- data %>%
     mutate(
@@ -1203,32 +1191,13 @@ plot_rainfall_map <- function(data, selected_year, selected_month) {
     filter(Year == selected_year, 
            as.character(Month) == as.character(selected_month))
   
-  # Handle empty data case
-  if (nrow(filtered_data) == 0) {
-    return(tm_shape(st_sf(geometry = st_sfc())) + 
-             tm_text("No data available"))
-  }
-  
-  # Remove any NA values
-  filtered_data <- filtered_data %>%
-    filter(!is.na(Total_Rainfall))
-  
-  # Set scale limits
-  max_rainfall <- max(filtered_data$Total_Rainfall, na.rm = TRUE)
-  
-  # Create map with tmap v4 syntax
+  # Create map
   tm_shape(filtered_data) +
-    tm_symbols(
+    tm_bubbles(
       size = "Total_Rainfall",
       fill = "Total_Rainfall",
-      fill.scale = tm_scale_intervals(
-        values = "brewer.blues",
-        breaks = seq(0, max_rainfall, length.out = 5)
-      ),
+      fill.scale = tm_scale_continuous(values = "brewer.blues"),
       size.scale = tm_scale_continuous(values.scale = 2),
-      col = "black",
-      fill_alpha = 0.6,
-      col_alpha = 0.5,
       id = "Station",
       popup.vars = c(
         "Station" = "Station",
@@ -1236,15 +1205,13 @@ plot_rainfall_map <- function(data, selected_year, selected_month) {
       )
     ) +
     tm_title(text = paste("Total Rainfall for", selected_month, selected_year)) +
-    tm_layout(
-      legend.position = c("right", "bottom")
-    ) +
     tm_view(
       set_zoom_limits = c(11, 14),
       bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
                        ymin = 1.2, ymax = 1.5))
     )
 }
+
 
 # Bubble Plot - Temperature
 plot_temperature_map <- function(data, selected_year, selected_month) {
@@ -1266,33 +1233,13 @@ plot_temperature_map <- function(data, selected_year, selected_month) {
     filter(Year == selected_year, 
            as.character(Month) == as.character(selected_month))
   
-  # Handle empty data case
-  if (nrow(filtered_data) == 0) {
-    return(tm_shape(st_sf(geometry = st_sfc())) + 
-             tm_text("No data available"))
-  }
-  
-  # Remove any NA values
-  filtered_data <- filtered_data %>%
-    filter(!is.na(Mean_Temperature))
-  
-  # Set scale limits
-  max_temp <- max(filtered_data$Mean_Temperature, na.rm = TRUE)
-  min_temp <- min(filtered_data$Mean_Temperature, na.rm = TRUE)
-  
-  # Create map with tmap v4 syntax
+  # Create map
   tm_shape(filtered_data) +
     tm_bubbles(
       size = "Mean_Temperature",
       fill = "Mean_Temperature",
-      fill.scale = tm_scale_intervals(
-        values = "brewer.reds",
-        breaks = seq(min_temp, max_temp, length.out = 5)
-      ),
+      fill.scale = tm_scale_continuous(values = "brewer.reds"),
       size.scale = tm_scale_continuous(values.scale = 2),
-      col = "black",
-      fill_alpha = 0.6,
-      col_alpha = 0.5,
       id = "Station",
       popup.vars = c(
         "Station" = "Station",
@@ -1300,9 +1247,6 @@ plot_temperature_map <- function(data, selected_year, selected_month) {
       )
     ) +
     tm_title(text = paste("Mean Temperature for", selected_month, selected_year)) +
-    tm_layout(
-      legend.position = c("right", "bottom")
-    ) +
     tm_view(
       set_zoom_limits = c(11, 14),
       bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
@@ -1330,33 +1274,13 @@ plot_windspeed_map <- function(data, selected_year, selected_month) {
     filter(Year == selected_year, 
            as.character(Month) == as.character(selected_month))
   
-  # Handle empty data case
-  if (nrow(filtered_data) == 0) {
-    return(tm_shape(st_sf(geometry = st_sfc())) + 
-             tm_text("No data available"))
-  }
-  
-  # Remove any NA values
-  filtered_data <- filtered_data %>%
-    filter(!is.na(Mean_Wind_Speed))
-  
-  # Set scale limits
-  max_wind <- max(filtered_data$Mean_Wind_Speed, na.rm = TRUE)
-  min_wind <- min(filtered_data$Mean_Wind_Speed, na.rm = TRUE)
-  
-  # Create map with tmap v4 syntax
+  # Create map
   tm_shape(filtered_data) +
     tm_bubbles(
       size = "Mean_Wind_Speed",
       fill = "Mean_Wind_Speed",
-      fill.scale = tm_scale_intervals(
-        values = "brewer.greens",
-        breaks = seq(min_wind, max_wind, length.out = 5)
-      ),
+      fill.scale = tm_scale_continuous(values = "brewer.greens"),
       size.scale = tm_scale_continuous(values.scale = 2),
-      col = "black",
-      fill_alpha = 0.6,
-      col_alpha = 0.5,
       id = "Station",
       popup.vars = c(
         "Station" = "Station",
@@ -1364,15 +1288,13 @@ plot_windspeed_map <- function(data, selected_year, selected_month) {
       )
     ) +
     tm_title(text = paste("Mean Wind Speed for", selected_month, selected_year)) +
-    tm_layout(
-      legend.position = c("right", "bottom")
-    ) +
     tm_view(
       set_zoom_limits = c(11, 14),
       bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
                        ymin = 1.2, ymax = 1.5))
     )
 }
+
 
 
 
@@ -1405,31 +1327,7 @@ localmoran_i_rainfall <- function(data, year, month, k_neighbors = 2) {
   return(sf_data)
 }
 
-# Plot function with tmap v4 syntax
-plot_rainfall_morani <- function(data, year, month, k_neighbors = 2) {
-  tmap_mode("view")
-  
-  tm_shape(data) +
-    tm_symbols(
-      size = "Total_Rainfall",
-      fill = "Local_Moran_I",
-      size.scale = tm_scale_continuous(values.scale = 3),
-      fill.scale = tm_scale_intervals(
-        values = "brewer.blues",
-        n = 5,
-        style = "jenks"
-      ),
-      id = "Station",
-      popup.vars = c(
-        "Station" = "Station",
-        "Total Rainfall (mm)" = "Total_Rainfall",
-        "Local Moran's I" = "Local_Moran_I"
-      )
-    ) +
-    tm_title(text = paste("Local Indicators of Spatial Association for", month, year))
-}
-
-# Similar functions for temperature and wind speed
+# Local Moran's I function for temperature
 localmoran_i_temperature <- function(data, year, month, k_neighbors = 2) {
   data <- data %>%
     mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
@@ -1458,29 +1356,7 @@ localmoran_i_temperature <- function(data, year, month, k_neighbors = 2) {
   return(sf_data)
 }
 
-plot_temperature_morani <- function(data, year, month, k_neighbors = 2) {
-  tmap_mode("view")
-  
-  tm_shape(data) +
-    tm_symbols(
-      size = "Mean_Temperature",
-      fill = "Local_Moran_I",
-      size.scale = tm_scale_continuous(values.scale = 3),
-      fill.scale = tm_scale_intervals(
-        values = "brewer.reds",
-        n = 5,
-        style = "jenks"
-      ),
-      id = "Station",
-      popup.vars = c(
-        "Station" = "Station",
-        "Mean Temperature (°C)" = "Mean_Temperature",
-        "Local Moran's I" = "Local_Moran_I"
-      )
-    ) +
-    tm_title(text = paste("Local Indicators of Spatial Association for", month, year))
-}
-
+# Local Moran's I function for wind speed
 localmoran_i_windspeed <- function(data, year, month, k_neighbors = 2) {
   data <- data %>%
     mutate(Year = year(date), Month = month(date, label = TRUE, abbr = FALSE)) %>%
@@ -1509,17 +1385,78 @@ localmoran_i_windspeed <- function(data, year, month, k_neighbors = 2) {
   return(sf_data)
 }
 
+
+# Plot function for Rainfall Moran's I
+plot_rainfall_morani <- function(data, year, month, k_neighbors = 2) {
+  tmap_mode("view")
+  
+  rainfall_morani <- tm_shape(data) +
+    tm_symbols(
+      size = "Total_Rainfall", 
+      fill = "Local_Moran_I",
+      size.scale = tm_scale_continuous(values.scale = 3),
+      fill.scale = tm_scale_intervals(
+        values = "brewer.blues",
+        style = "jenks"
+      ),
+      id = "Station",
+      popup.vars = c(
+        "Station" = "Station",
+        "Total Rainfall (mm)" = "Total_Rainfall",
+        "Local Moran's I" = "Local_Moran_I"
+      )
+    ) +
+    tm_title(text = paste("Local Indicators of Spatial Association for", month, year)) +
+    tm_view(
+      set_zoom_limits = c(11, 14),
+      bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
+                       ymin = 1.2, ymax = 1.5))
+    )
+  
+  return(rainfall_morani)
+}
+
+# Plot function for Temperature Moran's I
+plot_temperature_morani <- function(data, year, month, k_neighbors = 2) {
+  tmap_mode("view")
+  
+  temperature_morani <- tm_shape(data) +
+    tm_symbols(
+      size = "Mean_Temperature", 
+      fill = "Local_Moran_I",
+      size.scale = tm_scale_continuous(values.scale = 3),
+      fill.scale = tm_scale_intervals(
+        values = "brewer.reds",
+        style = "jenks"
+      ),
+      id = "Station",
+      popup.vars = c(
+        "Station" = "Station",
+        "Mean Temperature (°C)" = "Mean_Temperature",
+        "Local Moran's I" = "Local_Moran_I"
+      )
+    ) +
+    tm_title(text = paste("Local Indicators of Spatial Association for", month, year)) +
+    tm_view(
+      set_zoom_limits = c(11, 14),
+      bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
+                       ymin = 1.2, ymax = 1.5))
+    )
+  
+  return(temperature_morani)
+}
+
+# Plot function for Wind Speed Moran's I
 plot_windspeed_morani <- function(data, year, month, k_neighbors = 2) {
   tmap_mode("view")
   
-  tm_shape(data) +
+  windspeed_morani <- tm_shape(data) +
     tm_symbols(
-      size = "Mean_Wind_Speed",
+      size = "Mean_Wind_Speed", 
       fill = "Local_Moran_I",
       size.scale = tm_scale_continuous(values.scale = 3),
       fill.scale = tm_scale_intervals(
         values = "brewer.greens",
-        n = 5,
         style = "jenks"
       ),
       id = "Station",
@@ -1529,217 +1466,21 @@ plot_windspeed_morani <- function(data, year, month, k_neighbors = 2) {
         "Local Moran's I" = "Local_Moran_I"
       )
     ) +
-    tm_title(text = paste("Local Indicators of Spatial Association for", month, year))
-}
-
-
-# IDW function for rainfall using automap (Updated to Kriging)
-generate_kriging_rainfall <- function(data, year, month, resolution, nmax, mpsz) {
-  
-  # Filter the data based on the year and month
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
-  
-  # Get the bounding box of the data
-  bbox <- st_bbox(filtered_data)
-  
-  # Transform the bounding box to CRS EPSG:3414
-  bbox <- st_transform(bbox, crs = 3414)
-  
-  lon_min <- bbox["xmin"]
-  lon_max <- bbox["xmax"]
-  lat_min <- bbox["ymin"]
-  lat_max <- bbox["ymax"]
-  
-  set.seed(123)
-  
-  # Calculate the number of random points based on resolution
-  n_points <- ceiling((lon_max - lon_min) / resolution) * ceiling((lat_max - lat_min) / resolution)
-  
-  # Generate random points within the bounding box
-  random_points <- data.frame(
-    X = runif(n_points, lon_min, lon_max),
-    Y = runif(n_points, lat_min, lat_max)
-  )
-  
-  # Convert these random points to an sf object with the correct CRS
-  random_points_sf <- st_as_sf(random_points, coords = c("X", "Y"), crs = 3414)
-  
-  # Convert the original rainfall data to SpatialPointsDataFrame
-  coords <- filtered_data[, c("Longitude", "Latitude")]
-  rainfall_values <- filtered_data$value_rainfall
-  data_sp <- SpatialPointsDataFrame(coords = coords, data = data.frame(value_rainfall = rainfall_values), proj4string = CRS("+init=epsg:3414"))
-  
-  # Perform Kriging interpolation using automap
-  kriging_rainfall <- autoKrige(value_rainfall ~ 1, data_sp, newdata = random_points)
-  
-  # Convert Kriging results into an sf object
-  kriging_rainfall_sf <- st_as_sf(kriging_rainfall$krige)
-  
-  # Clip points to Singapore boundary
-  kriging_rainfall_sf <- kriging_rainfall_sf[mpsz, ]
-  
-  return(kriging_rainfall_sf)
-} 
-
-# Plot function for rainfall Kriging
-plot_rainfall_kriging <- function(data, year, month, resolution, nmax) {
-  tmap_mode("plot")
-  map <- tm_shape(data) +
-    tm_symbols(col = "var1.pred", 
-               size = "var1.pred", 
-               scale = 4, style = "jenks", palette = "Blues",  
-               border.col = "black", 
-               border.lwd = 0.5) +
-    tm_layout(
-      title = "Kriging Interpolated Rainfall at Random Points in Singapore",
-      frame = TRUE,          
-      frame.lwd = 2,         
-      title.size = 1.5
+    tm_title(text = paste("Local Indicators of Spatial Association for", month, year)) +
+    tm_view(
+      set_zoom_limits = c(11, 14),
+      bbox = st_bbox(c(xmin = 103.6, xmax = 104.1, 
+                       ymin = 1.2, ymax = 1.5))
     )
   
-  tmap_mode("view")
-  
-  return(map)
+  return(windspeed_morani)
 }
 
-# Kriging function for temperature using automap
-generate_kriging_temperature <- function(data, year, month, resolution, nmax, mpsz) {
-  
-  # Filter data based on the year and month
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
-  
-  set.seed(123)
-  
-  # Compute bounding box and transform to EPSG:3414
-  bbox <- st_bbox(mpsz)
-  bbox <- st_transform(st_as_sfc(bbox), crs = 3414)
-  
-  # Extract min/max coordinates
-  lon_min <- st_bbox(bbox)["xmin"]
-  lon_max <- st_bbox(bbox)["xmax"]
-  lat_min <- st_bbox(bbox)["ymin"]
-  lat_max <- st_bbox(bbox)["ymax"]
-  
-  # Calculate number of points based on resolution
-  n_points <- ceiling((lon_max - lon_min) / resolution) * ceiling((lat_max - lat_min) / resolution)
-  
-  # Generate random points within the bounding box
-  random_points <- data.frame(
-    X = runif(n_points, lon_min, lon_max),
-    Y = runif(n_points, lat_min, lat_max)
-  )
-  
-  # Convert to sf object with correct CRS
-  random_points_sf <- st_as_sf(random_points, coords = c("X", "Y"), crs = 3414)
-  
-  # Convert the original temperature data to SpatialPointsDataFrame
-  coords <- filtered_data[, c("Longitude", "Latitude")]
-  temp_values <- filtered_data$value_temperature
-  data_sp <- SpatialPointsDataFrame(coords = coords, data = data.frame(value_temperature = temp_values), proj4string = CRS("+init=epsg:3414"))
-  
-  # Perform Kriging interpolation using automap
-  kriging_temperature <- autoKrige(value_temperature ~ 1, data_sp, newdata = random_points)
-  
-  # Convert Kriging results into an sf object
-  kriging_temperature_sf <- st_as_sf(kriging_temperature$krige)
-  
-  # Clip points to Singapore boundary
-  kriging_temperature_sf <- kriging_temperature_sf[mpsz, ]
-  
-  return(kriging_temperature_sf)
-} 
 
-# Kriging function for wind speed using automap
-generate_kriging_windspeed <- function(data, year, month, resolution, nmax, mpsz) {
-  
-  # Filter data based on the year and month
-  filtered_data <- data %>%
-    filter(Year == year, Month == month)
-  
-  set.seed(123)
-  
-  # Compute bounding box and transform to EPSG:3414
-  bbox <- st_bbox(mpsz)
-  bbox <- st_transform(st_as_sfc(bbox), crs = 3414)
-  
-  # Extract min/max coordinates
-  lon_min <- st_bbox(bbox)["xmin"]
-  lon_max <- st_bbox(bbox)["xmax"]
-  lat_min <- st_bbox(bbox)["ymin"]
-  lat_max <- st_bbox(bbox)["ymax"]
-  
-  # Calculate number of points based on resolution
-  n_points <- ceiling((lon_max - lon_min) / resolution) * ceiling((lat_max - lat_min) / resolution)
-  
-  # Generate random points within the bounding box
-  random_points <- data.frame(
-    X = runif(n_points, lon_min, lon_max),
-    Y = runif(n_points, lat_min, lat_max)
-  )
-  
-  # Convert to sf object with correct CRS
-  random_points_sf <- st_as_sf(random_points, coords = c("X", "Y"), crs = 3414)
-  
-  # Convert the original wind speed data to SpatialPointsDataFrame
-  coords <- filtered_data[, c("Longitude", "Latitude")]
-  windspeed_values <- filtered_data$value_windspeed
-  data_sp <- SpatialPointsDataFrame(coords = coords, data = data.frame(value_windspeed = windspeed_values), proj4string = CRS("+init=epsg:3414"))
-  
-  # Perform Kriging interpolation using automap
-  kriging_windspeed <- autoKrige(value_windspeed ~ 1, data_sp, newdata = random_points)
-  
-  # Convert Kriging results into an sf object
-  kriging_windspeed_sf <- st_as_sf(kriging_windspeed$krige)
-  
-  # Clip points to Singapore boundary
-  kriging_windspeed_sf <- kriging_windspeed_sf[mpsz, ]
-  
-  return(kriging_windspeed_sf)
-} 
 
-# Plot function for temperature Kriging
-plot_temperature_kriging <- function(data, year, month, resolution, nmax) {
-  tmap_mode("plot")
-  map <- tm_shape(data) +
-    tm_symbols(col = "var1.pred", 
-               size = "var1.pred", 
-               scale = 4, style = "jenks", palette = "Reds",  
-               border.col = "black", 
-               border.lwd = 0.5) +
-    tm_layout(
-      title = "Kriging Interpolated Temperature at Random Points in Singapore",
-      frame = TRUE,          
-      frame.lwd = 2,         
-      title.size = 1.5
-    )
-  
-  tmap_mode("view")
-  
-  return(map)
-}
 
-# Plot function for wind speed Kriging
-plot_windspeed_kriging <- function(data, year, month, resolution, nmax) {
-  tmap_mode("plot")
-  map <- tm_shape(data) +
-    tm_symbols(col = "var1.pred", 
-               size = "var1.pred", 
-               scale = 4, style = "jenks", palette = "Greens",  
-               border.col = "black", 
-               border.lwd = 0.5) +
-    tm_layout(
-      title = "Kriging Interpolated Wind Speed at Random Points in Singapore",
-      frame = TRUE,          
-      frame.lwd = 2,         
-      title.size = 1.5
-    )
-  
-  tmap_mode("view")
-  
-  return(map)
-}
+
+
 
 
 
@@ -2591,10 +2332,11 @@ ui <- navbarPage(
                              choices = month.name,
                              selected = month.name[1]),
                  
+                 # In your UI code, update the sliderInput for k_neighbors:
                  sliderInput("k_neighbors",
                              "Number of Nearest Neighbors:",
-                             min = 2,
-                             max = 10,
+                             min = 1,
+                             max = 5,  # Reduced from 10 to 5
                              value = 2,
                              step = 1),
                  width = 3
@@ -2619,44 +2361,23 @@ ui <- navbarPage(
     tabPanel("Inverse Distance Weighted (IDW) Interpolation",
              sidebarLayout(
                sidebarPanel(
-                 selectInput("idw_year", 
-                             "Select Year",
-                             choices = 2020:2024,
-                             selected = 2024),
-                 
-                 selectInput("idw_month",
-                             "Select Month",
-                             choices = month.name,
-                             selected = month.name[1]),
-                 
-                 sliderInput("resolution",
-                             "Resolution:",
-                             min = 1000,
-                             max = 5000,
-                             value = 1000,
-                             step = 200),
-                 
-                 sliderInput("nmax",
-                             "Nmax:",
-                             min = 1,
-                             max = 10,
-                             value = 1,
-                             step = 1),
+                 selectInput("heatmap_dataset_type", "Select Dataset:",
+                             choices = c("Temperature" = "temperature",
+                                         "Rainfall" = "rainfall",
+                                         "Wind Speed" = "windspeed")),
+                 selectInput("heatmap_var_type", "Select Variable:",
+                             choices = NULL),
+                 selectInput("heatmap_aggregation", "Select Aggregation:",
+                             choices = c("Daily" = "daily",
+                                         "Weekly" = "weekly",
+                                         "Monthly" = "monthly")),
+                 dateRangeInput("heatmap_date_range", "Select Date Range:",
+                                start = "2020-01-01",
+                                end = "2024-12-31"),
                  width = 3
                ),
                mainPanel(
-                 tabsetPanel(
-                   id = "idw_tabs",
-                   
-                   tabPanel("Rainfall",
-                            tmapOutput("rainfall_idw_map", height = "600px")),
-                   
-                   tabPanel("Temperature",
-                            tmapOutput("temperature_idw_map", height = "600px")),
-                   
-                   tabPanel("Wind Speed",
-                            tmapOutput("windspeed_idw_map", height = "600px"))
-                 ),
+                 plotlyOutput("spatial_heatmap", height = "600px"),
                  width = 9
                )
              )
@@ -3504,84 +3225,8 @@ server <- function(input, output, session) {
       )
     })
   })
-
-  # Rainfall IDW Map
-  output$rainfall_idw_map <- renderTmap({
-    req(input$idw_year, input$idw_month)
-    
-    withProgress(message = 'Calculating IDW...', {
-      idw_data <- generate_idw_rainfall(
-        data = climate_rainfall_geospatial,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax
-      )
-      
-      plot_rainfall_idw(
-        data = idw_data,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax,
-        mpsz = mpsz
-      )
-      
-      tmap_leaflet(plot_rainfall_idw(idw_data, input$idw_year, input$idw_month, input$resolution, input$nmax))  
-    })
-  })  
-
-  # temperature IDW Map
-  output$temperature_idw_map <- renderTmap({
-    req(input$idw_year, input$idw_month)
-    
-    withProgress(message = 'Calculating IDW...', {
-      idw_data <- generate_idw_temperature(
-        data = climate_rainfall_geospatial,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax
-      )
-      
-      plot_temperature_idw(
-        data = idw_data,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax,
-        mpsz = mpsz
-      )
-      
-      tmap_leaflet(plot_temperature_idw(idw_data, input$idw_year, input$idw_month, input$resolution, input$nmax))  
-    })
-  })  
   
-  # windspeed IDW Map
-  output$windspeed_idw_map <- renderTmap({
-    req(input$idw_year, input$idw_month)
-    
-    withProgress(message = 'Calculating IDW...', {
-      idw_data <- generate_idw_windspeed(
-        data = climate_rainfall_geospatial,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax
-      )
-      
-      plot_windspeed_idw(
-        data = idw_data,
-        year = input$idw_year,
-        month = input$idw_month,
-        resolution = input$resolution,
-        nmax = input$nmax,
-        mpsz = mpsz
-      )
-      
-      tmap_leaflet(plot_windspeed_idw(idw_data, input$idw_year, input$idw_month, input$resolution, input$nmax))  
-    })
-  })    
+
 }
 
 # Run the application 

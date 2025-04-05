@@ -170,6 +170,12 @@ climate_temperature <- climate_data %>%
 climate_windspeed <- climate_data %>%
   select(Station, Year, Month, Day, date, station, year, month,
          contains("Wind"))
+
+climate_all <- climate_data %>%
+  select(Station, Year, Month, Day, date, station, year, month,
+         contains("Rainfall"),
+         contains("Temperature"),
+         contains("Wind"))
 ```
 
 ## 2.4 Checking for Missing Data
@@ -318,7 +324,7 @@ climate_temperature_interpolated
 #| code-summary: "Click to view code"
 
 
-climate_windspeed_interpolated <- climate_windspeed %>%
+climate_all_filtered <- climate_all %>%
   inner_join(stations_wind, by = c("station" = "StationID")) %>%
   arrange(station, date) %>%
   group_by(station) %>%
@@ -334,6 +340,30 @@ climate_windspeed_interpolated
 ## 2.5 Preparing Geospatial Data
 
 In order to visualize the climate data on the map of Singapore for geospatial analysis, we will first need to transform the data and map the 9 weather station points to the **SVY21 system**.
+
+```{r}
+climate_all_interpolated <- climate_all %>%
+  inner_join(stations_wind, by = c("station" = "StationID")) %>%
+  arrange(station, date) %>%
+  group_by(station) %>%
+  mutate(
+    `Daily Rainfall Total (mm)`     = na.approx(`Daily Rainfall Total (mm)`, x = date, na.rm = FALSE),
+    `Highest 30 Min Rainfall (mm)`  = na.approx(`Highest 30 Min Rainfall (mm)`, x = date, na.rm = FALSE),
+    `Highest 60 Min Rainfall (mm)`  = na.approx(`Highest 60 Min Rainfall (mm)`, x = date, na.rm = FALSE),
+    `Highest 120 Min Rainfall (mm)` = na.approx(`Highest 120 Min Rainfall (mm)`, x = date, na.rm = FALSE),
+     `Mean Temperature (°C)`     = na.approx(`Mean Temperature (°C)`, x = date, na.rm = FALSE),
+    `Maximum Temperature (°C)`  = na.approx(`Maximum Temperature (°C)`, x = date, na.rm = FALSE),
+    `Minimum Temperature (°C)`  = na.approx(`Minimum Temperature (°C)`, x = date, na.rm = FALSE),
+     `Mean Wind Speed (km/h)`     = na.approx(`Mean Wind Speed (km/h)`, x = date, na.rm = FALSE),
+    `Max Wind Speed (km/h)`  = na.approx(`Max Wind Speed (km/h)`, x = date, na.rm = FALSE)
+  ) %>%
+  ungroup()
+```
+
+```{r}
+climate_geospatial <- st_as_sf(climate_all_interpolated, crs = 3414)
+write_rds(climate_geospatial, "data/rds/climate_geospatial.rds")
+```
 
 ```{r}
 climate_rainfall3414 <- st_as_sf(climate_rainfall_interpolated, crs = 3414)

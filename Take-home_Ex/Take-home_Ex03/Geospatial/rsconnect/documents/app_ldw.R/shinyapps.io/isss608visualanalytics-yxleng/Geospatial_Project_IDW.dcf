@@ -1,12 +1,12 @@
-name: Geospatial_Project
-title: Geospatial_Project
+name: Geospatial_Project_IDW
+title: Geospatial_Project_IDW
 username: isss608visualanalytics-yxleng
 account: isss608visualanalytics-yxleng
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 14428876
-bundleId: 10055740
-url: https://isss608visualanalytics-yxleng.shinyapps.io/Geospatial_Project/
+appId: 14437811
+bundleId: 10060742
+url: https://isss608visualanalytics-yxleng.shinyapps.io/Geospatial_Project_IDW/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
